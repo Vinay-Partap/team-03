@@ -12,6 +12,7 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
 
 import Dashboard from "../pages/citizen/Dashboard";
+import GovernmentReports from "../pages/government/Reports";
 
 export default function AppRoutes() {
   return (
@@ -40,7 +41,9 @@ export default function AppRoutes() {
 
       {/* Government */}
 
-      <Route element={<GovernmentLayout />}></Route>
+      <Route element={<GovernmentLayout />}>
+        <Route path="/government/reports" element={<GovernmentReports />} />
+      </Route>
 
     </Routes>
   );

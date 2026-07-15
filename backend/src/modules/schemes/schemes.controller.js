@@ -1,45 +1,9 @@
-const Scheme = require("./schemes.model");
+const schemesService = require("./schemes.service");
 const { logAction } = require("../auditLogs/auditLogs.service");
-const Notification = require("../notifications/notifications.model");
 
-// Public & Citizen Search
 const getSchemes = async (req, res) => {
   try {
-    const { category, department, state, search, status } = req.query;
-
-    let query = {};
-
-    // Check permissions
-    if (req.user && ["admin", "official"].includes(req.user.role)) {
-      if (status) {
-        query.status = status;
-      }
-    } else {
-      query.status = "approved";
-    }
-
-    if (category) query.category = category;
-    if (department) query.department = department;
-    if (state) {
-      if (state.toLowerCase() === "global") {
-        query.state = "Global";
-      } else {
-        query.state = state;
-      }
-    }
-
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { benefits: { $regex: search, $options: "i" } },
-      ];
-    }
-
-    const schemes = await Scheme.find(query)
-      .populate("createdBy", "name email role")
-      .populate("approvedBy", "name email role");
-
+    const schemes = await schemesService.getSchemes(req.query, req.user);
     res.status(200).json({ success: true, schemes });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -48,43 +12,16 @@ const getSchemes = async (req, res) => {
 
 const getSchemeById = async (req, res) => {
   try {
-    const scheme = await Scheme.findById(req.params.id)
-      .populate("createdBy", "name email role")
-      .populate("approvedBy", "name email role");
-
-    if (!scheme) {
-      return res.status(404).json({ success: false, message: "Scheme not found" });
-    }
-
-    if (scheme.status !== "approved") {
-      if (!req.user || !["admin", "official"].includes(req.user.role)) {
-        return res.status(403).json({ success: false, message: "Unauthorized to view this scheme" });
-      }
-    }
-
+    const scheme = await schemesService.getSchemeById(req.params.id, req.user);
     res.status(200).json({ success: true, scheme });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Official & Admin CRUD
 const createScheme = async (req, res) => {
   try {
-    const { title, description, category, department, state, benefits, applicationProcess, eligibilityRules, status } = req.body;
-
-    const scheme = await Scheme.create({
-      title,
-      description,
-      category,
-      department,
-      state: state || "Global",
-      benefits,
-      applicationProcess,
-      eligibilityRules: eligibilityRules || {},
-      status: status || "draft",
-      createdBy: req.user.id,
-    });
+    const scheme = await schemesService.createScheme(req.body, req.user.id);
 
     await logAction({
       action: "SCHEME_CREATE",
@@ -104,29 +41,7 @@ const createScheme = async (req, res) => {
 const updateScheme = async (req, res) => {
   try {
     const { id } = req.params;
-    let scheme = await Scheme.findById(id);
-
-    if (!scheme) {
-      return res.status(404).json({ success: false, message: "Scheme not found" });
-    }
-
-    if (scheme.createdBy.toString() !== req.user.id && req.user.role !== "admin" && req.user.role !== "official") {
-      return res.status(403).json({ success: false, message: "Unauthorized to edit this scheme" });
-    }
-
-    const updates = req.body;
-
-    // Track a history log if updates are described
-    if (updates.updateContent) {
-      if (!scheme.updates) scheme.updates = [];
-      scheme.updates.push({
-        content: updates.updateContent,
-        date: new Date(),
-      });
-      delete updates.updateContent;
-    }
-
-    scheme = await Scheme.findByIdAndUpdate(id, updates, { new: true });
+    const scheme = await schemesService.updateScheme(id, req.body, req.user);
 
     await logAction({
       action: "SCHEME_UPDATE",
@@ -146,23 +61,13 @@ const updateScheme = async (req, res) => {
 const deleteScheme = async (req, res) => {
   try {
     const { id } = req.params;
-    const scheme = await Scheme.findById(id);
-
-    if (!scheme) {
-      return res.status(404).json({ success: false, message: "Scheme not found" });
-    }
-
-    if (scheme.createdBy.toString() !== req.user.id && req.user.role !== "admin") {
-      return res.status(403).json({ success: false, message: "Unauthorized to delete this scheme" });
-    }
-
-    await Scheme.findByIdAndDelete(id);
+    await schemesService.deleteScheme(id, req.user);
 
     await logAction({
       action: "SCHEME_DELETE",
       userId: req.user._id,
       userRole: req.user.role,
-      details: `Deleted scheme: ${scheme.title}`,
+      details: `Deleted scheme`,
       targetId: id,
       ipAddress: req.ip || "127.0.0.1",
     });
@@ -173,14 +78,9 @@ const deleteScheme = async (req, res) => {
   }
 };
 
-// Workflow Approvals
 const submitSchemeForApproval = async (req, res) => {
   try {
-    const scheme = await Scheme.findById(req.params.id);
-    if (!scheme) return res.status(404).json({ success: false, message: "Scheme not found" });
-
-    scheme.status = "pending_approval";
-    await scheme.save();
+    const scheme = await schemesService.submitForApproval(req.params.id);
 
     await logAction({
       action: "SCHEME_SUBMIT_APPROVAL",
@@ -199,12 +99,7 @@ const submitSchemeForApproval = async (req, res) => {
 
 const approveScheme = async (req, res) => {
   try {
-    const scheme = await Scheme.findById(req.params.id);
-    if (!scheme) return res.status(404).json({ success: false, message: "Scheme not found" });
-
-    scheme.status = "approved";
-    scheme.approvedBy = req.user.id;
-    await scheme.save();
+    const scheme = await schemesService.approveScheme(req.params.id, req.user.id);
 
     await logAction({
       action: "SCHEME_APPROVE",
@@ -215,14 +110,6 @@ const approveScheme = async (req, res) => {
       ipAddress: req.ip || "127.0.0.1",
     });
 
-    // Send global notification
-    await Notification.create({
-      userId: null,
-      title: "New Public Welfare Scheme Live",
-      message: `A new public scheme '${scheme.title}' has been launched under the ${scheme.department} department. Check eligibility parameters!`,
-      type: "scheme_update",
-    });
-
     res.status(200).json({ success: true, message: "Scheme approved and published", scheme });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -231,11 +118,7 @@ const approveScheme = async (req, res) => {
 
 const rejectScheme = async (req, res) => {
   try {
-    const scheme = await Scheme.findById(req.params.id);
-    if (!scheme) return res.status(404).json({ success: false, message: "Scheme not found" });
-
-    scheme.status = "draft";
-    await scheme.save();
+    const scheme = await schemesService.rejectScheme(req.params.id);
 
     await logAction({
       action: "SCHEME_REJECT",
@@ -254,11 +137,7 @@ const rejectScheme = async (req, res) => {
 
 const archiveScheme = async (req, res) => {
   try {
-    const scheme = await Scheme.findById(req.params.id);
-    if (!scheme) return res.status(404).json({ success: false, message: "Scheme not found" });
-
-    scheme.status = "archived";
-    await scheme.save();
+    const scheme = await schemesService.archiveScheme(req.params.id);
 
     await logAction({
       action: "SCHEME_ARCHIVE",
@@ -275,17 +154,12 @@ const archiveScheme = async (req, res) => {
   }
 };
 
-// Add updates history
 const addSchemeUpdate = async (req, res) => {
   try {
     const { content } = req.body;
     if (!content) return res.status(400).json({ success: false, message: "Update content is required" });
 
-    const scheme = await Scheme.findById(req.params.id);
-    if (!scheme) return res.status(404).json({ success: false, message: "Scheme not found" });
-
-    scheme.updates.push({ content });
-    await scheme.save();
+    const scheme = await schemesService.addSchemeUpdate(req.params.id, content);
 
     await logAction({
       action: "SCHEME_ADD_UPDATE",

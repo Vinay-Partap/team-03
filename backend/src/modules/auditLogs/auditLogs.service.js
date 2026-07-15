@@ -1,20 +1,24 @@
-const AuditLog = require("./auditLogs.model");
+const auditLogsRepository = require("./auditLogs.repository");
 
-const logAction = async ({ action, userId, userRole, details, targetId, ipAddress }) => {
-  try {
-    await AuditLog.create({
-      action,
-      userId,
-      userRole,
-      details,
-      targetId,
-      ipAddress,
-    });
-  } catch (error) {
-    console.error("Error creating audit log:", error);
+class AuditLogsService {
+  async logAction({ action, userId, userRole, details, targetId, ipAddress }) {
+    try {
+      await auditLogsRepository.create({
+        action,
+        userId,
+        userRole,
+        details,
+        targetId,
+        ipAddress,
+      });
+    } catch (error) {
+      console.error("Error creating audit log:", error);
+    }
   }
-};
 
-module.exports = {
-  logAction,
-};
+  async getAuditLogs() {
+    return await auditLogsRepository.find();
+  }
+}
+
+module.exports = new AuditLogsService();

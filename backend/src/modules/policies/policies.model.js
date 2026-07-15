@@ -21,7 +21,13 @@ const policySchema = new Schema(
   },
   {
     timestamps: true,
-  }
 );
+
+policySchema.index({ category: 1 });
+policySchema.index({ department: 1 });
+policySchema.index({ state: 1 });
+policySchema.index({ status: 1 });
+policySchema.index({ createdAt: -1 });
+
 
 module.exports = mongoose.models.Policies || mongoose.model("Policies", policySchema);

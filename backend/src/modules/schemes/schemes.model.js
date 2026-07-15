@@ -37,7 +37,13 @@ const schemeSchema = new Schema(
   },
   {
     timestamps: true,
-  }
 );
+
+schemeSchema.index({ category: 1 });
+schemeSchema.index({ department: 1 });
+schemeSchema.index({ state: 1 });
+schemeSchema.index({ status: 1 });
+schemeSchema.index({ createdAt: -1 });
+
 
 module.exports = mongoose.models.Schemes || mongoose.model("Schemes", schemeSchema);

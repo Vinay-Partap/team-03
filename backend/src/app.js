@@ -24,6 +24,10 @@ const feedbackRoutes = require("./modules/feedback/feedback.routes");
 const reportsRoutes = require("./modules/reports/reports.routes");
 const auditLogsRoutes = require("./modules/auditLogs/auditLogs.routes");
 const dashboardRoutes = require("./modules/dashboard/dashboard.routes");
+const adminRoutes = require("./modules/admin/admin.routes");
+const analyticsRoutes = require("./modules/analytics/analytics.routes");
+const applicationsRoutes = require("./modules/applications/applications.routes");
+const searchRoutes = require("./modules/search/search.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
@@ -35,6 +39,11 @@ app.use("/api/feedback", feedbackRoutes);
 app.use("/api/reports", reportsRoutes);
 app.use("/api/audit-logs", auditLogsRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/applications", applicationsRoutes);
+app.use("/api/search", searchRoutes);
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {

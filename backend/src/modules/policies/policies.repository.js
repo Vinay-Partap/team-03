@@ -1,8 +1,11 @@
 const Policy = require("./policies.model");
 
 class PoliciesRepository {
-  async find(query) {
-    return await Policy.find(query)
+  async find(query, skip = 0, limit = 0) {
+    let q = Policy.find(query);
+    if (skip > 0) q = q.skip(skip);
+    if (limit > 0) q = q.limit(limit);
+    return await q
       .populate("createdBy", "name email role")
       .populate("approvedBy", "name email role");
   }

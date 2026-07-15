@@ -3,7 +3,7 @@ const Notification = require("../notifications/notifications.model");
 
 class PoliciesService {
   async getPolicies(filter, user) {
-    const { category, department, state, search, status } = filter;
+    const { category, department, state, search, status, page, limit } = filter;
     let query = {};
 
     if (user && ["admin", "official"].includes(user.role)) {
@@ -31,7 +31,10 @@ class PoliciesService {
       ];
     }
 
-    return await policiesRepository.find(query);
+    const skip = page && limit ? (Number(page) - 1) * Number(limit) : 0;
+    const maxLimit = limit ? Number(limit) : 0;
+
+    return await policiesRepository.find(query, skip, maxLimit);
   }
 
   async getPolicyById(id, user) {

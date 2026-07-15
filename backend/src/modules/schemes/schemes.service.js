@@ -3,7 +3,7 @@ const Notification = require("../notifications/notifications.model");
 
 class SchemesService {
   async getSchemes(filter, user) {
-    const { category, department, state, search, status } = filter;
+    const { category, department, state, search, status, page, limit } = filter;
     let query = {};
 
     if (user && ["admin", "official"].includes(user.role)) {
@@ -32,7 +32,10 @@ class SchemesService {
       ];
     }
 
-    return await schemesRepository.find(query);
+    const skip = page && limit ? (Number(page) - 1) * Number(limit) : 0;
+    const maxLimit = limit ? Number(limit) : 0;
+
+    return await schemesRepository.find(query, skip, maxLimit);
   }
 
   async getSchemeById(id, user) {

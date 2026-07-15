@@ -1,7 +1,20 @@
-// auditLogs.service.js
+const AuditLog = require("./auditLogs.model");
 
-class AuditLogsService {
+const logAction = async ({ action, userId, userRole, details, targetId, ipAddress }) => {
+  try {
+    await AuditLog.create({
+      action,
+      userId,
+      userRole,
+      details,
+      targetId,
+      ipAddress,
+    });
+  } catch (error) {
+    console.error("Error creating audit log:", error);
+  }
+};
 
-}
-
-module.exports = new AuditLogsService();
+module.exports = {
+  logAction,
+};

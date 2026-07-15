@@ -1,29 +1,19 @@
-const Feedback = require("./feedback.model");
+const feedbackService = require("./feedback.service");
 const { logAction } = require("../auditLogs/auditLogs.service");
 
 const submitFeedback = async (req, res) => {
   try {
-    const { name, email, subject, message, type } = req.body;
-    if (!name || !email || !subject || !message) {
-      return res.status(400).json({ success: false, message: "Please fill all required fields" });
-    }
-
     const userId = req.user ? req.user.id : null;
-
-    const feedback = await Feedback.create({
+    const feedback = await feedbackService.submitFeedback({
+      ...req.body,
       userId,
-      name,
-      email,
-      subject,
-      message,
-      type: type || "feedback",
     });
 
     await logAction({
       action: "FEEDBACK_SUBMIT",
       userId,
       userRole: req.user ? req.user.role : "guest",
-      details: `Submitted contact/feedback: ${subject}`,
+      details: `Submitted contact/feedback: ${feedback.subject}`,
       targetId: feedback._id,
       ipAddress: req.ip || "127.0.0.1",
     });
@@ -36,7 +26,7 @@ const submitFeedback = async (req, res) => {
 
 const getFeedbacks = async (req, res) => {
   try {
-    const feedbacks = await Feedback.find().sort({ createdAt: -1 });
+    const feedbacks = await feedbackService.getFeedbacks();
     res.status(200).json({ success: true, feedbacks });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -46,13 +36,7 @@ const getFeedbacks = async (req, res) => {
 const resolveFeedback = async (req, res) => {
   try {
     const { id } = req.params;
-    const feedback = await Feedback.findById(id);
-    if (!feedback) {
-      return res.status(404).json({ success: false, message: "Feedback not found" });
-    }
-
-    feedback.status = "resolved";
-    await feedback.save();
+    const feedback = await feedbackService.resolveFeedback(id);
 
     await logAction({
       action: "FEEDBACK_RESOLVE",
@@ -65,7 +49,7 @@ const resolveFeedback = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Feedback marked as resolved", feedback });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(550).json({ success: false, message: error.message });
   }
 };
 

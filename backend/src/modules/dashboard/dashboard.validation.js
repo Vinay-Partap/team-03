@@ -1,5 +1,7 @@
-// dashboard.validation.js
+const validateDashboardQuery = (req, res, next) => {
+  next();
+};
 
 module.exports = {
-
+  validateDashboardQuery,
 };

@@ -10,8 +10,10 @@ const {
 } = require("./auth.controller");
 const { protect } = require("./auth.middleware");
 
-router.post("/register", register);
-router.post("/login", login);
+const { validateRegister, validateLogin } = require("./auth.validation");
+
+router.post("/register", validateRegister, register);
+router.post("/login", validateLogin, login);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 router.get("/profile", protect, getProfile);

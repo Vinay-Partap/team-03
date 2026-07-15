@@ -4,7 +4,13 @@ const jwt = require("jsonwebtoken");
 class AuthService {
   generateToken(id) {
     return jwt.sign({ id }, process.env.JWT_SECRET || "super_secret_jwt_key_123!", {
-      expiresIn: "30d",
+      expiresIn: "15m",
+    });
+  }
+
+  generateRefreshToken(id) {
+    return jwt.sign({ id }, process.env.JWT_SECRET || "super_secret_jwt_key_123!", {
+      expiresIn: "7d",
     });
   }
 
@@ -25,7 +31,10 @@ class AuthService {
     });
 
     const token = this.generateToken(user._id);
-    return { token, user };
+    const refreshToken = this.generateRefreshToken(user._id);
+    user.refreshToken = refreshToken;
+    await authRepository.saveUser(user);
+    return { token, refreshToken, user };
   }
 
   async loginUser(email, password) {
@@ -35,7 +44,10 @@ class AuthService {
     }
 
     const token = this.generateToken(user._id);
-    return { token, user };
+    const refreshToken = this.generateRefreshToken(user._id);
+    user.refreshToken = refreshToken;
+    await authRepository.saveUser(user);
+    return { token, refreshToken, user };
   }
 
   async getUserProfile(userId) {
@@ -86,6 +98,29 @@ class AuthService {
     user.password = newPassword;
     await authRepository.saveUser(user);
     return user;
+  }
+
+  async refreshAccessToken(token) {
+    if (!token) {
+      throw new Error("Refresh token is required");
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || "super_secret_jwt_key_123!");
+      const user = await authRepository.findById(decoded.id);
+      if (!user || user.refreshToken !== token) {
+        throw new Error("Invalid refresh token");
+      }
+
+      const newAccessToken = this.generateToken(user._id);
+      const newRefreshToken = this.generateRefreshToken(user._id);
+      user.refreshToken = newRefreshToken;
+      await authRepository.saveUser(user);
+
+      return { token: newAccessToken, refreshToken: newRefreshToken };
+    } catch (err) {
+      throw new Error("Invalid or expired refresh token");
+    }
   }
 }
 

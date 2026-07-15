@@ -3,7 +3,7 @@ const { logAction } = require("../auditLogs/auditLogs.service");
 
 const register = async (req, res) => {
   try {
-    const { token, user } = await authService.registerUser(req.body);
+    const { token, refreshToken, user } = await authService.registerUser(req.body);
 
     await logAction({
       action: "USER_REGISTER",
@@ -16,6 +16,7 @@ const register = async (req, res) => {
     res.status(201).json({
       success: true,
       token,
+      refreshToken,
       user: {
         _id: user._id,
         name: user.name,
@@ -32,7 +33,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const { token, user } = await authService.loginUser(email, password);
+    const { token, refreshToken, user } = await authService.loginUser(email, password);
 
     await logAction({
       action: "USER_LOGIN",
@@ -45,6 +46,7 @@ const login = async (req, res) => {
     res.status(200).json({
       success: true,
       token,
+      refreshToken,
       user: {
         _id: user._id,
         name: user.name,
@@ -145,6 +147,16 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const refresh = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    const tokens = await authService.refreshAccessToken(refreshToken);
+    res.status(200).json({ success: true, ...tokens });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -152,4 +164,5 @@ module.exports = {
   updateProfile,
   forgotPassword,
   resetPassword,
+  refresh,
 };

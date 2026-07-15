@@ -26,6 +26,7 @@ const userSchema = new Schema(
     savedPolicies: [{ type: Schema.Types.ObjectId, ref: "Policies" }],
     savedSchemes: [{ type: Schema.Types.ObjectId, ref: "Schemes" }],
     searchHistory: [{ type: String }],
+    refreshToken: { type: String, default: "" },
   },
   {
     timestamps: true,

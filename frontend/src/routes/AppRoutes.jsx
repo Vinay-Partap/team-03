@@ -11,7 +11,9 @@ import Register from "../pages/auth/Register";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
 
-import Dashboard from "../pages/citizen/Dashboard";
+import CitizenDashboard from "../pages/citizen/Dashboard";
+import AdminDashboard from "../pages/admin/Dashboard";
+import GovernmentDashboard from "../pages/government/Dashboard";
 import GovernmentReports from "../pages/government/Reports";
 
 export default function AppRoutes() {
@@ -36,12 +38,23 @@ export default function AppRoutes() {
       {/* Citizen */}
 
       <Route element={<CitizenLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<CitizenDashboard />} />
+        <Route path="/citizen" element={<CitizenDashboard />} />
+        <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
+      </Route>
+
+      {/* Admin */}
+
+      <Route element={<GovernmentLayout />}>
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Route>
 
       {/* Government */}
 
       <Route element={<GovernmentLayout />}>
+        <Route path="/government" element={<GovernmentDashboard />} />
+        <Route path="/government/dashboard" element={<GovernmentDashboard />} />
         <Route path="/government/reports" element={<GovernmentReports />} />
       </Route>
 

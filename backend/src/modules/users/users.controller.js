@@ -1,10 +1,9 @@
-const User = require("./users.model");
+const usersService = require("./users.service");
 const { logAction } = require("../auditLogs/auditLogs.service");
 
-// Admin routes
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await usersService.getAllUsers();
     res.status(200).json({ success: true, users });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -18,14 +17,10 @@ const updateUserRole = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid role specified" });
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
+    const oldUser = await usersService.getAllUsers().then(users => users.find(u => u._id.toString() === userId));
+    const oldRole = oldUser ? oldUser.role : "citizen";
 
-    const oldRole = user.role;
-    user.role = role;
-    await user.save();
+    const user = await usersService.updateUserRole(userId, role);
 
     await logAction({
       action: "ADMIN_UPDATE_USER_ROLE",
@@ -45,12 +40,7 @@ const updateUserRole = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    await User.findByIdAndDelete(id);
+    const user = await usersService.deleteUser(id);
 
     await logAction({
       action: "ADMIN_DELETE_USER",
@@ -67,16 +57,11 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Citizen Bookmark Actions
 const savePolicy = async (req, res) => {
   try {
     const { policyId } = req.body;
-    const user = await User.findById(req.user.id);
-    if (!user.savedPolicies.includes(policyId)) {
-      user.savedPolicies.push(policyId);
-      await user.save();
-    }
-    res.status(200).json({ success: true, message: "Policy saved successfully", savedPolicies: user.savedPolicies });
+    const savedPolicies = await usersService.savePolicy(req.user.id, policyId);
+    res.status(200).json({ success: true, message: "Policy saved successfully", savedPolicies });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -85,10 +70,8 @@ const savePolicy = async (req, res) => {
 const unsavePolicy = async (req, res) => {
   try {
     const { policyId } = req.body;
-    const user = await User.findById(req.user.id);
-    user.savedPolicies = user.savedPolicies.filter((id) => id.toString() !== policyId);
-    await user.save();
-    res.status(200).json({ success: true, message: "Policy removed from saved", savedPolicies: user.savedPolicies });
+    const savedPolicies = await usersService.unsavePolicy(req.user.id, policyId);
+    res.status(200).json({ success: true, message: "Policy removed from saved", savedPolicies });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -97,12 +80,8 @@ const unsavePolicy = async (req, res) => {
 const saveScheme = async (req, res) => {
   try {
     const { schemeId } = req.body;
-    const user = await User.findById(req.user.id);
-    if (!user.savedSchemes.includes(schemeId)) {
-      user.savedSchemes.push(schemeId);
-      await user.save();
-    }
-    res.status(200).json({ success: true, message: "Scheme saved successfully", savedSchemes: user.savedSchemes });
+    const savedSchemes = await usersService.saveScheme(req.user.id, schemeId);
+    res.status(200).json({ success: true, message: "Scheme saved successfully", savedSchemes });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -111,10 +90,8 @@ const saveScheme = async (req, res) => {
 const unsaveScheme = async (req, res) => {
   try {
     const { schemeId } = req.body;
-    const user = await User.findById(req.user.id);
-    user.savedSchemes = user.savedSchemes.filter((id) => id.toString() !== schemeId);
-    await user.save();
-    res.status(200).json({ success: true, message: "Scheme removed from saved", savedSchemes: user.savedSchemes });
+    const savedSchemes = await usersService.unsaveScheme(req.user.id, schemeId);
+    res.status(200).json({ success: true, message: "Scheme removed from saved", savedSchemes });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -122,24 +99,17 @@ const unsaveScheme = async (req, res) => {
 
 const getSavedItems = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id)
-      .populate("savedPolicies")
-      .populate("savedSchemes");
-    res.status(200).json({
-      success: true,
-      savedPolicies: user.savedPolicies,
-      savedSchemes: user.savedSchemes,
-    });
+    const savedItems = await usersService.getSavedItems(req.user.id);
+    res.status(200).json({ success: true, ...savedItems });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Search History
 const getSearchHistory = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("searchHistory");
-    res.status(200).json({ success: true, searchHistory: user.searchHistory || [] });
+    const searchHistory = await usersService.getSearchHistory(req.user.id);
+    res.status(200).json({ success: true, searchHistory });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -151,13 +121,8 @@ const addSearchQuery = async (req, res) => {
     if (!query || query.trim() === "") {
       return res.status(400).json({ success: false, message: "Query cannot be empty" });
     }
-    const user = await User.findById(req.user.id);
-    // Keep search history unique and limit to top 10
-    const filteredHistory = (user.searchHistory || []).filter((q) => q !== query);
-    filteredHistory.unshift(query);
-    user.searchHistory = filteredHistory.slice(0, 10);
-    await user.save();
-    res.status(200).json({ success: true, searchHistory: user.searchHistory });
+    const searchHistory = await usersService.addSearchQuery(req.user.id, query);
+    res.status(200).json({ success: true, searchHistory });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -165,9 +130,7 @@ const addSearchQuery = async (req, res) => {
 
 const clearSearchHistory = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    user.searchHistory = [];
-    await user.save();
+    await usersService.clearSearchHistory(req.user.id);
     res.status(200).json({ success: true, message: "Search history cleared" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

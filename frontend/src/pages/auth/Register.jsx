@@ -83,49 +83,49 @@ export default function Register() {
     <div className="max-h-[80vh] overflow-y-auto pr-1">
       <Toaster position="top-right" />
       <h2 className="text-center text-3xl font-extrabold text-white mb-6">Create your account</h2>
-      <form className="space-y-5 text-slate-300" onSubmit={handleSubmit}>
+      <form className="space-y-5 text-slate-200" onSubmit={handleSubmit}>
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
+          <label className="block text-sm font-semibold text-slate-200 mb-1">Full Name</label>
           <input
             type="text"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2 bg-slate-950/50 border border-slate-800 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="w-full px-4 py-2.5 bg-slate-950/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             placeholder="John Doe"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
+          <label className="block text-sm font-semibold text-slate-200 mb-1">Email Address</label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 bg-slate-950/50 border border-slate-800 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="w-full px-4 py-2.5 bg-slate-950/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             placeholder="john@example.com"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">Password</label>
+          <label className="block text-sm font-semibold text-slate-200 mb-1">Password</label>
           <input
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 bg-slate-950/50 border border-slate-800 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="w-full px-4 py-2.5 bg-slate-950/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             placeholder="••••••••"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">Select Role</label>
+          <label className="block text-sm font-semibold text-slate-200 mb-1">Select Role</label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full px-4 py-2 bg-slate-950/80 border border-slate-800 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="w-full px-4 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
             <option value="citizen">Citizen (Welfare seeker)</option>
             <option value="official">Government Official</option>
@@ -138,24 +138,24 @@ export default function Register() {
         {/* Citizen Profile Details */}
         {role === "citizen" && (
           <div className="pt-4 border-t border-slate-800 space-y-4">
-            <h3 className="text-sm font-bold text-blue-400 uppercase tracking-wider">Citizen Eligibility Profile (Optional)</h3>
+            <h3 className="text-base font-extrabold text-blue-300 uppercase tracking-wide">Citizen Eligibility Profile (Optional)</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Age</label>
+                <label className="block text-sm font-semibold text-slate-200 mb-1">Age</label>
                 <input
                   type="number"
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-950/50 border border-slate-800 rounded-lg text-white"
+                  className="w-full px-3 py-2 bg-slate-950/50 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="25"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Gender</label>
+                <label className="block text-sm font-semibold text-slate-200 mb-1">Gender</label>
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-950/80 border border-slate-800 rounded-lg text-white"
+                  className="w-full px-3 py-2 bg-slate-950/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 >
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -166,22 +166,22 @@ export default function Register() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Annual Income (₹)</label>
+                <label className="block text-sm font-semibold text-slate-200 mb-1">Annual Income (₹)</label>
                 <input
                   type="number"
                   value={income}
                   onChange={(e) => setIncome(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-950/50 border border-slate-800 rounded-lg text-white"
+                  className="w-full px-3 py-2 bg-slate-950/50 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="250000"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">State Residency</label>
+                <label className="block text-sm font-semibold text-slate-200 mb-1">State Residency</label>
                 <input
                   type="text"
                   value={state}
                   onChange={(e) => setState(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-950/50 border border-slate-800 rounded-lg text-white"
+                  className="w-full px-3 py-2 bg-slate-950/50 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="Bihar"
                 />
               </div>
@@ -189,22 +189,22 @@ export default function Register() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Occupation</label>
+                <label className="block text-sm font-semibold text-slate-200 mb-1">Occupation</label>
                 <input
                   type="text"
                   value={occupation}
                   onChange={(e) => setOccupation(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-950/50 border border-slate-800 rounded-lg text-white"
+                  className="w-full px-3 py-2 bg-slate-950/50 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="Farmer"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Education Level</label>
+                <label className="block text-sm font-semibold text-slate-200 mb-1">Education Level</label>
                 <input
                   type="text"
                   value={education}
                   onChange={(e) => setEducation(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-950/50 border border-slate-800 rounded-lg text-white"
+                  className="w-full px-3 py-2 bg-slate-950/50 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="10th Pass"
                 />
               </div>
@@ -212,11 +212,11 @@ export default function Register() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Category</label>
+                <label className="block text-sm font-semibold text-slate-200 mb-1">Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-slate-950/80 border border-slate-800 rounded-lg text-white"
+                  className="w-full px-3 py-2 bg-slate-950/80 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 >
                   <option value="General">General</option>
                   <option value="OBC">OBC</option>
@@ -230,9 +230,9 @@ export default function Register() {
                   id="disability"
                   checked={disability}
                   onChange={(e) => setDisability(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 border-slate-800 rounded"
+                  className="h-4 w-4 text-blue-600 border-slate-750 rounded focus:ring-offset-slate-950 focus:ring-blue-500"
                 />
-                <label htmlFor="disability" className="text-xs font-semibold text-slate-400">Has Disability</label>
+                <label htmlFor="disability" className="text-sm font-semibold text-slate-200">Has Disability</label>
               </div>
             </div>
           </div>

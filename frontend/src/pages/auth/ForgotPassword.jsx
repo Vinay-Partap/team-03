@@ -39,7 +39,7 @@ export default function ForgotPassword() {
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1.5">
+          <label htmlFor="email" className="block text-sm font-semibold text-slate-200 mb-1.5">
             Email address
           </label>
           <input
@@ -48,7 +48,7 @@ export default function ForgotPassword() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-950/50 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="w-full px-4 py-2.5 bg-slate-950/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             placeholder="john@example.com"
           />
         </div>

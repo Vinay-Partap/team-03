@@ -1,12 +1,8 @@
-const Notification = require("./notifications.model");
+const notificationsService = require("./notifications.service");
 
 const getNotifications = async (req, res) => {
   try {
-    // Get notifications for this user OR global notifications (userId = null)
-    const notifications = await Notification.find({
-      $or: [{ userId: req.user.id }, { userId: null }],
-    }).sort({ createdAt: -1 });
-
+    const notifications = await notificationsService.getNotifications(req.user.id);
     res.status(200).json({ success: true, notifications });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -16,14 +12,7 @@ const getNotifications = async (req, res) => {
 const markAsRead = async (req, res) => {
   try {
     const { id } = req.params;
-    const notification = await Notification.findById(id);
-    if (!notification) {
-      return res.status(404).json({ success: false, message: "Notification not found" });
-    }
-
-    notification.read = true;
-    await notification.save();
-
+    await notificationsService.markAsRead(id);
     res.status(200).json({ success: true, message: "Notification marked as read" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

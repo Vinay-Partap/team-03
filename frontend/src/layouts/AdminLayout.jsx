@@ -4,19 +4,21 @@ import { logoutUser } from "../redux/slices/authSlice";
 import { useState } from "react";
 import {
   LayoutDashboard,
-  FileText,
-  Award,
-  CheckSquare,
+  Users,
+  Database,
   FileBarChart,
   MessageSquare,
   User,
   LogOut,
   Menu,
   X,
-  ShieldAlert
+  Settings,
+  ShieldCheck,
+  FileText,
+  Award
 } from "lucide-react";
 
-export default function GovernmentLayout() {
+export default function AdminLayout() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,12 +31,12 @@ export default function GovernmentLayout() {
   };
 
   const navItems = [
-    { name: "Official Dashboard", path: "/government/dashboard", icon: LayoutDashboard },
-    { name: "Manage Policies", path: "/government/policies", icon: FileText },
-    { name: "Manage Schemes", path: "/government/schemes", icon: Award },
-    { name: "Approval Workflow", path: "/government/approvals", icon: CheckSquare },
-    { name: "Export Reports", path: "/government/reports", icon: FileBarChart },
-    { name: "Citizen Feedbacks", path: "/government/feedback", icon: MessageSquare },
+    { name: "Admin Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
+    { name: "Manage Users", path: "/admin/users", icon: Users },
+    { name: "Audit Logs", path: "/admin/logs", icon: Database },
+    { name: "System Policies", path: "/admin/policies", icon: FileText },
+    { name: "System Schemes", path: "/admin/schemes", icon: Award },
+    { name: "Citizen Support", path: "/admin/feedback", icon: MessageSquare },
     { name: "My Profile", path: "/profile", icon: User },
   ];
 
@@ -43,8 +45,8 @@ export default function GovernmentLayout() {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex-shrink-0">
         <div className="p-6 border-b border-slate-800 flex items-center gap-2.5">
-          <ShieldAlert className="h-6 w-6 text-emerald-500 stroke-[2.5]" />
-          <span className="text-white font-bold text-lg tracking-tight">Official Portal</span>
+          <Settings className="h-6 w-6 text-purple-500 stroke-[2.5]" />
+          <span className="text-white font-bold text-lg tracking-tight">Admin Console</span>
         </div>
 
         <div className="flex-1 py-6 overflow-y-auto px-4 space-y-1.5">
@@ -57,7 +59,7 @@ export default function GovernmentLayout() {
                 to={item.path}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all group ${
                   isActive
-                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/20"
+                    ? "bg-purple-600 text-white shadow-md shadow-purple-500/20"
                     : "hover:bg-slate-800 hover:text-white text-slate-400"
                 }`}
               >
@@ -71,7 +73,7 @@ export default function GovernmentLayout() {
         {/* User Card */}
         <div className="p-4 border-t border-slate-800 flex flex-col gap-3">
           <div className="flex items-center gap-3 px-2">
-            <div className="bg-emerald-600/10 text-emerald-400 h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm">
+            <div className="bg-purple-600/10 text-purple-400 h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm">
               {user?.name?.slice(0, 2).toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -93,8 +95,8 @@ export default function GovernmentLayout() {
       <div className="flex flex-col flex-1 overflow-hidden">
         <header className="md:hidden h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-30">
           <div className="flex items-center gap-2.5">
-            <ShieldAlert className="h-5 w-5 text-emerald-500" />
-            <span className="text-white font-bold tracking-tight">Official Portal</span>
+            <Settings className="h-5 w-5 text-purple-500" />
+            <span className="text-white font-bold tracking-tight">Admin Console</span>
           </div>
           <button onClick={() => setMobileOpen(!mobileOpen)} className="text-slate-300 p-1.5 hover:bg-slate-800 rounded-lg">
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -107,8 +109,8 @@ export default function GovernmentLayout() {
             <div className="w-64 bg-slate-900 text-slate-300 flex flex-col h-full" onClick={(e) => e.stopPropagation()}>
               <div className="p-6 border-b border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldAlert className="h-5 w-5 text-emerald-500" />
-                  <span className="text-white font-bold">Official Portal</span>
+                  <Settings className="h-5 w-5 text-purple-500" />
+                  <span className="text-white font-bold">Admin Console</span>
                 </div>
                 <button onClick={() => setMobileOpen(false)} className="text-slate-400">
                   <X className="h-5 w-5" />
@@ -123,7 +125,7 @@ export default function GovernmentLayout() {
                       key={item.name}
                       to={item.path}
                       className={`flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-sm ${
-                        isActive ? "bg-emerald-600 text-white" : "hover:bg-slate-800 text-slate-400"
+                        isActive ? "bg-purple-600 text-white" : "hover:bg-slate-800 text-slate-400"
                       }`}
                       onClick={() => setMobileOpen(false)}
                     >

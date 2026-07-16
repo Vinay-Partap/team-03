@@ -1,16 +1,20 @@
-// applications.model.js
-
 const mongoose = require("mongoose");
-
 const Schema = mongoose.Schema;
 
-const applicationsSchema = new Schema(
-{
-
-},
-{
-timestamps:true
-}
+const applicationSchema = new Schema(
+  {
+    schemeId: { type: Schema.Types.ObjectId, ref: "Schemes", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    status: {
+      type: String,
+      enum: ["applied", "under_review", "approved", "rejected"],
+      default: "applied",
+    },
+    remarks: { type: String, default: "" },
+  },
+  {
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("Applications", applicationsSchema);
+module.exports = mongoose.model("Application", applicationSchema);

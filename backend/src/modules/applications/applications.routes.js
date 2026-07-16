@@ -1,7 +1,10 @@
-// applications.routes.js
-
 const express = require("express");
-
 const router = express.Router();
+const { submitApplication, getApplications, updateApplicationStatus } = require("./applications.controller");
+const { protect } = require("../auth/auth.middleware");
+
+router.post("/", protect, submitApplication);
+router.get("/", protect, getApplications);
+router.put("/:id/status", protect, updateApplicationStatus);
 
 module.exports = router;

@@ -15,12 +15,10 @@ describe("Eligibility API Integration", () => {
     }
     await User.deleteMany({ email: "eligibility_test@govintel.gov" });
 
-    const bcrypt = require("bcryptjs");
-    const hashedPassword = await bcrypt.hash("Password123", 10);
     user = await User.create({
       name: "Eligibility User",
       email: "eligibility_test@govintel.gov",
-      password: hashedPassword,
+      password: "Password123",
       role: "citizen",
       profile: {
         age: 25,
@@ -50,7 +48,7 @@ describe("Eligibility API Integration", () => {
 
   it("should perform profile-based match calculations successfully", async () => {
     const res = await request(app)
-      .get("/api/eligibility/check-my-eligibility")
+      .get("/api/eligibility/check-my")
       .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);

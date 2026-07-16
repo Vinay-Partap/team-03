@@ -21,6 +21,7 @@ const policySchema = new Schema(
   },
   {
     timestamps: true,
+  }
 );
 
 policySchema.index({ category: 1 });

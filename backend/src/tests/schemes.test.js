@@ -17,12 +17,10 @@ describe("Schemes API Integration", () => {
     await User.deleteMany({ email: "scheme_test@govintel.gov" });
     await Scheme.deleteMany({ title: "Scheme Integration Test Title" });
 
-    const bcrypt = require("bcryptjs");
-    const hashedPassword = await bcrypt.hash("Password123", 10);
     user = await User.create({
       name: "Scheme Officer",
       email: "scheme_test@govintel.gov",
-      password: hashedPassword,
+      password: "Password123",
       role: "official",
     });
 

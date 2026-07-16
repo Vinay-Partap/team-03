@@ -15,12 +15,10 @@ describe("Users API Integration", () => {
     }
     await User.deleteMany({ email: "admin_test@govintel.gov" });
     
-    const bcrypt = require("bcryptjs");
-    const hashedPassword = await bcrypt.hash("Password123", 10);
     adminUser = await User.create({
       name: "Admin User",
       email: "admin_test@govintel.gov",
-      password: hashedPassword,
+      password: "Password123",
       role: "admin",
     });
 

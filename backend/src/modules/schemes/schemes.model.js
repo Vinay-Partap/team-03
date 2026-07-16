@@ -37,6 +37,7 @@ const schemeSchema = new Schema(
   },
   {
     timestamps: true,
+  }
 );
 
 schemeSchema.index({ category: 1 });

@@ -10,6 +10,7 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
+import MockDigilocker from "../pages/auth/MockDigilocker";
 
 import Dashboard from "../pages/citizen/Dashboard";
 import GovernmentReports from "../pages/government/Reports";
@@ -32,6 +33,9 @@ export default function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
+      
+      {/* Mock SSO (Standalone) */}
+      <Route path="/mock-digilocker" element={<MockDigilocker />} />
 
       {/* Citizen */}
 

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function AuthLayout() {
   return (
-    <main className="h-screen overflow-hidden bg-[#030712] px-4 py-6 text-white font-sans relative flex flex-col items-center justify-center sm:px-6">
+    <main className="min-h-[100dvh] bg-[#030712] px-4 py-8 text-white font-sans relative flex flex-col items-center justify-center sm:px-6">
       <div className="absolute top-[-10%] left-[-10%] h-1/2 w-1/2 rounded-full bg-blue-500/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] h-1/2 w-1/2 rounded-full bg-indigo-500/10 blur-[120px] pointer-events-none" />
       <motion.header initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5 }} className="relative z-10 mb-6 text-center">

@@ -4,8 +4,8 @@ const authService = {
   login: async (email, password) => {
     const response = await API.post("/auth/login", { email, password });
     if (response.data.token) {
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      sessionStorage.setItem("token", response.data.token);
+      sessionStorage.setItem("user", JSON.stringify(response.data.user));
     }
     return response.data;
   },
@@ -13,15 +13,15 @@ const authService = {
   register: async (userData) => {
     const response = await API.post("/auth/register", userData);
     if (response.data.token) {
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      sessionStorage.setItem("token", response.data.token);
+      sessionStorage.setItem("user", JSON.stringify(response.data.user));
     }
     return response.data;
   },
 
   logout: () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
   },
 
   getProfile: async () => {
@@ -32,7 +32,7 @@ const authService = {
   updateProfile: async (profileData) => {
     const response = await API.put("/auth/profile", profileData);
     if (response.data.user) {
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      sessionStorage.setItem("user", JSON.stringify(response.data.user));
     }
     return response.data;
   },

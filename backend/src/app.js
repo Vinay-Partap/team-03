@@ -85,9 +85,12 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Health check
-app.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "OK", message: "Server is healthy" });
+// Liveness and readiness endpoints; do not expose secrets.
+app.get("/api/health", (req, res) => res.status(200).json({ status: "ok" }));
+app.get("/api/ready", (req, res) => {
+  const mongoose = require("mongoose");
+  if (mongoose.connection.readyState !== 1) return res.status(503).json({ status: "unavailable" });
+  res.status(200).json({ status: "ready" });
 });
 
 // Import modules routes

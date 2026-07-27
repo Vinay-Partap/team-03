@@ -23,8 +23,8 @@ router.delete("/:id", protect, authorize("admin", "official"), deletePolicy);
 
 // Workflow routing
 router.put("/:id/submit", protect, authorize("admin", "official"), submitPolicyForApproval);
-router.put("/:id/approve", protect, authorize("admin", "official"), approvePolicy);
-router.put("/:id/reject", protect, authorize("admin", "official"), rejectPolicy);
-router.put("/:id/archive", protect, authorize("admin", "official"), archivePolicy);
+router.put("/:id/approve", protect, authorize("admin"), approvePolicy);
+router.put("/:id/reject", protect, authorize("admin"), rejectPolicy);
+router.put("/:id/archive", protect, authorize("admin"), archivePolicy);
 
 module.exports = router;

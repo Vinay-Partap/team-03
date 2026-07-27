@@ -34,7 +34,7 @@ const createPolicy = async (req, res) => {
 
     res.status(201).json({ success: true, policy });
   } catch (error) {
-    res.status(550).json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 

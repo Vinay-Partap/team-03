@@ -80,7 +80,7 @@ const deletePolicy = async (req, res) => {
 
 const submitPolicyForApproval = async (req, res) => {
   try {
-    const policy = await policiesService.submitForApproval(req.params.id);
+    const policy = await policiesService.submitForApproval(req.params.id, req.user);
 
     await logAction({
       action: "POLICY_SUBMIT_APPROVAL",

@@ -9,9 +9,11 @@ export default function PublicLayout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    setLogoutOpen(false);
     navigate("/login");
   };
 
@@ -59,7 +61,7 @@ export default function PublicLayout() {
                   <LayoutDashboard className="h-4 w-4" /> Dashboard
                 </Link>
                 <button
-                  onClick={handleLogout}
+                  onClick={() => setLogoutOpen(true)}
                   className="text-slate-600 hover:text-red-600 font-semibold px-3 py-2 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-1.5"
                 >
                   <LogOut className="h-4 w-4" /> Logout
@@ -129,8 +131,8 @@ export default function PublicLayout() {
                 </Link>
                 <button
                   onClick={() => {
-                    handleLogout();
                     setMobileMenuOpen(false);
+                    setLogoutOpen(true);
                   }}
                   className="text-red-600 hover:bg-red-50 font-semibold py-2 px-4 rounded-lg border border-red-200 text-center"
                 >
@@ -203,6 +205,18 @@ export default function PublicLayout() {
           <p>&copy; {new Date().getFullYear()} GovIntel Platform. All rights reserved.</p>
         </div>
       </footer>
+      {logoutOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+            <h2 id="logout-title" className="text-lg font-bold text-slate-900">Log out of your account?</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">You will need to sign in again to access your dashboard and saved information.</p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button onClick={() => setLogoutOpen(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+              <button onClick={handleLogout} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Yes, log out</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

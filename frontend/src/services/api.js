@@ -22,3 +22,18 @@ API.interceptors.request.use(
 );
 
 export default API;
+
+// A stale/expired token must not leave protected screens making repeated requests.
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      if (window.location.pathname !== "/login") {
+        window.location.assign("/login");
+      }
+    }
+    return Promise.reject(error);
+  }
+);

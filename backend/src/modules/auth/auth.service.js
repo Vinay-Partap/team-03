@@ -11,10 +11,12 @@ class AuthService {
     user.refreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex'); await user.save();
     return { token, refreshToken, user: safeUser(user) };
   }
-  async registerUser({ name, email, password, profile = {} }) {
+  async registerUser({ name, email, password, role, profile = {} }) {
     const normalizedEmail = String(email).trim().toLowerCase();
     if (await authRepository.findByEmail(normalizedEmail)) throw new Error('An account with this email already exists');
-    const user = await authRepository.createUser({ name: String(name).trim(), email: normalizedEmail, password, role: 'citizen', profile });
+    const selfServiceRoles = ['citizen', 'researcher', 'organization'];
+    const safeRole = selfServiceRoles.includes(role) ? role : 'citizen';
+    const user = await authRepository.createUser({ name: String(name).trim(), email: normalizedEmail, password, role: safeRole, profile });
     return this.issueTokens(user);
   }
   async loginUser(email, password) {

@@ -151,8 +151,7 @@ export default function Eligibility() {
 
             <div>
               <label className="block text-xs font-bold text-slate-400 mb-1">State Residency</label>
-              <input
-                type="text"
+              <select
                 required
                 value={state}
                 onChange={(e) => setState(e.target.value)}
@@ -177,8 +176,7 @@ export default function Eligibility() {
 
             <div>
               <label className="block text-xs font-bold text-slate-400 mb-1">Education Level</label>
-              <input
-                type="text"
+              <select
                 required
                 value={education}
                 onChange={(e) => setEducation(e.target.value)}

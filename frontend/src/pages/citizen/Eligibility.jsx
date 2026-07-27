@@ -111,7 +111,7 @@ export default function Eligibility() {
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-xs font-bold text-slate-400 mb-1">Age (Years)</label>
               <input
@@ -124,7 +124,7 @@ export default function Eligibility() {
               />
             </div>
 
-            <div>
+            <div className="sm:order-3">
               <label className="block text-xs font-bold text-slate-400 mb-1">Gender</label>
               <select
                 value={gender}
@@ -137,7 +137,7 @@ export default function Eligibility() {
               </select>
             </div>
 
-            <div>
+            <div className="sm:order-2">
               <label className="block text-xs font-bold text-slate-400 mb-1">Annual Income (₹)</label>
               <input
                 type="number"
@@ -157,8 +157,10 @@ export default function Eligibility() {
                 value={state}
                 onChange={(e) => setState(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none"
-                placeholder="Bihar"
-              />
+                >
+                <option value="">Select state</option>
+                <option value="Bihar">Bihar</option><option value="Delhi">Delhi</option><option value="Maharashtra">Maharashtra</option><option value="Uttar Pradesh">Uttar Pradesh</option><option value="All">All India</option>
+              </select>
             </div>
 
             <div>
@@ -181,8 +183,9 @@ export default function Eligibility() {
                 value={education}
                 onChange={(e) => setEducation(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none"
-                placeholder="10th Pass"
-              />
+                >
+                <option value="">Select education</option><option value="10th Pass">10th Pass</option><option value="12th Pass">12th Pass</option><option value="Graduate">Graduate</option><option value="Post Graduate">Post Graduate</option>
+              </select>
             </div>
 
             <div>
@@ -215,7 +218,7 @@ export default function Eligibility() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-md transition-all pt-3 cursor-pointer"
+              className="w-full sm:col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-md transition-all pt-3 cursor-pointer"
             >
               {loading ? "Checking rules..." : "Evaluate Eligibility"}
             </button>

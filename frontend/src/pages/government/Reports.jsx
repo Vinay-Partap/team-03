@@ -260,7 +260,7 @@ const styles = `
     min-height: 100vh;
     background: #f5f7fb;
     color: #1f293d;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: inherit;
   }
 
   .reports-page *, .reports-page *::before, .reports-page *::after { box-sizing: border-box; }

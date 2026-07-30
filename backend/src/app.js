@@ -7,6 +7,7 @@ const hpp = require("hpp");
 const mongoSanitize = require("express-mongo-sanitize");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const passport = require("passport");
 const logger = require("./utils/logger");
 const { errorHandler } = require("./utils/errors");
 
@@ -40,6 +41,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json({ limit: "1mb" }));
+app.use(passport.initialize());
 app.use(morgan("dev"));
 
 // Rate limiter: Max 200 requests per 15 minutes per IP

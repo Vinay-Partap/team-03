@@ -95,6 +95,7 @@ app.get("/api/ready", (req, res) => {
 
 // Import modules routes
 const authRoutes = require("./modules/auth/auth.routes");
+const googleAuthRoutes = require("./modules/auth/google.routes");
 const usersRoutes = require("./modules/users/users.routes");
 const policiesRoutes = require("./modules/policies/policies.routes");
 const schemesRoutes = require("./modules/schemes/schemes.routes");
@@ -110,6 +111,7 @@ const applicationsRoutes = require("./modules/applications/applications.routes")
 const searchRoutes = require("./modules/search/search.routes");
 
 app.use("/api/auth", authRoutes);
+app.use("/api/auth/google", googleAuthRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/policies", policiesRoutes);
 app.use("/api/schemes", schemesRoutes);

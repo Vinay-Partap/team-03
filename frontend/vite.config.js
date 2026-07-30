@@ -8,6 +8,10 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [tailwindcss(), react()],
+    resolve: {
+      // Auth0Provider and the app must resolve the exact same React instance.
+      dedupe: ["react", "react-dom"],
+    },
     server: {
       proxy: {
         "/api": {

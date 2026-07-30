@@ -1,3 +1,4 @@
+import NotificationHub from "../components/notifications/NotificationHub";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../redux/slices/authSlice";
@@ -194,6 +195,7 @@ export default function CitizenLayout() {
         </main>
       </div>
       {logoutOpen && <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-4" role="dialog" aria-modal="true"><div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"><h2 className="text-lg font-bold text-slate-900">Do you want to log out?</h2><p className="mt-2 text-sm text-slate-600">You will need to sign in again to access your account.</p><div className="mt-6 flex justify-end gap-3"><button onClick={() => setLogoutOpen(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">Cancel</button><button onClick={handleLogout} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white">Yes, log out</button></div></div></div>}
+      <NotificationHub />
     </div>
   );
 }

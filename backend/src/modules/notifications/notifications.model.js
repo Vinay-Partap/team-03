@@ -7,9 +7,11 @@ const notificationSchema = new Schema(
     title: { type: String, required: true },
     message: { type: String, required: true },
     read: { type: Boolean, default: false },
+    priority: { type: String, enum: ["low", "normal", "high"], default: "normal" },
+    link: { type: String, default: "" },
     type: {
       type: String,
-      enum: ["new_policy", "deadline_reminder", "scheme_update", "system"],
+      enum: ["application_submitted", "application_approved", "application_rejected", "new_scheme", "policy_update", "announcement", "document_verification", "profile_update", "admin_broadcast", "new_policy", "deadline_reminder", "scheme_update", "system"],
       default: "system",
     },
   },

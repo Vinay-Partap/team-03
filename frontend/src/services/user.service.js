@@ -65,6 +65,10 @@ const userService = {
     return response.data;
   },
 
+  markAllNotificationsRead: async () => (await API.put("/notifications/read-all")).data,
+
+  deleteNotification: async (id) => (await API.delete(`/notifications/${id}`)).data,
+
   markNotificationRead: async (id) => {
     const response = await API.put(`/notifications/${id}/read`);
     return response.data;

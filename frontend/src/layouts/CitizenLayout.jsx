@@ -25,6 +25,7 @@ export default function CitizenLayout() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const fetchUnreadNotifications = async () => {
     try {
@@ -44,6 +45,7 @@ export default function CitizenLayout() {
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    setLogoutOpen(false);
     navigate("/login");
   };
 
@@ -113,7 +115,7 @@ export default function CitizenLayout() {
             </div>
           </div>
           <button
-            onClick={handleLogout}
+            onClick={() => setLogoutOpen(true)}
             className="flex items-center gap-3 w-full px-4 py-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-slate-800 font-medium text-sm transition-all"
           >
             <LogOut className="h-4.5 w-4.5" />
@@ -175,7 +177,7 @@ export default function CitizenLayout() {
               </div>
               <div className="p-6 border-t border-slate-800 flex flex-col gap-3">
                 <button
-                  onClick={handleLogout}
+                  onClick={() => setLogoutOpen(true)}
                   className="flex items-center gap-3 w-full px-4 py-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-slate-800 font-medium text-sm"
                 >
                   <LogOut className="h-4.5 w-4.5" />
@@ -191,6 +193,7 @@ export default function CitizenLayout() {
           <Outlet />
         </main>
       </div>
+      {logoutOpen && <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-4" role="dialog" aria-modal="true"><div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"><h2 className="text-lg font-bold text-slate-900">Do you want to log out?</h2><p className="mt-2 text-sm text-slate-600">You will need to sign in again to access your account.</p><div className="mt-6 flex justify-end gap-3"><button onClick={() => setLogoutOpen(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">Cancel</button><button onClick={handleLogout} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white">Yes, log out</button></div></div></div>}
     </div>
   );
 }

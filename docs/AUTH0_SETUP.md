@@ -36,3 +36,7 @@ npm run dev
 ## Important integration boundary
 
 The provider is installed without replacing the app's existing Express JWT flow. Before using Auth0 to authorize Express APIs, configure an Auth0 API audience and validate Auth0 access tokens with `express-oauth2-jwt-bearer` (issuer and audience verification) on the backend. Do not trust a client-side Auth0 user object as backend authorization.
+
+## Local JWT bridge
+
+Auth0 is an optional OAuth2 login. After Auth0 verifies identity, the client sends its ID token to `POST /api/auth/oauth/auth0`; Express verifies Auth0 JWKS, finds/creates the local account, and returns the existing local JWT access and refresh tokens. Admin/official roles are never accepted from OAuth self-registration.

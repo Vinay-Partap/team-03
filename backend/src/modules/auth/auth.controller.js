@@ -133,6 +133,13 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const auth0Login = async (req, res) => {
+  try {
+    const tokens = await authService.loginWithAuth0(req.body.idToken, req.body.role);
+    res.status(200).json({ success: true, ...tokens });
+  } catch (error) { res.status(401).json({ success: false, message: error.message }); }
+};
+
 const refresh = async (req, res) => {
   try {
     const { refreshToken } = req.body;
@@ -151,4 +158,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   refresh,
+  auth0Login,
 };

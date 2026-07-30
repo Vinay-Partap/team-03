@@ -1,6 +1,7 @@
 const authRepository = require('./auth.repository');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const jwksClient = require('jwks-rsa');
 
 const safeUser = (user) => ({ _id: user._id, name: user.name, email: user.email, role: user.role, profile: user.profile, savedPolicies: user.savedPolicies, savedSchemes: user.savedSchemes });
 class AuthService {
@@ -43,5 +44,26 @@ class AuthService {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET); const user = await authRepository.findById(decoded.id);
     if (!user || user.refreshToken !== crypto.createHash('sha256').update(refreshToken).digest('hex')) throw new Error('Invalid refresh token'); return this.issueTokens(user);
   }
+  async loginWithAuth0(idToken, requestedRole = 'citizen') {
+    const domain = process.env.AUTH0_DOMAIN;
+    const clientId = process.env.AUTH0_CLIENT_ID;
+    if (!domain || !clientId) throw new Error('Auth0 is not configured');
+    const client = jwksClient({ jwksUri: `https://${domain}/.well-known/jwks.json`, cache: true, rateLimit: true });
+    const decoded = jwt.decode(idToken, { complete: true });
+    if (!decoded?.header?.kid) throw new Error('Invalid Auth0 token');
+    const key = await client.getSigningKey(decoded.header.kid);
+    const claims = jwt.verify(idToken, key.getPublicKey(), { algorithms: ['RS256'], issuer: `https://${domain}/`, audience: clientId });
+    if (!claims.email || !claims.email_verified) throw new Error('A verified email is required for OAuth login');
+    const email = claims.email.toLowerCase();
+    let user = await authRepository.findByEmail(email);
+    if (!user) {
+      const roles = ['citizen', 'researcher', 'organization'];
+      user = await authRepository.createUser({ name: claims.name || email.split('@')[0], email, password: crypto.randomBytes(32).toString('hex'), role: roles.includes(requestedRole) ? requestedRole : 'citizen' });
+    }
+    if (!user.isActive) throw new Error('This account is inactive');
+    return this.issueTokens(user);
+  }
+
 }
 module.exports = new AuthService();
+

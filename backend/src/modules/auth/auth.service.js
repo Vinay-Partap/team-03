@@ -44,6 +44,15 @@ class AuthService {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET); const user = await authRepository.findById(decoded.id);
     if (!user || user.refreshToken !== crypto.createHash('sha256').update(refreshToken).digest('hex')) throw new Error('Invalid refresh token'); return this.issueTokens(user);
   }
+  async loginWithGoogle(profile) {
+    const email = profile.emails?.[0]?.value?.toLowerCase();
+    if (!email) throw new Error('Google did not provide a verified email');
+    let user = await authRepository.findByEmail(email);
+    if (!user) user = await authRepository.createUser({ name: profile.displayName || email.split('@')[0], email, password: crypto.randomBytes(32).toString('hex'), role: 'citizen' });
+    if (!user.isActive) throw new Error('This account is inactive');
+    return this.issueTokens(user);
+  }
+
   async loginWithAuth0(idToken, requestedRole = 'citizen') {
     const domain = process.env.AUTH0_DOMAIN;
     const clientId = process.env.AUTH0_CLIENT_ID;

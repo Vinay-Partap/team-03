@@ -1,3 +1,4 @@
+import NotificationHub from "../components/notifications/NotificationHub";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../redux/slices/authSlice";
@@ -151,6 +152,7 @@ export default function GovernmentLayout() {
           <Outlet />
         </main>
       </div>
+      <NotificationHub />
     </div>
   );
 }

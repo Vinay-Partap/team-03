@@ -5,6 +5,7 @@ import { registerUser, clearError } from "../../redux/slices/authSlice";
 import { toast, Toaster } from "react-hot-toast";
 import { User, Mail, Lock, Eye, EyeOff, Users, UserCheck, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import Auth0LoginButton from "../../components/auth/Auth0LoginButton";
 
 export default function Register() {
   const [name, setName] = useState(""); const [email, setEmail] = useState("");
@@ -26,6 +27,6 @@ export default function Register() {
       <label className="block text-sm font-semibold text-white">Password<div className="relative mt-1"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400"/><input required minLength="8" type={showPassword?"text":"password"} value={password} onChange={e=>setPassword(e.target.value)} className={`${input} pr-12`} placeholder="At least 8 characters"/><button aria-label="Show or hide password" type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">{showPassword?<EyeOff className="h-5 w-5"/>:<Eye className="h-5 w-5"/>}</button></div></label>
       <label className="block text-sm font-semibold text-white">Confirm Password<div className="relative mt-1"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400"/><input required minLength="8" type={showPassword?"text":"password"} value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} className={input} placeholder="Re-enter your password"/></div></label>
       <motion.button whileTap={{scale:.99}} type="submit" disabled={loading} className="mt-1 w-full h-10 flex items-center justify-center gap-2 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50">{loading ? "Registering..." : <><UserCheck className="h-5 w-5"/>Create Account</>}</motion.button>
-    </form><p className="mt-3 text-center text-sm text-slate-400">Already have an account? <Link to="/login" className="font-semibold text-blue-400">Login here <ArrowRight className="inline h-4 w-4"/></Link></p>
+    </form><div className="mt-3"><Auth0LoginButton signup /></div><p className="mt-3 text-center text-sm text-slate-400">Already have an account? <Link to="/login" className="font-semibold text-blue-400">Login here <ArrowRight className="inline h-4 w-4"/></Link></p>
   </motion.div>;
 }

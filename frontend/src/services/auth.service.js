@@ -37,6 +37,15 @@ const authService = {
     return response.data;
   },
 
+  loginWithAuth0: async (idToken, role = "citizen") => {
+    const response = await API.post("/auth/oauth/auth0", { idToken, role });
+    if (response.data.token) {
+      sessionStorage.setItem("token", response.data.token);
+      sessionStorage.setItem("user", JSON.stringify(response.data.user));
+    }
+    return response.data;
+  },
+
   forgotPassword: async (email) => {
     const response = await API.post("/auth/forgot-password", { email });
     return response.data;

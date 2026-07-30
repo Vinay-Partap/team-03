@@ -5,6 +5,7 @@ import { loginUser, clearError } from "../../redux/slices/authSlice";
 import { toast, Toaster } from "react-hot-toast";
 import { Mail, Lock, Eye, EyeOff, LogIn, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import Auth0LoginButton from "../../components/auth/Auth0LoginButton";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -128,6 +129,7 @@ export default function Login() {
           )}
         </motion.button>
       </form>
+      <div className="my-4"><Auth0LoginButton /></div>
 
       <p className="mt-8 text-center text-sm text-slate-400 font-medium">
         Don't have an account?{" "}

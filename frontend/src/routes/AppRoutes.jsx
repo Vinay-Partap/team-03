@@ -52,12 +52,6 @@ export default function AppRoutes() {
       {/* Public Pages */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/policies" element={<Search />} />
-        <Route path="/policies/:id" element={<PolicyDetails />} />
-        <Route path="/schemes" element={<Search />} />
-        <Route path="/schemes/:id" element={<SchemeDetails />} />
-        <Route path="/eligibility" element={<Eligibility />} />
-        <Route path="/feedback" element={<Feedback />} />
       </Route>
 
       {/* Auth Pages */}
@@ -73,6 +67,12 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={["citizen", "admin", "official", "researcher", "organization"]} />}>
         <Route element={<CitizenLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/policies" element={<Search />} />
+          <Route path="/policies/:id" element={<PolicyDetails />} />
+          <Route path="/schemes" element={<Search />} />
+          <Route path="/schemes/:id" element={<SchemeDetails />} />
+          <Route path="/eligibility" element={<Eligibility />} />
+          <Route path="/feedback" element={<Feedback />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/saved" element={<SavedPolicies />} />
           <Route path="/notifications" element={<Notifications />} />

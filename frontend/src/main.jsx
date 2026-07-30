@@ -9,11 +9,15 @@ import App from "./App";
 
 import "./index.css";
 
+// Auth0 SPA domain/client ID are public configuration, not secrets. Environment values override these defaults.
+const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN || "dev-q2hbezioi4vl4y0g.us.auth0.com";
+const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID || "IWrcVLB9kArIpSheWIBTGvcCFriYfrkR";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Auth0Provider
-      domain={import.meta.env.VITE_AUTH0_DOMAIN}
-      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      domain={auth0Domain}
+      clientId={auth0ClientId}
       authorizationParams={{ redirect_uri: window.location.origin }}
     >
       <Provider store={store}>

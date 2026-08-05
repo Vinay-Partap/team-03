@@ -69,16 +69,10 @@ class UsersService {
   }
 
   async getSavedItems(userId) {
-    const user = await usersRepository.findById(userId)
-      .populate("savedPolicies")
-      .populate("savedSchemes");
-    if (!user) {
-      throw new Error("User not found");
-    }
-    return {
-      savedPolicies: user.savedPolicies,
-      savedSchemes: user.savedSchemes,
-    };
+    const user = await usersRepository.findById(userId);
+    if (!user) throw new Error("User not found");
+    await user.populate([{ path: "savedPolicies" }, { path: "savedSchemes" }]);
+    return { savedPolicies: user.savedPolicies || [], savedSchemes: user.savedSchemes || [] };
   }
 
   async getSearchHistory(userId) {

@@ -102,7 +102,8 @@ const getSavedItems = async (req, res) => {
     const savedItems = await usersService.getSavedItems(req.user.id);
     res.status(200).json({ success: true, ...savedItems });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("GET /api/users/saved failed", { userId: req.user?.id, error: error.message, stack: error.stack });
+    res.status(error.message === "User not found" ? 404 : 500).json({ success: false, message: `Unable to load saved items: ${error.message}` });
   }
 };
 

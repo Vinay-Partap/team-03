@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 
 export default function AuthLayout() {
   return <main className="min-h-[100dvh] bg-slate-50 font-sans lg:grid lg:h-[100dvh] lg:grid-cols-5 lg:overflow-hidden">
-    <section className="relative z-10 flex min-h-[100dvh] items-center justify-center px-5 py-8 lg:col-span-2 lg:min-h-0 lg:h-full lg:py-5 lg:bg-white lg:px-10 xl:px-16">
+    <section className="relative z-10 flex min-h-[100dvh] items-center justify-center px-5 py-6 sm:py-8 lg:col-span-2 lg:min-h-0 lg:h-full lg:py-5 lg:bg-white lg:px-10 xl:px-16">
       <div className="w-full max-w-md">
-        <Link to="/" className="mb-10 inline-flex items-center gap-2.5 text-slate-950"><span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200"><ShieldCheck className="h-5 w-5" /></span><span className="text-xl font-extrabold tracking-tight">GovIntel</span></Link>
+        <Link to="/" className="mb-6 sm:mb-10 inline-flex items-center gap-2.5 text-slate-950"><span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200"><ShieldCheck className="h-5 w-5" /></span><span className="text-xl font-extrabold tracking-tight">GovIntel</span></Link>
         <Outlet />
       </div>
     </section>

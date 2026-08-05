@@ -13,6 +13,9 @@ export default function AuthLayout() {
     <section className="relative hidden overflow-hidden bg-[#0b1e4b] lg:col-span-3 lg:flex lg:min-h-0 lg:h-full lg:items-center lg:justify-center">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(59,130,246,.45),transparent_38%),radial-gradient(circle_at_75%_75%,rgba(30,64,175,.5),transparent_45%)]" />
       <motion.img initial={{opacity:0,y:25}} animate={{opacity:1,y:0}} transition={{duration:.7}} src="/src/assets/govintel-auth-hero.png" alt="Government intelligence operations center" className="relative z-10 w-[92%] rounded-3xl object-cover shadow-2xl shadow-blue-950/50" />
+      <div className="absolute right-10 top-10 z-20 rounded-2xl border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur">Secure • Fast • Intelligent</div>
+      <motion.div animate={{y:[0,-8,0]}} transition={{duration:4,repeat:Infinity}} className="absolute right-12 top-1/3 z-20 rounded-2xl border border-white/15 bg-slate-950/40 p-3 text-xs text-white backdrop-blur"><b>Live notifications</b><p className="mt-1 text-blue-200">Scheme update received</p></motion.div>
+      <motion.div animate={{y:[0,8,0]}} transition={{duration:4.5,repeat:Infinity}} className="absolute bottom-28 right-16 z-20 rounded-2xl border border-white/15 bg-white/10 p-3 text-xs text-white backdrop-blur"><b>AI recommendation</b><p className="mt-1 text-blue-200">3 eligible schemes found</p></motion.div>
       <div className="absolute bottom-10 left-12 z-20 max-w-md text-white"><span className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur"><Sparkles className="h-3.5 w-3.5"/> Government intelligence, simplified</span><h2 className="text-3xl font-bold leading-tight">Make every policy decision more accessible.</h2></div>
     </section>
   </main>;

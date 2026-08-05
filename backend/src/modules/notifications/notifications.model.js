@@ -7,6 +7,8 @@ const notificationSchema = new Schema(
     title: { type: String, required: true },
     message: { type: String, required: true },
     read: { type: Boolean, default: false },
+    category: { type: String, enum: ["policies", "schemes", "applications", "system"], default: "system" },
+    deletedAt: { type: Date, default: null },
     priority: { type: String, enum: ["low", "normal", "high"], default: "normal" },
     link: { type: String, default: "" },
     type: {

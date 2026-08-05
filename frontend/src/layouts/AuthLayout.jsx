@@ -1,36 +1,19 @@
 import { Outlet, Link } from "react-router-dom";
-import { Shield } from "lucide-react";
+import { ShieldCheck, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function AuthLayout() {
-  return (
-    <div className="h-[100dvh] bg-[#030712] text-white flex flex-col justify-center items-center py-3 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
-      {/* Soft background glow blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* Branding header above card */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="flex flex-col items-center mb-3 text-center z-10"
-      >
-        <Link to="/" className="flex flex-col items-center group">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 mb-3 shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/40 transition-all duration-300">
-            <Shield className="h-5 w-5 text-blue-400" />
-          </div>
-          <h1 className="text-xl font-bold text-white tracking-tight group-hover:text-blue-300 transition-colors">
-            GovIntel Platform
-          </h1>
-        </Link>
-        <p className="text-xs text-slate-400 mt-1 font-medium">Smarter Access to Government Schemes</p>
-      </motion.div>
-
-      {/* Main Content Card container */}
-      <div className="w-full flex justify-center z-10">
+  return <main className="min-h-[100dvh] bg-slate-50 font-sans lg:grid lg:grid-cols-5">
+    <section className="relative z-10 flex min-h-[100dvh] items-center justify-center px-5 py-8 lg:col-span-2 lg:bg-white lg:px-10 xl:px-16">
+      <div className="w-full max-w-md">
+        <Link to="/" className="mb-10 inline-flex items-center gap-2.5 text-slate-950"><span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200"><ShieldCheck className="h-5 w-5" /></span><span className="text-xl font-extrabold tracking-tight">GovIntel</span></Link>
         <Outlet />
       </div>
-    </div>
-  );
+    </section>
+    <section className="relative hidden overflow-hidden bg-[#0b1e4b] lg:col-span-3 lg:flex lg:min-h-screen lg:items-center lg:justify-center">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(59,130,246,.45),transparent_38%),radial-gradient(circle_at_75%_75%,rgba(30,64,175,.5),transparent_45%)]" />
+      <motion.img initial={{opacity:0,y:25}} animate={{opacity:1,y:0}} transition={{duration:.7}} src="/src/assets/govintel-auth-hero.png" alt="Government intelligence operations center" className="relative z-10 w-[92%] rounded-3xl object-cover shadow-2xl shadow-blue-950/50" />
+      <div className="absolute bottom-10 left-12 z-20 max-w-md text-white"><span className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur"><Sparkles className="h-3.5 w-3.5"/> Government intelligence, simplified</span><h2 className="text-3xl font-bold leading-tight">Make every policy decision more accessible.</h2></div>
+    </section>
+  </main>;
 }

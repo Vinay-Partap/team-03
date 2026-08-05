@@ -98,12 +98,17 @@ const unsaveScheme = async (req, res) => {
 };
 
 const getSavedItems = async (req, res) => {
+  console.log("[GET /api/users/saved] request received");
+  console.log("[GET /api/users/saved] req.user", req.user);
+  console.log("[GET /api/users/saved] userId", req.user?.id);
   try {
-    const savedItems = await usersService.getSavedItems(req.user.id);
-    res.status(200).json({ success: true, ...savedItems });
+    const savedItems = await usersService.getSavedItems(req.user?.id);
+    console.log("[GET /api/users/saved] sending HTTP 200");
+    return res.status(200).json({ success: true, ...savedItems });
   } catch (error) {
-    console.error("GET /api/users/saved failed", { userId: req.user?.id, error: error.message, stack: error.stack });
-    res.status(error.message === "User not found" ? 404 : 500).json({ success: false, message: `Unable to load saved items: ${error.message}` });
+    console.error("[GET /api/users/saved] exception", error);
+    console.error(error.stack);
+    return res.status(error.message === "User not found" ? 404 : 500).json({ success: false, message: `Unable to load saved items: ${error.message}` });
   }
 };
 

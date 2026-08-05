@@ -5,8 +5,14 @@ class UsersRepository {
     return await User.find().select("-password");
   }
 
-  async findById(id) {
-    return await User.findById(id);
+  findById(id) {
+    console.log("[usersRepository.findById] creating Mongoose Query", { id });
+    return User.findById(id);
+  }
+
+  findByIdWithSavedItems(id) {
+    console.log("[usersRepository.findByIdWithSavedItems] creating populated Query", { id, paths: ["savedPolicies", "savedSchemes"] });
+    return User.findById(id).populate("savedPolicies").populate("savedSchemes");
   }
 
   async findByIdAndDelete(id) {

@@ -69,10 +69,21 @@ class UsersService {
   }
 
   async getSavedItems(userId) {
-    const user = await usersRepository.findById(userId);
-    if (!user) throw new Error("User not found");
-    await user.populate([{ path: "savedPolicies" }, { path: "savedSchemes" }]);
-    return { savedPolicies: user.savedPolicies || [], savedSchemes: user.savedSchemes || [] };
+    console.log("[saved-items] service entered", { userId, userIdType: typeof userId });
+    try {
+      const query = usersRepository.findByIdWithSavedItems(userId);
+      console.log("[saved-items] repository result", { isThenable: typeof query?.then === "function", constructor: query?.constructor?.name });
+      const user = await query;
+      console.log("[saved-items] populated user document", { found: Boolean(user), savedPolicies: user?.savedPolicies?.length, savedSchemes: user?.savedSchemes?.length });
+      if (!user) throw new Error("User not found");
+      const result = { savedPolicies: user.savedPolicies || [], savedSchemes: user.savedSchemes || [] };
+      console.log("[saved-items] returning", { policies: result.savedPolicies.length, schemes: result.savedSchemes.length });
+      return result;
+    } catch (error) {
+      console.error("[saved-items] populate/query failure", error);
+      console.error(error.stack);
+      throw error;
+    }
   }
 
   async getSearchHistory(userId) {

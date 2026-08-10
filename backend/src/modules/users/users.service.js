@@ -24,6 +24,16 @@ class UsersService {
     return user;
   }
 
+  async updateAccountStatus(id, status, reason = "") {
+    const user = await usersRepository.findById(id);
+    if (!user) throw new Error("User not found");
+    if (["suspended", "disabled"].includes(status) && user.role === "admin" && user.isActive) {
+      const count = await usersRepository.countActiveAdmins();
+      if (count <= 1) throw new Error("Cannot deactivate the last active administrator");
+    }
+    user.accountStatus = status; user.statusReason = reason; user.isActive = status === "active"; return usersRepository.save(user);
+  }
+
   async savePolicy(userId, policyId) {
     const user = await usersRepository.findById(userId);
     if (!user) {

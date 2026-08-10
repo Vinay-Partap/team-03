@@ -15,6 +15,8 @@ class UsersRepository {
     return User.findById(id).populate("savedPolicies").populate("savedSchemes");
   }
 
+  async countActiveAdmins() { return User.countDocuments({ role: "admin", isActive: true, accountStatus: "active" }); }
+
   async findByIdAndDelete(id) {
     return await User.findByIdAndDelete(id);
   }

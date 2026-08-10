@@ -102,6 +102,7 @@ class PoliciesService {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");
     if (policy.status !== "pending_approval") throw new Error("Only submitted records can be approved");
+    if (policy.createdBy?._id?.toString() === approverId.toString() || policy.createdBy?.toString() === approverId.toString()) throw new Error("A creator cannot approve their own policy");
     policy.status = "approved";
     policy.approvedBy = approverId;
     const saved = await policiesRepository.save(policy);

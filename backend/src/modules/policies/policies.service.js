@@ -90,7 +90,9 @@ class PoliciesService {
   async submitForApproval(id, user) {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");
-    if (policy.createdBy.toString() !== user.id && user.role !== "admin") throw new Error("Only the creator can submit this record");
+    const creatorId = policy.createdBy?._id || policy.createdBy;
+    console.log("[policy-submit] ownership check", { policyId: id, creatorId: creatorId?.toString(), requesterId: user?.id, status: policy.status });
+    if (!creatorId || (creatorId.toString() !== user.id && user.role !== "admin")) throw new Error("Only the creator can submit this record");
     if (policy.status !== "draft") throw new Error("Only drafts can be submitted");
     policy.status = "pending_approval";
     return await policiesRepository.save(policy);

@@ -31,7 +31,8 @@ class UsersService {
       const count = await usersRepository.countActiveAdmins();
       if (count <= 1) throw new Error("Cannot deactivate the last active administrator");
     }
-    user.accountStatus = status; user.statusReason = reason; user.isActive = status === "active"; return usersRepository.save(user);
+    user.accountStatus = status; user.statusReason = reason; user.isActive = status === "active";
+    if (user.role === "official" && status === "active" && !user.officialProfile.verifiedAt) user.officialProfile.verifiedAt = new Date(); return usersRepository.save(user);
   }
 
   async savePolicy(userId, policyId) {

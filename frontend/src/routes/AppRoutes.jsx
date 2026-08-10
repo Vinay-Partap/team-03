@@ -93,6 +93,7 @@ export default function AppRoutes() {
           <Route path="/government/departments" element={<GovDepartments />} />
           <Route path="/government/users" element={<GovUsers />} />
           <Route path="/government/settings" element={<GovSettings />} />
+          <Route path="/government/profile" element={<Profile />} />
         </Route>
       </Route>
 
@@ -106,6 +107,7 @@ export default function AppRoutes() {
           <Route path="/admin/policies" element={<GovPolicies />} />
           <Route path="/admin/schemes" element={<GovSchemes />} />
           <Route path="/admin/feedback" element={<GovFeedback />} />
+          <Route path="/admin/profile" element={<Profile />} />
         </Route>
       </Route>
 

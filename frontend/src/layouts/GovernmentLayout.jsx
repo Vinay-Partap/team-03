@@ -36,7 +36,7 @@ export default function GovernmentLayout() {
     { name: "Approval Workflow", path: "/government/approvals", icon: CheckSquare },
     { name: "Export Reports", path: "/government/reports", icon: FileBarChart },
     { name: "Citizen Feedbacks", path: "/government/feedback", icon: MessageSquare },
-    { name: "My Profile", path: "/profile", icon: User },
+    { name: "My Profile", path: "/government/profile", icon: User },
   ];
 
   return (

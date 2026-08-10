@@ -110,6 +110,7 @@ class SchemesService {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
     if (scheme.status !== "pending_approval") throw new Error("Only submitted records can be approved");
+    if (scheme.createdBy?._id?.toString() === approverId.toString() || scheme.createdBy?.toString() === approverId.toString()) throw new Error("A creator cannot approve their own scheme");
     scheme.status = "approved";
     scheme.approvedBy = approverId;
     const saved = await schemesRepository.save(scheme);

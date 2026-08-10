@@ -38,7 +38,7 @@ export default function AdminLayout() {
     { name: "System Policies", path: "/admin/policies", icon: FileText },
     { name: "System Schemes", path: "/admin/schemes", icon: Award },
     { name: "Citizen Support", path: "/admin/feedback", icon: MessageSquare },
-    { name: "My Profile", path: "/profile", icon: User },
+    { name: "My Profile", path: "/admin/profile", icon: User },
   ];
 
   return (

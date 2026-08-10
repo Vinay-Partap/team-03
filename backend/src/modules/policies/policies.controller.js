@@ -120,7 +120,7 @@ const approvePolicy = async (req, res) => {
 
 const rejectPolicy = async (req, res) => {
   try {
-    const policy = await policiesService.rejectPolicy(req.params.id);
+    const policy = await policiesService.rejectPolicy(req.params.id, req.user);
 
     await logAction({
       action: "POLICY_REJECT",

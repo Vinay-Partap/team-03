@@ -118,7 +118,7 @@ const approveScheme = async (req, res) => {
 
 const rejectScheme = async (req, res) => {
   try {
-    const scheme = await schemesService.rejectScheme(req.params.id);
+    const scheme = await schemesService.rejectScheme(req.params.id, req.user);
 
     await logAction({
       action: "SCHEME_REJECT",

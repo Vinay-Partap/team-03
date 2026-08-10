@@ -126,7 +126,7 @@ class SchemesService {
     return saved;
   }
 
-  async rejectScheme(id) {
+  async rejectScheme(id, reviewer) {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
     if (scheme.status !== "pending_approval") throw new Error("Only submitted records can be rejected");

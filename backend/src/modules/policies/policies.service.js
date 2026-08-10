@@ -118,7 +118,7 @@ class PoliciesService {
     return saved;
   }
 
-  async rejectPolicy(id) {
+  async rejectPolicy(id, reviewer) {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");
     if (policy.status !== "pending_approval") throw new Error("Only submitted records can be rejected");

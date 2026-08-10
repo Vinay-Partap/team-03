@@ -31,6 +31,10 @@ const userSchema = new Schema(
     passwordResetExpiresAt: { type: Date, default: null },
     department: { type: String, default: "" },
     isActive: { type: Boolean, default: true },
+    accountStatus: { type: String, enum: ["active", "suspended", "pending_verification", "disabled"], default: "active" },
+    statusReason: { type: String, default: "" },
+    officialProfile: { organization: { type: String, default: "" }, designation: { type: String, default: "" }, verifiedAt: { type: Date, default: null } },
+    organizationProfile: { name: { type: String, default: "" }, type: { type: String, default: "" } },
   },
   {
     timestamps: true,

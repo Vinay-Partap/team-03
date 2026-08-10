@@ -93,7 +93,9 @@ const submitPolicyForApproval = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Policy submitted for approval", policy });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("[PUT /api/policies/:id/submit]", error);
+    const status = error.message === "Policy not found" ? 404 : (error.message.includes("creator") || error.message.includes("draft") ? 403 : 500);
+    res.status(status).json({ success: false, message: error.message });
   }
 };
 

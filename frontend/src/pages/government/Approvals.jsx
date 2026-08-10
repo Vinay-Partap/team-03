@@ -37,7 +37,8 @@ export default function Approvals() {
           await policyService.approvePolicy(id);
           toast.success("Policy directive approved and published live!");
         } else {
-          await policyService.rejectPolicy(id);
+          const reason = window.prompt("Reason for sending this policy back (optional):") || "";
+          await policyService.rejectPolicy(id, reason);
           toast.success("Policy directive sent back to creator drafts");
         }
       } else {
@@ -45,7 +46,8 @@ export default function Approvals() {
           await policyService.approveScheme(id);
           toast.success("Scheme approved and published live!");
         } else {
-          await policyService.rejectScheme(id);
+          const reason = window.prompt("Reason for sending this scheme back (optional):") || "";
+          await policyService.rejectScheme(id, reason);
           toast.success("Scheme sent back to creator drafts");
         }
       }

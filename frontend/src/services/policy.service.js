@@ -37,8 +37,8 @@ const policyService = {
     return response.data;
   },
 
-  rejectPolicy: async (id) => {
-    const response = await API.put(`/policies/${id}/reject`);
+  rejectPolicy: async (id, reason = "") => {
+    const response = await API.put(`/policies/${id}/reject`, { reason });
     return response.data;
   },
 
@@ -83,8 +83,8 @@ const policyService = {
     return response.data;
   },
 
-  rejectScheme: async (id) => {
-    const response = await API.put(`/schemes/${id}/reject`);
+  rejectScheme: async (id, reason = "") => {
+    const response = await API.put(`/schemes/${id}/reject`, { reason });
     return response.data;
   },
 

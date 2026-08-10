@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const jwksClient = require('jwks-rsa');
 
-const safeUser = (user) => ({ _id: user._id, name: user.name, email: user.email, role: user.role, profile: user.profile, officialProfile: user.officialProfile, organizationProfile: user.organizationProfile, accountStatus: user.accountStatus, savedPolicies: user.savedPolicies, savedSchemes: user.savedSchemes });
+const safeUser = (user) => ({ _id: user._id, name: user.name, email: user.email, role: user.role, profile: user.profile, officialProfile: user.officialProfile, organizationProfile: user.organizationProfile, researcherProfile: user.researcherProfile, accountStatus: user.accountStatus, savedPolicies: user.savedPolicies, savedSchemes: user.savedSchemes });
 class AuthService {
   generateToken(id) { return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '15m' }); }
   generateRefreshToken(id) { return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' }); }
@@ -28,11 +28,12 @@ class AuthService {
     return this.issueTokens(user);
   }
   async getUserProfile(id) { const user = await authRepository.findById(id); if (!user) throw new Error('User not found'); return safeUser(user); }
-  async updateUserProfile(id, { name, profile, officialProfile, organizationProfile }) {
+  async updateUserProfile(id, { name, profile, officialProfile, organizationProfile, researcherProfile }) {
     const user = await authRepository.findById(id); if (!user) throw new Error('User not found');
     if (name) user.name = String(name).trim();
     if (officialProfile && user.role === "official") user.officialProfile = { ...user.officialProfile.toObject?.() || {}, ...officialProfile };
     if (organizationProfile && user.role === "organization") user.organizationProfile = { ...user.organizationProfile.toObject?.() || {}, ...organizationProfile };
+    if (researcherProfile && user.role === "researcher") user.researcherProfile = { ...user.researcherProfile.toObject?.() || {}, ...researcherProfile };
     if (profile) user.profile = { ...user.profile.toObject(), ...profile }; await user.save(); return user;
   }
   async createPasswordReset(email) {

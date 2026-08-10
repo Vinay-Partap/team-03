@@ -35,6 +35,7 @@ const userSchema = new Schema(
     statusReason: { type: String, default: "" },
     officialProfile: { organization: { type: String, default: "" }, designation: { type: String, default: "" }, verifiedAt: { type: Date, default: null } },
     organizationProfile: { name: { type: String, default: "" }, type: { type: String, default: "" } },
+    researcherProfile: { institution: { type: String, default: "" }, domain: { type: String, default: "" } },
   },
   {
     timestamps: true,

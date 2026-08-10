@@ -98,13 +98,14 @@ class PoliciesService {
     return await policiesRepository.save(policy);
   }
 
-  async approvePolicy(id, approverId) {
+  async approvePolicy(id, reviewer) {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");
     if (policy.status !== "pending_approval") throw new Error("Only submitted records can be approved");
-    if (policy.createdBy?._id?.toString() === approverId.toString() || policy.createdBy?.toString() === approverId.toString()) throw new Error("A creator cannot approve their own policy");
+    if (policy.createdBy?._id?.toString() === reviewer.id.toString() || policy.createdBy?.toString() === reviewer.id.toString()) throw new Error("A creator cannot approve their own policy");
     policy.status = "approved";
-    policy.approvedBy = approverId;
+    policy.approvedBy = reviewer.id;
+    policy.reviewedBy = reviewer.id; policy.reviewedAt = new Date(); policy.reviewDecision = "approved"; policy.reviewReason = "";
     const saved = await policiesRepository.save(policy);
 
     // Send global notification
@@ -118,11 +119,13 @@ class PoliciesService {
     return saved;
   }
 
-  async rejectPolicy(id, reviewer) {
+  async rejectPolicy(id, reviewer, reason = "") {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");
     if (policy.status !== "pending_approval") throw new Error("Only submitted records can be rejected");
-    policy.status = "draft";
+    const creatorId = policy.createdBy?._id || policy.createdBy;
+    if (!creatorId || creatorId.toString() === reviewer.id.toString()) throw new Error("A creator cannot reject their own policy");
+    policy.status = "draft"; policy.reviewedBy = reviewer.id; policy.reviewedAt = new Date(); policy.reviewDecision = "rejected"; policy.reviewReason = reason;
     return await policiesRepository.save(policy);
   }
 

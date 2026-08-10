@@ -106,13 +106,14 @@ class SchemesService {
     return await schemesRepository.save(scheme);
   }
 
-  async approveScheme(id, approverId) {
+  async approveScheme(id, reviewer) {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
     if (scheme.status !== "pending_approval") throw new Error("Only submitted records can be approved");
-    if (scheme.createdBy?._id?.toString() === approverId.toString() || scheme.createdBy?.toString() === approverId.toString()) throw new Error("A creator cannot approve their own scheme");
+    if (scheme.createdBy?._id?.toString() === reviewer.id.toString() || scheme.createdBy?.toString() === reviewer.id.toString()) throw new Error("A creator cannot approve their own scheme");
     scheme.status = "approved";
-    scheme.approvedBy = approverId;
+    scheme.approvedBy = reviewer.id;
+    scheme.reviewedBy = reviewer.id; scheme.reviewedAt = new Date(); scheme.reviewDecision = "approved"; scheme.reviewReason = "";
     const saved = await schemesRepository.save(scheme);
 
     // Send global notification
@@ -126,11 +127,13 @@ class SchemesService {
     return saved;
   }
 
-  async rejectScheme(id, reviewer) {
+  async rejectScheme(id, reviewer, reason = "") {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
     if (scheme.status !== "pending_approval") throw new Error("Only submitted records can be rejected");
-    scheme.status = "draft";
+    const creatorId = scheme.createdBy?._id || scheme.createdBy;
+    if (!creatorId || creatorId.toString() === reviewer.id.toString()) throw new Error("A creator cannot reject their own scheme");
+    scheme.status = "draft"; scheme.reviewedBy = reviewer.id; scheme.reviewedAt = new Date(); scheme.reviewDecision = "rejected"; scheme.reviewReason = reason;
     return await schemesRepository.save(scheme);
   }
 

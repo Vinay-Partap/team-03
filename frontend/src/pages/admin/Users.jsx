@@ -122,7 +122,7 @@ export default function Users() {
                     <td className="p-5 text-xxs font-semibold text-slate-400">
                       {item.profile?.age ? `Age: ${item.profile.age} | State: ${item.profile.state}` : "Profile parameters not configured"}
                     </td>
-                    <td className="p-5"><select value={item.accountStatus || "active"} onChange={(e) => handleStatusChange(item._id, e.target.value)} className="bg-slate-50 border border-slate-200 text-slate-800 font-bold px-2 py-1 rounded-lg text-xs"><option value="active">ACTIVE</option><option value="pending_verification">PENDING</option><option value="suspended">SUSPENDED</option><option value="disabled">DISABLED</option></select>{item.officialProfile?.verifiedAt && <p className="mt-1 text-xxs text-emerald-600">Verified</p>}</td><td className="p-5 text-right">
+                    <td className="p-5"><select value={item.accountStatus || "active"} onChange={(e) => handleStatusChange(item._id, e.target.value)} className="bg-slate-50 border border-slate-200 text-slate-800 font-bold px-2 py-1 rounded-lg text-xs"><option value="active">ACTIVE</option><option value="pending_verification">PENDING</option><option value="suspended">SUSPENDED</option><option value="disabled">DISABLED</option></select>{item.officialProfile?.verifiedAt && <p className="mt-1 text-xxs text-emerald-600">Verified</p>}{item.statusReason && <p className="mt-1 max-w-32 text-xxs text-slate-400" title={item.statusReason}>{item.statusReason}</p>}</td><td className="p-5 text-right">
                       <button
                         onClick={() => handleDelete(item._id)}
                         className="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg transition-all"

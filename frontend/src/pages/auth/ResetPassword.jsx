@@ -45,24 +45,24 @@ export default function ResetPassword() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-[480px] bg-[#0b1329]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 sm:p-12 shadow-[0_0_50px_rgba(59,130,246,0.08)]"
+      className="w-full max-w-sm rounded-2xl bg-white p-6 sm:p-8 shadow-xl shadow-slate-200/60"
     >
       <Toaster position="top-right" />
       
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2">Reset Password</h2>
-        <p className="text-sm text-slate-400 font-medium">Create a strong new password for your account</p>
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight mb-2">Reset Password</h2>
+        <p className="text-sm text-slate-500 font-medium">Create a strong new password for your account</p>
       </div>
 
       {!token ? (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm p-4 rounded-xl text-center font-medium">
+        <div className="bg-red-500/10 border border-red-500/20 text-red-600 text-sm p-4 rounded-xl text-center font-medium">
           Reset token is invalid or missing. Please request a new link from the{" "}
-          <Link to="/forgot-password" className="underline font-bold text-white hover:text-blue-300">Forgot Password</Link> page.
+          <Link to="/forgot-password" className="underline font-bold text-slate-900 hover:text-blue-700">Forgot Password</Link> page.
         </div>
       ) : (
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sm font-semibold text-white mb-2">New Password</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">New Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input
@@ -70,13 +70,13 @@ export default function ResetPassword() {
                 required
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full h-[54px] pl-12 pr-12 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-medium text-sm"
+                className="w-full h-[54px] pl-12 pr-12 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium text-sm"
                 placeholder="••••••••"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -84,7 +84,7 @@ export default function ResetPassword() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-white mb-2">Confirm New Password</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Confirm New Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input
@@ -92,13 +92,13 @@ export default function ResetPassword() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full h-[54px] pl-12 pr-12 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-medium text-sm"
+                className="w-full h-[54px] pl-12 pr-12 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium text-sm"
                 placeholder="••••••••"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
               >
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -124,8 +124,8 @@ export default function ResetPassword() {
         </form>
       )}
 
-      <p className="mt-8 text-center text-sm text-slate-400 font-medium">
-        <Link to="/login" className="font-semibold text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5 group">
+      <p className="mt-8 text-center text-sm text-slate-500 font-medium">
+        <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1.5 group">
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           <span>Back to Login</span>
         </Link>

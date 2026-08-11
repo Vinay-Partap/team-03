@@ -140,6 +140,8 @@ const auth0Login = async (req, res) => {
   } catch (error) { res.status(401).json({ success: false, message: error.message }); }
 };
 
+const verifyEmail = async (req, res) => { try { await authService.verifyEmail(req.body.token || req.query.token); res.json({ success:true, message:'Email verified successfully' }); } catch (error) { res.status(400).json({ success:false, message:error.message }); } };
+
 const refresh = async (req, res) => {
   try {
     const { refreshToken } = req.body;
@@ -159,4 +161,5 @@ module.exports = {
   resetPassword,
   refresh,
   auth0Login,
+  verifyEmail,
 };

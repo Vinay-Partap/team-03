@@ -12,6 +12,8 @@ const userService = {
     return response.data;
   },
 
+  updateAccountStatus: async (id, status, reason = "") => (await API.patch(`/users/${id}/status`, { status, reason })).data,
+
   deleteUser: async (id) => {
     const response = await API.delete(`/users/${id}`);
     return response.data;

@@ -99,7 +99,7 @@ const submitSchemeForApproval = async (req, res) => {
 
 const approveScheme = async (req, res) => {
   try {
-    const scheme = await schemesService.approveScheme(req.params.id, req.user.id);
+    const scheme = await schemesService.approveScheme(req.params.id, req.user);
 
     await logAction({
       action: "SCHEME_APPROVE",
@@ -118,7 +118,7 @@ const approveScheme = async (req, res) => {
 
 const rejectScheme = async (req, res) => {
   try {
-    const scheme = await schemesService.rejectScheme(req.params.id);
+    const scheme = await schemesService.rejectScheme(req.params.id, req.user, req.body.reason);
 
     await logAction({
       action: "SCHEME_REJECT",

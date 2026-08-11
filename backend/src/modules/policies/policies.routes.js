@@ -25,7 +25,7 @@ router.delete("/:id", protect, authorize("admin", "official"), validateObjectId(
 // Workflow routing
 router.put("/:id/submit", protect, authorize("admin", "official"), validateObjectId("id"), submitPolicyForApproval);
 router.put("/:id/approve", protect, authorize("admin", "official"), validateObjectId("id"), approvePolicy);
-router.put("/:id/reject", protect, authorize("admin"), validateObjectId("id"), rejectPolicy);
+router.put("/:id/reject", protect, authorize("admin", "official"), validateObjectId("id"), rejectPolicy);
 router.put("/:id/archive", protect, authorize("admin"), validateObjectId("id"), archivePolicy);
 
 module.exports = router;

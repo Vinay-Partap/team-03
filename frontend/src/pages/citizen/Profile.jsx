@@ -17,6 +17,10 @@ export default function Profile() {
   const [education, setEducation] = useState(user?.profile?.education || "10th Pass");
   const [category, setCategory] = useState(user?.profile?.category || "General");
   const [disability, setDisability] = useState(user?.profile?.disability || false);
+  const [officialOrganization, setOfficialOrganization] = useState(user?.officialProfile?.organization || "");
+  const [designation, setDesignation] = useState(user?.officialProfile?.designation || "");
+  const [organizationName, setOrganizationName] = useState(user?.organizationProfile?.name || "");
+  const [organizationType, setOrganizationType] = useState(user?.organizationProfile?.type || "");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,6 +41,8 @@ export default function Profile() {
               disability,
             }
           : undefined,
+      officialProfile: user?.role === "official" ? { organization: officialOrganization, designation } : undefined,
+      organizationProfile: user?.role === "organization" ? { name: organizationName, type: organizationType } : undefined,
     };
 
     dispatch(updateProfile(payload))
@@ -88,6 +94,9 @@ export default function Profile() {
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-700"
               />
             </div>
+
+            {user?.role === "official" && <div className="pt-4 border-t border-slate-100 space-y-4"><h3 className="text-sm font-bold text-blue-600 uppercase">Official details</h3><div className="grid grid-cols-2 gap-4"><label className="text-xs font-bold text-slate-400">Government organization<input value={officialOrganization} onChange={e=>setOfficialOrganization(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"/></label><label className="text-xs font-bold text-slate-400">Designation<input value={designation} onChange={e=>setDesignation(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"/></label></div><p className="text-xs text-slate-500">Verification: {user?.accountStatus === "active" ? "Verified" : "Pending verification"}{user?.officialProfile?.verifiedAt ? ` · ${new Date(user.officialProfile.verifiedAt).toLocaleDateString()}` : ""}</p></div>}
+            {user?.role === "organization" && <div className="pt-4 border-t border-slate-100 space-y-4"><h3 className="text-sm font-bold text-blue-600 uppercase">Organization details</h3><div className="grid grid-cols-2 gap-4"><label className="text-xs font-bold text-slate-400">Organization name<input value={organizationName} onChange={e=>setOrganizationName(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"/></label><label className="text-xs font-bold text-slate-400">Organization type<input value={organizationType} onChange={e=>setOrganizationType(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"/></label></div></div>}
 
             {user?.role === "citizen" && (
               <div className="pt-4 border-t border-slate-100 space-y-4">

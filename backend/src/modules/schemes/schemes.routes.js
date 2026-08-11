@@ -26,7 +26,7 @@ router.delete("/:id", protect, authorize("admin", "official"), validateObjectId(
 // Workflow routing
 router.put("/:id/submit", protect, authorize("admin", "official"), validateObjectId("id"), submitSchemeForApproval);
 router.put("/:id/approve", protect, authorize("admin", "official"), validateObjectId("id"), approveScheme);
-router.put("/:id/reject", protect, authorize("admin"), validateObjectId("id"), rejectScheme);
+router.put("/:id/reject", protect, authorize("admin", "official"), validateObjectId("id"), rejectScheme);
 router.put("/:id/archive", protect, authorize("admin"), validateObjectId("id"), archiveScheme);
 
 // News/Updates logging

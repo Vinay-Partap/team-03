@@ -29,20 +29,20 @@ export default function ForgotPassword() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-[480px] bg-[#0b1329]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 sm:p-12 shadow-[0_0_50px_rgba(59,130,246,0.08)]"
+      className="w-full max-w-sm rounded-2xl bg-white p-6 sm:p-8 shadow-xl shadow-slate-200/60"
     >
       <Toaster position="top-right" />
       
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2">Forgot Password</h2>
-        <p className="text-sm text-slate-400 font-medium leading-relaxed">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight mb-2">Forgot Password</h2>
+        <p className="text-sm text-slate-500 font-medium leading-relaxed">
           Enter your registered email address. If an account exists, reset instructions will be sent securely.
         </p>
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-white mb-2">
+          <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
             Email address
           </label>
           <div className="relative">
@@ -53,7 +53,7 @@ export default function ForgotPassword() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-[54px] pl-12 pr-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-medium text-sm"
+              className="w-full h-[54px] pl-12 pr-4 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium text-sm"
               placeholder="john@example.com"
             />
           </div>
@@ -77,8 +77,8 @@ export default function ForgotPassword() {
         </motion.button>
       </form>
 
-      <p className="mt-8 text-center text-sm text-slate-400 font-medium">
-        <Link to="/login" className="font-semibold text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5 group">
+      <p className="mt-8 text-center text-sm text-slate-500 font-medium">
+        <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1.5 group">
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           <span>Back to Login</span>
         </Link>

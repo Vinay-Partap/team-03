@@ -4,6 +4,7 @@ import authService from "../../services/auth.service";
 import { toast, Toaster } from "react-hot-toast";
 import { Lock, Eye, EyeOff, ArrowLeft, Save } from "lucide-react";
 import { motion } from "framer-motion";
+import PasswordStrength from "../../components/auth/PasswordStrength";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -83,6 +84,7 @@ export default function ResetPassword() {
             </div>
           </div>
 
+          <PasswordStrength password={newPassword} />
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">Confirm New Password</label>
             <div className="relative">

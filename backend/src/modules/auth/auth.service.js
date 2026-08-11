@@ -22,7 +22,7 @@ class AuthService {
     const user = await authRepository.createUser({ name: String(name).trim(), email: normalizedEmail, password, role: safeRole, profile, isActive: !pendingOfficial, accountStatus: pendingOfficial ? 'pending_verification' : 'active' });
     if (pendingOfficial) return { pendingVerification: true, user: safeUser(user) };
     const token = crypto.randomBytes(32).toString('hex'); user.emailVerificationTokenHash = crypto.createHash('sha256').update(token).digest('hex'); user.emailVerificationExpiresAt = new Date(Date.now() + 24*60*60*1000); await user.save();
-    const url = `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/auth/verify-email?token=${token}`; await sendEmail({ to: user.email, ...verificationEmail(url) });
+    const url = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`; await sendEmail({ to: user.email, ...verificationEmail(url) });
     return this.issueTokens(user);
   }
   async loginUser(email, password) {

@@ -95,6 +95,9 @@ class AuthService {
     return this.issueTokens(user);
   }
 
+  async revokeRefreshToken(token, reason = "logout") { try { const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET); if (decoded.sid) await AuthSession.findByIdAndUpdate(decoded.sid, { revokedAt:new Date(), revokeReason:reason }); } catch (_) {} }
+  async revokeAllSessions(userId) { await AuthSession.updateMany({ userId, revokedAt:null }, { revokedAt:new Date(), revokeReason:"logout_all" }); }
+  async getSessions(userId) { return AuthSession.find({ userId }).sort({ lastUsedAt:-1 }).select("-tokenHash"); }
 }
 module.exports = new AuthService();
 

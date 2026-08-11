@@ -2,6 +2,7 @@ const authRepository = require('./auth.repository');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const jwksClient = require('jwks-rsa');
+const { sendEmail, verificationEmail, resetEmail, passwordResetSuccessEmail } = require('../../services/email.service');
 
 const safeUser = (user) => ({ _id: user._id, name: user.name, email: user.email, role: user.role, profile: user.profile, officialProfile: user.officialProfile, organizationProfile: user.organizationProfile, researcherProfile: user.researcherProfile, accountStatus: user.accountStatus, savedPolicies: user.savedPolicies, savedSchemes: user.savedSchemes });
 class AuthService {
@@ -20,6 +21,8 @@ class AuthService {
     const pendingOfficial = safeRole === 'official';
     const user = await authRepository.createUser({ name: String(name).trim(), email: normalizedEmail, password, role: safeRole, profile, isActive: !pendingOfficial, accountStatus: pendingOfficial ? 'pending_verification' : 'active' });
     if (pendingOfficial) return { pendingVerification: true, user: safeUser(user) };
+    const token = crypto.randomBytes(32).toString('hex'); user.emailVerificationTokenHash = crypto.createHash('sha256').update(token).digest('hex'); user.emailVerificationExpiresAt = new Date(Date.now() + 24*60*60*1000); await user.save();
+    const url = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`; await sendEmail({ to: user.email, ...verificationEmail(url) });
     return this.issueTokens(user);
   }
   async loginUser(email, password) {
@@ -39,13 +42,15 @@ class AuthService {
   async createPasswordReset(email) {
     const user = await authRepository.findByEmail(String(email).trim().toLowerCase()); if (!user) return null;
     const rawToken = crypto.randomBytes(32).toString('hex'); user.passwordResetTokenHash = crypto.createHash('sha256').update(rawToken).digest('hex'); user.passwordResetExpiresAt = new Date(Date.now() + 10 * 60 * 1000); await user.save();
-    return { user, rawToken };
+    await sendEmail({ to: user.email, ...resetEmail(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${rawToken}`) });
+    return { user };
   }
   async resetPassword(token, newPassword) {
     const hash = crypto.createHash('sha256').update(token).digest('hex'); const User = require('../users/users.model');
     const user = await User.findOne({ passwordResetTokenHash: hash, passwordResetExpiresAt: { $gt: new Date() } }); if (!user) throw new Error('Reset link is invalid or expired');
-    user.password = newPassword; user.passwordResetTokenHash = null; user.passwordResetExpiresAt = null; user.refreshToken = ''; await user.save(); return user;
+    user.password = newPassword; user.passwordResetTokenHash = null; user.passwordResetExpiresAt = null; user.refreshToken = ''; await user.save(); await sendEmail({ to: user.email, ...passwordResetSuccessEmail() }); return user;
   }
+  async verifyEmail(token) { const hash = crypto.createHash('sha256').update(token).digest('hex'); const User = require('../users/users.model'); const user = await User.findOne({ emailVerificationTokenHash: hash, emailVerificationExpiresAt: { $gt: new Date() } }); if (!user) throw new Error('Verification link is invalid or expired'); user.emailVerified = true; user.emailVerificationTokenHash = null; user.emailVerificationExpiresAt = null; await user.save(); return user; }
   async refreshAccessToken(refreshToken) {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET); const user = await authRepository.findById(decoded.id);
     if (!user || user.refreshToken !== crypto.createHash('sha256').update(refreshToken).digest('hex')) throw new Error('Invalid refresh token'); return this.issueTokens(user);

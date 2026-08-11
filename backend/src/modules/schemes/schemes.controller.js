@@ -21,7 +21,7 @@ const getSchemeById = async (req, res) => {
 
 const createScheme = async (req, res) => {
   try {
-    const scheme = await schemesService.createScheme(req.body, req.user.id);
+    const scheme = await schemesService.createScheme(req.body, req.user);
 
     await logAction({
       action: "SCHEME_CREATE",

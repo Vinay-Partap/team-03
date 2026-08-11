@@ -52,10 +52,13 @@ class PoliciesService {
     return policy;
   }
 
-  async createPolicy(policyData, userId) {
+  async createPolicy(policyData, user) {
+    const department = user.role === "official" ? user.department : policyData.department;
+    if (!department) throw new Error("Government Officials must have an assigned department before creating content");
     return await policiesRepository.create({
       ...policyData,
-      createdBy: userId,
+      department,
+      createdBy: user.id,
     });
   }
 
@@ -101,6 +104,7 @@ class PoliciesService {
   async approvePolicy(id, reviewer) {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");
+    if (reviewer.role === "official" && reviewer.department !== policy.department) throw new Error("Officials may only review records in their assigned department");
     if (policy.status !== "pending_approval") throw new Error("Only submitted records can be approved");
     if (policy.createdBy?._id?.toString() === reviewer.id.toString() || policy.createdBy?.toString() === reviewer.id.toString()) throw new Error("A creator cannot approve their own policy");
     policy.status = "approved";
@@ -122,6 +126,7 @@ class PoliciesService {
   async rejectPolicy(id, reviewer, reason = "") {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");
+    if (reviewer.role === "official" && reviewer.department !== policy.department) throw new Error("Officials may only review records in their assigned department");
     if (policy.status !== "pending_approval") throw new Error("Only submitted records can be rejected");
     const creatorId = policy.createdBy?._id || policy.createdBy;
     if (!creatorId || creatorId.toString() === reviewer.id.toString()) throw new Error("A creator cannot reject their own policy");

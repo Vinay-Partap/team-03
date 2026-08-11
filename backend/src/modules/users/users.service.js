@@ -36,6 +36,8 @@ class UsersService {
     if (user.role === "official" && status === "active" && !user.officialProfile.verifiedAt) user.officialProfile.verifiedAt = new Date(); const saved = await usersRepository.save(user); if (changedBy) await AccountStatusHistory.create({ userId: saved._id, previousStatus, newStatus: status, reason, changedBy }); return saved;
   }
 
+  async getAccountStatusHistory(id) { return AccountStatusHistory.find({ userId:id }).sort({ createdAt:-1 }).populate("changedBy", "name email"); }
+
   async savePolicy(userId, policyId) {
     const user = await usersRepository.findById(userId);
     if (!user) {

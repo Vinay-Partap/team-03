@@ -43,6 +43,8 @@ const updateAccountStatus = async (req, res) => {
   catch (error) { res.status(error.message.includes('last active') ? 409 : 400).json({success:false,message:error.message}); }
 };
 
+const getAccountStatusHistory = async (req,res) => { try { const history = await usersService.getAccountStatusHistory(req.params.id); res.json({success:true,history}); } catch(e) { res.status(500).json({success:false,message:e.message}); } };
+
 const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -154,6 +156,7 @@ module.exports = {
   updateUserRole,
   deleteUser,
   updateAccountStatus,
+  getAccountStatusHistory,
   savePolicy,
   unsavePolicy,
   saveScheme,

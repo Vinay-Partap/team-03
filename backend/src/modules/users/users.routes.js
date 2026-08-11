@@ -5,6 +5,7 @@ const {
   updateUserRole,
   deleteUser,
   updateAccountStatus,
+  getAccountStatusHistory,
   savePolicy,
   unsavePolicy,
   saveScheme,
@@ -19,6 +20,7 @@ const { protect, authorize } = require("../auth/auth.middleware");
 // Admin user administration
 router.get("/", protect, authorize("admin"), getAllUsers);
 router.put("/role", protect, authorize("admin"), updateUserRole);
+router.get("/:id/status-history", protect, authorize("admin"), getAccountStatusHistory);
 router.patch("/:id/status", protect, authorize("admin"), updateAccountStatus);
 router.delete("/:id", protect, authorize("admin"), deleteUser);
 

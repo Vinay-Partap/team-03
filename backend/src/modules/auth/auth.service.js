@@ -3,14 +3,17 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const jwksClient = require('jwks-rsa');
 const { sendEmail, verificationEmail, resetEmail, passwordResetSuccessEmail } = require('../../services/email.service');
+const AuthSession = require('./authSession.model');
 
 const safeUser = (user) => ({ _id: user._id, name: user.name, email: user.email, role: user.role, profile: user.profile, officialProfile: user.officialProfile, organizationProfile: user.organizationProfile, researcherProfile: user.researcherProfile, department: user.department, accountStatus: user.accountStatus, savedPolicies: user.savedPolicies, savedSchemes: user.savedSchemes });
 class AuthService {
   generateToken(id) { return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '15m' }); }
-  generateRefreshToken(id) { return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' }); }
+  generateRefreshToken(id, sid) { return jwt.sign({ id, sid }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' }); }
   async issueTokens(user) {
-    const token = this.generateToken(user._id); const refreshToken = this.generateRefreshToken(user._id);
-    user.refreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex'); await user.save();
+    const session = await AuthSession.create({ userId:user._id, tokenHash:'pending', expiresAt:new Date(Date.now()+604800000) });
+    const token = this.generateToken(user._id); const refreshToken = this.generateRefreshToken(user._id, session._id.toString());
+    session.tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex'); await session.save();
+    user.refreshToken = session.tokenHash; await user.save();
     return { token, refreshToken, user: safeUser(user) };
   }
   async registerUser({ name, email, password, role, profile = {} }) {
@@ -60,8 +63,8 @@ class AuthService {
   }
   async verifyEmail(token) { const hash = crypto.createHash('sha256').update(token).digest('hex'); const User = require('../users/users.model'); const user = await User.findOne({ emailVerificationTokenHash: hash, emailVerificationExpiresAt: { $gt: new Date() } }); if (!user) throw new Error('Verification link is invalid or expired'); user.emailVerified = true; user.emailVerificationTokenHash = null; user.emailVerificationExpiresAt = null; await user.save(); return user; }
   async refreshAccessToken(refreshToken) {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET); const user = await authRepository.findById(decoded.id);
-    if (!user || user.refreshToken !== crypto.createHash('sha256').update(refreshToken).digest('hex')) throw new Error('Invalid refresh token'); return this.issueTokens(user);
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET); const user = await authRepository.findById(decoded.id); const session = decoded.sid && await AuthSession.findById(decoded.sid);
+    if (!user || !session || session.revokedAt || session.expiresAt < new Date() || session.tokenHash !== crypto.createHash('sha256').update(refreshToken).digest('hex')) throw new Error('Invalid refresh token'); session.revokedAt = new Date(); session.revokeReason='rotated'; await session.save(); return this.issueTokens(user);
   }
   async loginWithGoogle(profile) {
     const email = profile.emails?.[0]?.value?.toLowerCase();

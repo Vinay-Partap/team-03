@@ -27,7 +27,14 @@ class AuthService {
   }
   async loginUser(email, password) {
     const user = await authRepository.findByEmail(String(email).trim().toLowerCase());
-    if (!user || !user.isActive || !(await user.comparePassword(password))) throw new Error('Invalid email or password');
+    if (!user || !user.isActive) throw new Error('Invalid email or password');
+    if (user.lockUntil && user.lockUntil > new Date()) throw new Error('Account temporarily locked. Try again later.');
+    if (!(await user.comparePassword(password))) {
+      user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1; user.lastFailedLoginAt = new Date();
+      if (user.failedLoginAttempts >= 5) { user.lockUntil = new Date(Date.now() + 15 * 60 * 1000); user.failedLoginAttempts = 0; }
+      await user.save(); throw new Error('Invalid email or password');
+    }
+    user.failedLoginAttempts = 0; user.lockUntil = null; await user.save();
     return this.issueTokens(user);
   }
   async getUserProfile(id) { const user = await authRepository.findById(id); if (!user) throw new Error('User not found'); return safeUser(user); }

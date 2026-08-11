@@ -51,6 +51,10 @@ const limiter = rateLimit({
   message: { success: false, message: "Too many requests, please try again later" },
 });
 app.use("/api/", limiter);
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false, message: { success:false, message:"Too many authentication attempts. Please try again later." } });
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
+app.use("/api/auth/forgot-password", authLimiter);
 
 // Request tracking logging middleware
 app.use((req, res, next) => {

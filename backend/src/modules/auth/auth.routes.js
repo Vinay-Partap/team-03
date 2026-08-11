@@ -10,6 +10,9 @@ const {
   refresh,
   auth0Login,
   verifyEmail,
+  logout,
+  logoutAll,
+  getSessions,
 } = require("./auth.controller");
 const { protect } = require("./auth.middleware");
 
@@ -18,6 +21,9 @@ const { validateRegister, validateLogin } = require("./auth.validation");
 router.post("/register", validateRegister, register);
 router.post("/login", validateLogin, login);
 router.post("/refresh", refresh);
+router.post("/logout", logout);
+router.post("/logout-all", protect, logoutAll);
+router.get("/sessions", protect, getSessions);
 router.get("/verify-email", verifyEmail);
 router.post("/verify-email", verifyEmail);
 router.post("/oauth/auth0", auth0Login);

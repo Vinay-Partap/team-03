@@ -1,4 +1,5 @@
 const usersRepository = require("./users.repository");
+const AccountStatusHistory = require("./accountStatusHistory.model");
 
 class UsersService {
   async getAllUsers() {
@@ -24,16 +25,18 @@ class UsersService {
     return user;
   }
 
-  async updateAccountStatus(id, status, reason = "") {
+  async updateAccountStatus(id, status, reason = "", changedBy) {
     const user = await usersRepository.findById(id);
     if (!user) throw new Error("User not found");
     if (["suspended", "disabled"].includes(status) && user.role === "admin" && user.isActive) {
       const count = await usersRepository.countActiveAdmins();
       if (count <= 1) throw new Error("Cannot deactivate the last active administrator");
     }
-    user.accountStatus = status; user.statusReason = reason; user.isActive = status === "active";
-    if (user.role === "official" && status === "active" && !user.officialProfile.verifiedAt) user.officialProfile.verifiedAt = new Date(); return usersRepository.save(user);
+    const previousStatus = user.accountStatus; user.accountStatus = status; user.statusReason = reason; user.isActive = status === "active";
+    if (user.role === "official" && status === "active" && !user.officialProfile.verifiedAt) user.officialProfile.verifiedAt = new Date(); const saved = await usersRepository.save(user); if (changedBy) await AccountStatusHistory.create({ userId: saved._id, previousStatus, newStatus: status, reason, changedBy }); return saved;
   }
+
+  async getAccountStatusHistory(id) { return AccountStatusHistory.find({ userId:id }).sort({ createdAt:-1 }).populate("changedBy", "name email"); }
 
   async savePolicy(userId, policyId) {
     const user = await usersRepository.findById(userId);

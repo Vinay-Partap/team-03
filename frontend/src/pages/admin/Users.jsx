@@ -35,6 +35,8 @@ export default function Users() {
     }
   };
 
+  const handleHistory = async (id) => { try { const data = await userService.getAccountStatusHistory(id); const lines = data.history.map(h => `${new Date(h.createdAt).toLocaleString()}: ${h.previousStatus || "new"} → ${h.newStatus}${h.reason ? ` (${h.reason})` : ""}`).join("\n") || "No status history"; window.alert(lines); } catch { toast.error("Unable to load status history"); } };
+
   const handleStatusChange = async (id, status) => {
     const reason = status === "active" ? "" : window.prompt("Status reason (optional)") || "";
     try { await userService.updateAccountStatus(id, status, reason); toast.success("Account status updated"); fetchUsers(); } catch (e) { toast.error(e.response?.data?.message || "Unable to update account status"); }
@@ -123,6 +125,7 @@ export default function Users() {
                       {item.profile?.age ? `Age: ${item.profile.age} | State: ${item.profile.state}` : "Profile parameters not configured"}
                     </td>
                     <td className="p-5"><select value={item.accountStatus || "active"} onChange={(e) => handleStatusChange(item._id, e.target.value)} className="bg-slate-50 border border-slate-200 text-slate-800 font-bold px-2 py-1 rounded-lg text-xs"><option value="active">ACTIVE</option><option value="pending_verification">PENDING</option><option value="suspended">SUSPENDED</option><option value="disabled">DISABLED</option></select>{item.officialProfile?.verifiedAt && <p className="mt-1 text-xxs text-emerald-600">Verified</p>}{item.statusReason && <p className="mt-1 max-w-32 text-xxs text-slate-400" title={item.statusReason}>{item.statusReason}</p>}</td><td className="p-5 text-right">
+                      <button onClick={() => handleHistory(item._id)} className="mr-2 rounded-lg bg-slate-100 px-2 py-2 text-xs text-slate-600">History</button>
                       <button
                         onClick={() => handleDelete(item._id)}
                         className="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg transition-all"

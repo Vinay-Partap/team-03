@@ -53,10 +53,13 @@ class SchemesService {
     return scheme;
   }
 
-  async createScheme(schemeData, userId) {
+  async createScheme(schemeData, user) {
+    const department = user.role === "official" ? user.department : schemeData.department;
+    if (!department) throw new Error("Government Officials must have an assigned department before creating content");
     return await schemesRepository.create({
       ...schemeData,
-      createdBy: userId,
+      department,
+      createdBy: user.id,
     });
   }
 
@@ -109,6 +112,7 @@ class SchemesService {
   async approveScheme(id, reviewer) {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
+    if (reviewer.role === "official" && reviewer.department !== scheme.department) throw new Error("Officials may only review records in their assigned department");
     if (scheme.status !== "pending_approval") throw new Error("Only submitted records can be approved");
     if (scheme.createdBy?._id?.toString() === reviewer.id.toString() || scheme.createdBy?.toString() === reviewer.id.toString()) throw new Error("A creator cannot approve their own scheme");
     scheme.status = "approved";
@@ -130,6 +134,7 @@ class SchemesService {
   async rejectScheme(id, reviewer, reason = "") {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
+    if (reviewer.role === "official" && reviewer.department !== scheme.department) throw new Error("Officials may only review records in their assigned department");
     if (scheme.status !== "pending_approval") throw new Error("Only submitted records can be rejected");
     const creatorId = scheme.createdBy?._id || scheme.createdBy;
     if (!creatorId || creatorId.toString() === reviewer.id.toString()) throw new Error("A creator cannot reject their own scheme");

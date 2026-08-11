@@ -39,9 +39,11 @@ const updateUserRole = async (req, res) => {
 
 
 const updateAccountStatus = async (req, res) => {
-  try { const { status, reason } = req.body; if (!['active','suspended','pending_verification','disabled'].includes(status)) return res.status(400).json({success:false,message:'Invalid account status'}); const user = await usersService.updateAccountStatus(req.params.id, status, reason); await logAction({ action:'ADMIN_UPDATE_ACCOUNT_STATUS', userId:req.user._id, userRole:req.user.role, targetId:user._id, details:`Set ${user.email} to ${status}`, ipAddress:req.ip }); res.json({success:true,user}); }
+  try { const { status, reason } = req.body; if (!['active','suspended','pending_verification','disabled'].includes(status)) return res.status(400).json({success:false,message:'Invalid account status'}); const user = await usersService.updateAccountStatus(req.params.id, status, reason, req.user.id); await logAction({ action:'ADMIN_UPDATE_ACCOUNT_STATUS', userId:req.user._id, userRole:req.user.role, targetId:user._id, details:`Set ${user.email} to ${status}`, ipAddress:req.ip }); res.json({success:true,user}); }
   catch (error) { res.status(error.message.includes('last active') ? 409 : 400).json({success:false,message:error.message}); }
 };
+
+const getAccountStatusHistory = async (req,res) => { try { const history = await usersService.getAccountStatusHistory(req.params.id); res.json({success:true,history}); } catch(e) { res.status(500).json({success:false,message:e.message}); } };
 
 const deleteUser = async (req, res) => {
   try {
@@ -154,6 +156,7 @@ module.exports = {
   updateUserRole,
   deleteUser,
   updateAccountStatus,
+  getAccountStatusHistory,
   savePolicy,
   unsavePolicy,
   saveScheme,

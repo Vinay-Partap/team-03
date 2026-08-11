@@ -142,6 +142,10 @@ const auth0Login = async (req, res) => {
 
 const verifyEmail = async (req, res) => { try { await authService.verifyEmail(req.body.token || req.query.token); res.json({ success:true, message:'Email verified successfully' }); } catch (error) { res.status(400).json({ success:false, message:error.message }); } };
 
+const logout = async (req,res) => { await authService.revokeRefreshToken(req.body.refreshToken); res.json({success:true}); };
+const logoutAll = async (req,res) => { await authService.revokeAllSessions(req.user.id); res.json({success:true}); };
+const getSessions = async (req,res) => { const sessions = await authService.getSessions(req.user.id); res.json({success:true,sessions}); };
+
 const refresh = async (req, res) => {
   try {
     const { refreshToken } = req.body;
@@ -162,4 +166,7 @@ module.exports = {
   refresh,
   auth0Login,
   verifyEmail,
+  logout,
+  logoutAll,
+  getSessions,
 };

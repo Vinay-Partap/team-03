@@ -21,7 +21,7 @@ const getPolicyById = async (req, res) => {
 
 const createPolicy = async (req, res) => {
   try {
-    const policy = await policiesService.createPolicy(req.body, req.user.id);
+    const policy = await policiesService.createPolicy(req.body, req.user);
 
     await logAction({
       action: "POLICY_CREATE",

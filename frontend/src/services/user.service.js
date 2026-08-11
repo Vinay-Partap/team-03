@@ -12,6 +12,8 @@ const userService = {
     return response.data;
   },
 
+  getAccountStatusHistory: async (id) => (await API.get(`/users/${id}/status-history`)).data,
+
   updateAccountStatus: async (id, status, reason = "") => (await API.patch(`/users/${id}/status`, { status, reason })).data,
 
   deleteUser: async (id) => {

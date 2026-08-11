@@ -5,6 +5,7 @@ const authService = {
     const response = await API.post("/auth/login", { email, password });
     if (response.data.token) {
       sessionStorage.setItem("token", response.data.token);
+      if (response.data.refreshToken) sessionStorage.setItem("refreshToken", response.data.refreshToken);
       sessionStorage.setItem("user", JSON.stringify(response.data.user));
     }
     return response.data;
@@ -14,15 +15,23 @@ const authService = {
     const response = await API.post("/auth/register", userData);
     if (response.data.token) {
       sessionStorage.setItem("token", response.data.token);
+      if (response.data.refreshToken) sessionStorage.setItem("refreshToken", response.data.refreshToken);
       sessionStorage.setItem("user", JSON.stringify(response.data.user));
     }
     return response.data;
   },
 
-  logout: () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+  logout: async () => {
+    const refreshToken = sessionStorage.getItem("refreshToken");
+    try { if (refreshToken) await API.post("/auth/logout", { refreshToken }); } finally { sessionStorage.removeItem("token"); sessionStorage.removeItem("refreshToken"); sessionStorage.removeItem("user"); }
   },
+
+  logoutAllDevices: async () => {
+    await API.post("/auth/logout-all");
+    sessionStorage.removeItem("token"); sessionStorage.removeItem("refreshToken"); sessionStorage.removeItem("user");
+  },
+
+  getSessions: async () => (await API.get("/auth/sessions")).data,
 
   getProfile: async () => {
     const response = await API.get("/auth/profile");
@@ -41,6 +50,7 @@ const authService = {
     const response = await API.post("/auth/oauth/auth0", { idToken, role });
     if (response.data.token) {
       sessionStorage.setItem("token", response.data.token);
+      if (response.data.refreshToken) sessionStorage.setItem("refreshToken", response.data.refreshToken);
       sessionStorage.setItem("user", JSON.stringify(response.data.user));
     }
     return response.data;

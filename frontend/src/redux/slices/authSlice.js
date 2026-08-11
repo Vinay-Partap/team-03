@@ -63,7 +63,7 @@ export const updateProfile = createAsyncThunk(
 );
 
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
-  authService.logout();
+  await authService.logout();
   return null;
 });
 

@@ -18,6 +18,7 @@ const { validateRegister, validateLogin } = require("./auth.validation");
 router.post("/register", validateRegister, register);
 router.post("/login", validateLogin, login);
 router.post("/refresh", refresh);
+router.get("/verify-email", verifyEmail);
 router.post("/verify-email", verifyEmail);
 router.post("/oauth/auth0", auth0Login);
 router.post("/forgot-password", forgotPassword);

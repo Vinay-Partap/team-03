@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProfile } from "../../redux/slices/authSlice";
-import { toast, Toaster } from "react-hot-toast";
-import { User, Mail, ShieldAlert, Award } from "lucide-react";
+import { updateProfile, logoutUser } from "../../redux/slices/authSlice";
+import { toast, Toaster }
+import authService from "../../services/auth.service"; from "react-hot-toast";
+import { User, Mail, ShieldAlert, Award, Monitor } from "lucide-react";
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ export default function Profile() {
   const [occupation, setOccupation] = useState(user?.profile?.occupation || "Farmer");
   const [education, setEducation] = useState(user?.profile?.education || "10th Pass");
   const [category, setCategory] = useState(user?.profile?.category || "General");
+  const [sessions, setSessions] = useState([]);
   const [disability, setDisability] = useState(user?.profile?.disability || false);
   const [department, setDepartment] = useState(user?.department || "");
   const [institution, setInstitution] = useState(user?.researcherProfile?.institution || "");
@@ -24,6 +26,8 @@ export default function Profile() {
   const [designation, setDesignation] = useState(user?.officialProfile?.designation || "");
   const [organizationName, setOrganizationName] = useState(user?.organizationProfile?.name || "");
   const [organizationType, setOrganizationType] = useState(user?.organizationProfile?.type || "");
+
+  useEffect(() => { authService.getSessions().then(data => setSessions(data.sessions || [])).catch(() => {}); }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -211,6 +215,8 @@ export default function Profile() {
                 </div>
               </div>
             )}
+
+            <div className="pt-4 border-t border-slate-100"><div className="flex items-center justify-between"><div><h3 className="text-sm font-bold text-blue-600 flex items-center gap-1"><Monitor className="h-4 w-4"/>Active sessions</h3><p className="text-xs text-slate-500">{sessions.filter(s => !s.revokedAt).length} session(s) recorded</p></div><button type="button" onClick={() => { if(window.confirm("Log out from all devices?")) dispatch(logoutUser()).then(() => window.location.assign("/login")); }} className="text-xs font-bold text-red-600">Log out all devices</button></div></div>
 
             <div className="flex justify-end pt-3">
               <button

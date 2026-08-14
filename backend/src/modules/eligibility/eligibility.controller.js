@@ -3,6 +3,9 @@ const eligibilityService = require("./eligibility.service");
 const checkEligibility = async (req, res) => {
   try {
     const profile = req.body;
+    if (!Number.isFinite(Number(profile.age)) || Number(profile.age) < 0 || Number(profile.age) > 120) return res.status(400).json({success:false,message:"Age must be between 0 and 120"});
+    if (!Number.isFinite(Number(profile.income)) || Number(profile.income) < 0) return res.status(400).json({success:false,message:"Income must be a non-negative number"});
+    if (!["Male","Female","Transgender"].includes(profile.gender)) return res.status(400).json({success:false,message:"Invalid gender"});
     const results = await eligibilityService.checkEligibility(profile, req.user);
     res.status(200).json({
       success: true,

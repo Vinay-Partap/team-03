@@ -144,7 +144,7 @@ const rejectPolicy = async (req, res) => {
 
 const archivePolicy = async (req, res) => {
   try {
-    const policy = await policiesService.archivePolicy(req.params.id);
+    const policy = await policiesService.archivePolicy(req.params.id, req.user, req.body.reason);
 
     await logAction({
       action: "POLICY_ARCHIVE",

@@ -73,7 +73,10 @@ class PoliciesService {
       throw new Error("Unauthorized to edit this policy");
     }
 
-    return await policiesRepository.findByIdAndUpdate(id, updateData);
+    policy.version = (policy.version || 1) + 1;
+    policy.versionHistory.push({ version: policy.version, changedAt: new Date(), changedBy: user.id, summary: updateData.changeSummary || "Policy updated" });
+    Object.assign(policy, updateData); delete policy.changeSummary;
+    return await policiesRepository.save(policy);
   }
 
   async deletePolicy(id, user) {
@@ -136,11 +139,11 @@ class PoliciesService {
     return await policiesRepository.save(policy);
   }
 
-  async archivePolicy(id) {
+  async archivePolicy(id, user, reason = "") {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");
 
-    policy.status = "archived";
+    policy.status = "archived"; policy.archivedAt = new Date(); policy.archivedBy = user.id; policy.archiveReason = reason;
     return await policiesRepository.save(policy);
   }
 }

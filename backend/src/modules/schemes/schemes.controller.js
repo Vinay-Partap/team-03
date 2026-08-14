@@ -159,7 +159,7 @@ const addSchemeUpdate = async (req, res) => {
     const { content } = req.body;
     if (!content) return res.status(400).json({ success: false, message: "Update content is required" });
 
-    const scheme = await schemesService.addSchemeUpdate(req.params.id, content);
+    const scheme = await schemesService.addSchemeUpdate(req.params.id, content, req.user, req.body.type);
 
     await logAction({
       action: "SCHEME_ADD_UPDATE",

@@ -29,6 +29,8 @@ const schemeSchema = new Schema(
     updates: [
       {
         content: { type: String, required: true },
+        type: { type: String, default: "General Update" },
+        addedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
         date: { type: Date, default: Date.now },
       },
     ],

@@ -17,7 +17,7 @@ export default function Search() {
   const [category, setCategory] = useState("");
   const [department, setDepartment] = useState("");
   const [state, setState] = useState("");
-  const [ministry, setMinistry] = useState(""); const [page, setPage] = useState(1); const [pagination, setPagination] = useState(null);
+  const [ministry, setMinistry] = useState(""); const [sector, setSector] = useState(""); const [publicationFrom, setPublicationFrom] = useState(""); const [publicationTo, setPublicationTo] = useState(""); const [page, setPage] = useState(1); const [pagination, setPagination] = useState(null);
 
   const [policies, setPolicies] = useState([]);
   const [schemes, setSchemes] = useState([]);
@@ -38,7 +38,7 @@ export default function Search() {
       if (search) params.search = search;
       if (category) params.category = category;
       if (department) params.department = department;
-      if (state) params.state = state; if (ministry) params.ministry = ministry; params.page = page; params.limit = 12;
+      if (state) params.state = state; if (ministry) params.ministry = ministry; if(sector)params.sector=sector;if(publicationFrom)params.publicationFrom=publicationFrom;if(publicationTo)params.publicationTo=publicationTo; params.page = page; params.limit = 12;
 
       if (activeTab === "policies") {
         const res = await policyService.getPolicies(params);
@@ -68,7 +68,7 @@ export default function Search() {
 
   useEffect(() => {
     fetchItems();
-  }, [activeTab, category, department, state, ministry, page]);
+  }, [activeTab, category, department, state, ministry, sector, publicationFrom, publicationTo, page]);
 
   useEffect(() => {
     fetchSaved();
@@ -249,7 +249,7 @@ export default function Search() {
               {states.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
-        <div><label className="block text-xs font-bold text-slate-400 mb-1">Ministry</label><input value={ministry} onChange={e=>{setMinistry(e.target.value);setPage(1)}} placeholder="All Ministries" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div></div>
+        <div><label className="block text-xs font-bold text-slate-400 mb-1">Ministry</label><input value={ministry} onChange={e=>{setMinistry(e.target.value);setPage(1)}} placeholder="All Ministries" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div><div><label className="block text-xs font-bold text-slate-400 mb-1">Sector</label><input value={sector} onChange={e=>{setSector(e.target.value);setPage(1)}} placeholder="All Sectors" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div><div><label className="block text-xs font-bold text-slate-400 mb-1">Published From</label><input type="date" value={publicationFrom} onChange={e=>setPublicationFrom(e.target.value)} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div><div><label className="block text-xs font-bold text-slate-400 mb-1">Published To</label><input type="date" value={publicationTo} onChange={e=>setPublicationTo(e.target.value)} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div><button onClick={()=>{setCategory("");setDepartment("");setState("");setMinistry("");setSector("");setPublicationFrom("");setPublicationTo("");setPage(1)}} className="text-xs font-bold text-blue-600">Reset filters</button></div>
       </div>
 
       {/* Results grid */}
@@ -260,7 +260,7 @@ export default function Search() {
       ) : (
         <div className="space-y-4">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-            Search Results ({activeTab === "policies" ? policies.length : schemes.length})
+            Search Results ({pagination?.total ?? (activeTab === "policies" ? policies.length : schemes.length)})
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

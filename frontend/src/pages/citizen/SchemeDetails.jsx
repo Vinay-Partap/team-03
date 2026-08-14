@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import API from "../../services/api";
 import { useParams, Link } from "react-router-dom";
 import policyService from "../../services/policy.service";
 import { ArrowLeft, Landmark, Award, ShieldCheck, HelpCircle, Activity, User, BookOpen } from "lucide-react";
@@ -167,6 +168,9 @@ export default function SchemeDetails() {
             </div>
           </div>
         )}
+
+        {scheme.document?.name && <button onClick={async()=>{const r=await API.get(`/schemes/${scheme._id}/document`,{responseType:"blob"});window.open(URL.createObjectURL(r.data),"_blank")}} className="text-left text-sm font-bold text-purple-600">View official document: {scheme.document.name}</button>}
+        {scheme.versionHistory?.length > 0 && <div className="border-t border-slate-100 pt-5"><h2 className="font-bold text-slate-800">Version History</h2>{[...scheme.versionHistory].reverse().map(v=><p key={v._id||v.version} className="mt-2 text-xs text-slate-500">v{v.version} · {v.summary || "Updated"} · {v.changedAt && new Date(v.changedAt).toLocaleString()}</p>)}</div>}
 
         {/* Officer info */}
         <div className="pt-6 mt-6 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-4 rounded-2xl">

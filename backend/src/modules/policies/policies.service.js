@@ -6,10 +6,13 @@ class PoliciesService {
     const { category, department, state, search, status, page, limit } = filter;
     let query = {};
 
-    if (user && ["admin", "official"].includes(user.role)) {
-      if (status) {
-        query.status = status;
-      }
+    if (user?.role === "admin") {
+      if (status) query.status = status;
+    } else if (user?.role === "official") {
+      const ownOrDepartment = [{ createdBy: user._id }];
+      if (user.department) ownOrDepartment.push({ department: user.department, status: "pending_approval" });
+      query.$and = [{ $or: [{ status: "approved" }, ...ownOrDepartment] }];
+      if (status) query.$and.push({ status });
     } else {
       query.status = "approved";
     }
@@ -34,7 +37,8 @@ class PoliciesService {
     const skip = page && limit ? (Number(page) - 1) * Number(limit) : 0;
     const maxLimit = limit ? Math.min(Number(limit), 100) : 25;
 
-    return await policiesRepository.find(query, skip, maxLimit);
+    const [policies, total] = await Promise.all([policiesRepository.find(query, skip, maxLimit), policiesRepository.count(query)]);
+    return { items: policies, pagination: { page: Number(page) || 1, limit: maxLimit, total, totalPages: Math.ceil(total / maxLimit) } };
   }
 
   async getPolicyById(id, user) {

@@ -6,6 +6,7 @@ import CitizenLayout from "../layouts/CitizenLayout";
 import GovernmentLayout from "../layouts/GovernmentLayout";
 import AdminLayout from "../layouts/AdminLayout";
 
+import FAQ from "../pages/support/FAQ";
 import LandingPage from "../pages/landing/LandingPage";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
@@ -75,6 +76,7 @@ export default function AppRoutes() {
           <Route path="/schemes/:id" element={<SchemeDetails />} />
           <Route path="/eligibility" element={<Eligibility />} />
           <Route path="/feedback" element={<Feedback />} />
+        <Route path="/faqs" element={<FAQ />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/saved" element={<SavedPolicies />} />
           <Route path="/notifications" element={<Notifications />} />

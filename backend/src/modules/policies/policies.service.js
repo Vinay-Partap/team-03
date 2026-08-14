@@ -3,7 +3,7 @@ const Notification = require("../notifications/notifications.model");
 
 class PoliciesService {
   async getPolicies(filter, user) {
-    const { category, department, state, search, status, page, limit } = filter;
+    const { category, department, state, ministry, publicationFrom, publicationTo, effectiveFrom, effectiveTo, sort, search, status, page, limit } = filter;
     let query = {};
 
     if (user?.role === "admin") {
@@ -19,6 +19,9 @@ class PoliciesService {
 
     if (category) query.category = category;
     if (department) query.department = department;
+    if (ministry) query.ministry = ministry;
+    if (publicationFrom || publicationTo) query.publicationDate = { ...(publicationFrom && {$gte:new Date(publicationFrom)}), ...(publicationTo && {$lte:new Date(publicationTo)}) };
+    if (effectiveFrom || effectiveTo) query.effectiveDate = { ...(effectiveFrom && {$gte:new Date(effectiveFrom)}), ...(effectiveTo && {$lte:new Date(effectiveTo)}) };
     if (state) {
       if (state.toLowerCase() === "global") {
         query.state = "Global";

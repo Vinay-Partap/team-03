@@ -81,7 +81,7 @@ const deletePolicy = async (req, res) => {
   }
 };
 
-const uploadPolicyDocument = async (req,res) => { try { if(!req.file) return res.status(400).json({success:false,message:"A policy document is required"}); const policy=await policiesService.attachDocument(req.params.id,req.file,req.user); res.json({success:true,policy}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
+const uploadPolicyDocument = async (req,res) => { try { if(!req.file) return res.status(400).json({success:false,message:"A policy document is required"}); const policy=await policiesService.attachDocument(req.params.id,req.file,req.user); await logAction({ action:"POLICY_DOCUMENT_UPLOAD", userId:req.user._id, userRole:req.user.role, targetId:policy._id, details:`Uploaded policy document: ${req.file.originalname}`, ipAddress:req.ip }); res.json({success:true,policy}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
 
 const submitPolicyForApproval = async (req, res) => {
   try {
@@ -142,7 +142,7 @@ const rejectPolicy = async (req, res) => {
   }
 };
 
-const restorePolicy = async (req,res) => { try { const policy=await policiesService.restorePolicy(req.params.id,req.user); res.json({success:true,message:"Policy restored to draft",policy}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
+const restorePolicy = async (req,res) => { try { const policy=await policiesService.restorePolicy(req.params.id,req.user); await logAction({action:"POLICY_RESTORE",userId:req.user._id,userRole:req.user.role,targetId:policy._id,details:"Restored archived policy",ipAddress:req.ip}); res.json({success:true,message:"Policy restored to draft",policy}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
 
 const archivePolicy = async (req, res) => {
   try {

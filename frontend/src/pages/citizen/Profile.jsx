@@ -21,6 +21,7 @@ export default function Profile() {
   const [mfaCode, setMfaCode] = useState("");
   const [recoveryCodes, setRecoveryCodes] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [privacyConsent, setPrivacyConsent] = useState(user?.privacyConsent || false);
   const [disability, setDisability] = useState(user?.profile?.disability || false);
   const [department, setDepartment] = useState(user?.department || "");
   const [institution, setInstitution] = useState(user?.researcherProfile?.institution || "");
@@ -54,6 +55,7 @@ export default function Profile() {
       officialProfile: user?.role === "official" ? { organization: officialOrganization, designation } : undefined,
       department: user?.role === "official" ? department : undefined,
       researcherProfile: user?.role === "researcher" ? { institution, domain: researchDomain } : undefined,
+      privacyConsent, privacyPolicyVersion: "1.0",
       organizationProfile: user?.role === "organization" ? { name: organizationName, type: organizationType } : undefined,
     };
 
@@ -223,6 +225,7 @@ export default function Profile() {
 
             <div className="pt-4 border-t border-slate-100"><div className="flex items-center justify-between"><div><h3 className="text-sm font-bold text-blue-600 flex items-center gap-1"><Monitor className="h-4 w-4"/>Active sessions</h3><p className="text-xs text-slate-500">{sessions.filter(s => !s.revokedAt).length} session(s) recorded</p></div><button type="button" onClick={() => { if(window.confirm("Log out from all devices?")) authService.logoutAllDevices().then(() => window.location.assign("/login")); }} className="text-xs font-bold text-red-600">Log out all devices</button></div></div>
 
+<label className="flex gap-2 border-t border-slate-100 pt-4 text-xs text-slate-600"><input type="checkbox" checked={privacyConsent} onChange={e=>setPrivacyConsent(e.target.checked)}/> I consent to storing my sensitive eligibility profile and eligibility history.</label>
             <div className="flex justify-end pt-3">
               <button
                 type="submit"

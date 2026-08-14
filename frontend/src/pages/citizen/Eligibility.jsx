@@ -19,6 +19,7 @@ export default function Eligibility() {
 
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
+  const [history, setHistory] = useState([]);
   const [summary, setSummary] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
 
@@ -39,7 +40,7 @@ export default function Eligibility() {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { if(user) policyService.getEligibilityHistory?.().then(r=>setHistory(r.history||[])).catch(()=>{});
     if (user && user.profile) {
       loadProfile();
     }

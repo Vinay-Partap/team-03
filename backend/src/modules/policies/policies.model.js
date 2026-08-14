@@ -6,7 +6,8 @@ const policySchema = new Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     category: { type: String, required: true, enum: require('./policyCategories') },
-    department: { type: String, required: true }, // Finance, Health, Home Affairs, etc.
+    department: { type: String, required: true },
+    sector: { type: String, default: "" }, // Finance, Health, Home Affairs, etc.
     state: { type: String, default: "Global" }, // "Global" or state name
     status: {
       type: String,

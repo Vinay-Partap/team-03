@@ -3,7 +3,7 @@ const Notification = require("../notifications/notifications.model");
 
 class SchemesService {
   async getSchemes(filter, user) {
-    const { category, department, state, ministry, publicationFrom, publicationTo, effectiveFrom, effectiveTo, sort, search, status, page, limit } = filter;
+    const { category, department, state, ministry, publicationFrom, publicationTo, effectiveFrom, effectiveTo, sector, sort, search, status, page, limit } = filter;
     let query = {};
 
     if (user?.role === "admin") { if (status) query.status = status;

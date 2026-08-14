@@ -25,6 +25,9 @@ export default function Feedback() {
     fetchFeedbacks();
   }, []);
 
+  const handleTicket = async (id, status) => { try { await userService.updateTicket(id,{status}); toast.success("Ticket updated"); fetchFeedbacks(); } catch { toast.error("Ticket update failed"); } };
+  const reply = async (id) => { const message=window.prompt("Public reply to citizen:"); if(message) { await userService.addTicketReply(id,{message,internal:false}); toast.success("Reply sent"); } };
+
   const handleResolve = async (id) => {
     try {
       await userService.resolveFeedback(id);
@@ -79,6 +82,7 @@ export default function Feedback() {
                     <span>{item.status}</span>
                   </span>
                 </div>
+                <p className="text-xs font-bold text-blue-600">{item.ticketId} · {item.category} · {item.priority}</p>
                 <h3 className="font-extrabold text-slate-800 text-base">{item.subject}</h3>
                 <p className="text-slate-600 text-xs font-semibold leading-relaxed whitespace-pre-line">{item.message}</p>
                 <div className="flex items-center gap-4 text-xxs text-slate-400 font-semibold pt-1">
@@ -86,6 +90,7 @@ export default function Feedback() {
                   <span className="flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> {item.email}</span>
                 </div>
               </div>
+              <div className="flex gap-2"><button onClick={()=>reply(item._id)} className="rounded-xl border px-3 py-2 text-xs font-bold">Reply</button><select value={item.status} onChange={e=>handleTicket(item._id,e.target.value)} className="rounded-xl border px-2 text-xs"><option value="open">Open</option><option value="in_progress">In Progress</option><option value="waiting_for_citizen">Waiting</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></div>
               {item.status === "open" && (
                 <button
                   onClick={() => handleResolve(item._id)}

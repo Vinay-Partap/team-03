@@ -89,6 +89,10 @@ const userService = {
     return response.data;
   },
 
+  updateTicket: async (id, data) => (await API.put(`/feedback/${id}`, data)).data,
+  addTicketReply: async (id, data) => (await API.post(`/feedback/${id}/replies`, data)).data,
+  getTicketReplies: async (id) => (await API.get(`/feedback/${id}/replies`)).data,
+
   resolveFeedback: async (id) => {
     const response = await API.put(`/feedback/${id}/resolve`);
     return response.data;

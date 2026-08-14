@@ -35,8 +35,8 @@ class DashboardService {
     };
   }
 
-  async getGovernmentDashboard() {
-    return await dashboardRepository.getGovStats();
+  async getGovernmentDashboard(user) {
+    return await dashboardRepository.getGovStats(user);
   }
 
   async getAdminDashboard() {

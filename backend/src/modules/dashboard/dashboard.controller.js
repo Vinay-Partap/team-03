@@ -11,7 +11,7 @@ const getCitizenDashboardData = async (req, res) => {
 
 const getGovernmentDashboardData = async (req, res) => {
   try {
-    const data = await dashboardService.getGovernmentDashboard();
+    const data = await dashboardService.getGovernmentDashboard(req.user);
     res.status(200).json({ success: true, ...data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

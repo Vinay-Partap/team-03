@@ -7,7 +7,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({
     policies: { total: 0, approved: 0, pending: 0, draft: 0 },
     schemes: { total: 0, approved: 0, pending: 0, draft: 0 },
-    breakdowns: { policyCategories: [], schemeCategories: [] },
+    breakdowns: { policyCategories: [], schemeCategories: [] }, notifications: { total: 0, unread: 0 },
   });
   const [loading, setLoading] = useState(true);
 

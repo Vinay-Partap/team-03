@@ -3,7 +3,7 @@ const Notification = require("../notifications/notifications.model");
 
 class SchemesService {
   async getSchemes(filter, user) {
-    const { category, department, state, search, status, page, limit } = filter;
+    const { category, department, state, ministry, publicationFrom, publicationTo, effectiveFrom, effectiveTo, sort, search, status, page, limit } = filter;
     let query = {};
 
     if (user?.role === "admin") { if (status) query.status = status;
@@ -13,7 +13,7 @@ class SchemesService {
     }
 
     if (category) query.category = category;
-    if (department) query.department = department;
+    if (department) query.department=department; if (ministry) query.ministry=ministry; if(publicationFrom||publicationTo) query.publicationDate={...(publicationFrom&&{$gte:new Date(publicationFrom)}),...(publicationTo&&{$lte:new Date(publicationTo)})}; if(effectiveFrom||effectiveTo) query.effectiveDate={...(effectiveFrom&&{$gte:new Date(effectiveFrom)}),...(effectiveTo&&{$lte:new Date(effectiveTo)})};
     if (state) {
       if (state.toLowerCase() === "global") {
         query.state = "Global";

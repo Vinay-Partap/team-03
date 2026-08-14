@@ -113,21 +113,21 @@ class EligibilityService {
       isEligible,
       reasons: reasons.length > 0 ? reasons : ["General eligibility matches"],
       failures,
+      missingFields: ["age","gender","income","occupation","education","state","category"].filter((field) => profile[field] === undefined || profile[field] === null || profile[field] === ""),
+      recommendationScore: isEligible ? Math.max(50, 100 - (failures.length * 20)) : 0,
     };
   }
 
-  async checkEligibility(profile, userId = null) {
+  async checkEligibility(profile, user = null) {
     const schemes = await eligibilityRepository.getApprovedSchemes();
     const results = schemes.map((scheme) => this.evaluateScheme(profile, scheme));
 
-    eligibilityRepository.saveLog({
-      userId,
-      profile,
-      results: results.map((r) => ({ schemeId: r.schemeId, isEligible: r.isEligible })),
-    }).catch(err => console.error("Failed to save eligibility log:", err));
-
-    return results;
+    results.sort((a,b) => b.recommendationScore - a.recommendationScore);
+    if (user?.privacyConsent) eligibilityRepository.saveLog({ userId:user.id, profile:{}, results:results.map(r=>({schemeId:r.schemeId,isEligible:r.isEligible})) }).catch(err=>console.error("Eligibility summary log failed",err.message));
+    return { results, summary:{ evaluated:results.length, eligible:results.filter(r=>r.isEligible).length, possible:results.filter(r=>r.isEligible&&r.missingFields.length).length } };
   }
+  async getHistory(userId) { return eligibilityRepository.getHistory(userId); }
+  async clearHistory(userId) { return eligibilityRepository.clearHistory(userId); }
 }
 
 module.exports = new EligibilityService();

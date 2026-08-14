@@ -19,6 +19,8 @@ export default function Eligibility() {
 
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [summary, setSummary] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
 
   const loadProfile = () => {
@@ -38,7 +40,7 @@ export default function Eligibility() {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { if(user) policyService.getEligibilityHistory?.().then(r=>setHistory(r.history||[])).catch(()=>{});
     if (user && user.profile) {
       loadProfile();
     }
@@ -46,8 +48,8 @@ export default function Eligibility() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!age || !income) {
-      return toast.error("Please enter age and annual income");
+    if (!age || !income || Number(age) < 0 || Number(age) > 120 || Number(income) < 0) {
+      return toast.error("Enter a valid age (0–120) and non-negative annual income");
     }
 
     setLoading(true);
@@ -65,7 +67,7 @@ export default function Eligibility() {
 
       const res = await policyService.checkEligibility(payload);
       if (res.success) {
-        setResults(res.results || []);
+        setResults(res.results || []); setSummary(res.summary || null);
         toast.success(`Evaluated schemes. Found matches.`);
       }
     } catch (err) {
@@ -85,6 +87,7 @@ export default function Eligibility() {
   return (
     <div className="space-y-8">
       <Toaster position="top-right" />
+      {history.length>0 && <div className="rounded-xl bg-white p-3 text-xs shadow-sm"><b>Eligibility History</b><button onClick={async()=>{if(window.confirm("Clear eligibility history?")){await policyService.clearEligibilityHistory();setHistory([])}}} className="float-right text-red-600">Clear</button><p className="mt-1">Latest check: {new Date(history[0].createdAt).toLocaleString()}</p></div>}
       <div>
         <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
           <ShieldCheck className="h-6 w-6 text-blue-600" />
@@ -111,6 +114,7 @@ export default function Eligibility() {
             )}
           </div>
 
+          {user && <div className="rounded-xl bg-blue-50 p-3 text-xs text-blue-700">Profile completeness: {Object.values(user.profile || {}).filter(v=>v!==null&&v!=="").length}/8 · <a href="/profile" className="font-bold underline">Complete Profile</a></div>}
           <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-xs font-bold text-slate-400 mb-1">Age (Years)</label>

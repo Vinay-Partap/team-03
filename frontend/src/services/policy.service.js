@@ -110,6 +110,9 @@ const policyService = {
     return response.data;
   },
 
+  getEligibilityHistory: async () => (await API.get("/eligibility/history")).data,
+  clearEligibilityHistory: async () => (await API.delete("/eligibility/history")).data,
+
   checkMyEligibility: async () => {
     const response = await API.get("/eligibility/check-my");
     return response.data;

@@ -6,6 +6,7 @@ import { Award, Plus, Trash2, Edit2, Archive, Landmark, X, PlusCircle, Activity 
 export default function Schemes() {
   const [schemes, setSchemes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [documentFile, setDocumentFile] = useState(null);
 
   // Modals management
   const [showModal, setShowModal] = useState(false);
@@ -131,10 +132,10 @@ export default function Schemes() {
 
     try {
       if (editMode) {
-        await policyService.updateScheme(targetId, payload);
+        await policyService.updateScheme(targetId, payload); if(documentFile) await policyService.uploadSchemeDocument(targetId,documentFile);
         toast.success("Scheme updated successfully");
       } else {
-        await policyService.createScheme(payload);
+        const result = await policyService.createScheme(payload); if(documentFile) await policyService.uploadSchemeDocument(result.scheme._id,documentFile);
         toast.success("Scheme draft created successfully");
       }
       setShowModal(false);
@@ -174,7 +175,8 @@ export default function Schemes() {
         await policyService.submitSchemeApproval(id);
         toast.success("Submitted scheme for approval check");
       } else if (action === "archive") {
-        await policyService.archiveScheme(id);
+        const reason = window.prompt("Archive reason (optional):") || "";
+        await policyService.archiveScheme(id, reason);
         toast.success("Scheme archived successfully");
       }
       fetchSchemes();
@@ -317,7 +319,7 @@ export default function Schemes() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs font-semibold text-slate-500">
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs font-semibold text-slate-500"><div><label>Official document (PDF/DOC/DOCX)</label><input type="file" accept=".pdf,.doc,.docx" onChange={e=>setDocumentFile(e.target.files?.[0]||null)} /></div>
               {/* Basic Fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

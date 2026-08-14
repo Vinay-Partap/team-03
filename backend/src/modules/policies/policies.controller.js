@@ -117,6 +117,7 @@ const approvePolicy = async (req, res) => {
       ipAddress: req.ip || "127.0.0.1",
     });
 
+    await logAction({action:"POLICY_REVIEW_DECISION",userId:req.user._id,userRole:req.user.role,targetId:policy._id,details:`Approved policy: ${policy.title}`,ipAddress:req.ip});
     res.status(200).json({ success: true, message: "Policy approved and published", policy });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -157,6 +158,7 @@ const archivePolicy = async (req, res) => {
       ipAddress: req.ip || "127.0.0.1",
     });
 
+    await logAction({action:"POLICY_ARCHIVE",userId:req.user._id,userRole:req.user.role,targetId:policy._id,details:`Archived policy: ${policy.title}`,ipAddress:req.ip});
     res.status(200).json({ success: true, message: "Policy archived successfully", policy });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

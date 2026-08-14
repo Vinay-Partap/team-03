@@ -207,7 +207,8 @@ export default function Policies() {
                             Submit
                           </button>
                         )}
-                        {item.status === "approved" && (
+                        {item.status === "archived" && <button onClick={async()=>{if(window.confirm("Restore this policy to draft?")){await policyService.restorePolicy(item._id);fetchPolicies();toast.success("Policy restored to draft")}}} className="text-xs font-bold text-emerald-600">Restore</button>}
+                  {item.status === "approved" && (
                           <button
                             onClick={() => handleWorkflow(item._id, "archive")}
                             className="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold p-1 rounded-lg"

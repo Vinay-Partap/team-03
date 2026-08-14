@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const jwksClient = require('jwks-rsa');
 const { sendEmail, verificationEmail, resetEmail, passwordResetSuccessEmail } = require('../../services/email.service');
 const AuthSession = require('./authSession.model');
+const speakeasy = require('speakeasy');
+const QRCode = require('qrcode');
 
 const safeUser = (user) => ({ _id: user._id, name: user.name, email: user.email, role: user.role, profile: user.profile, officialProfile: user.officialProfile, organizationProfile: user.organizationProfile, researcherProfile: user.researcherProfile, department: user.department, privacyConsent: user.privacyConsent, privacyPolicyVersion: user.privacyPolicyVersion, accountStatus: user.accountStatus, savedPolicies: user.savedPolicies, savedSchemes: user.savedSchemes });
 class AuthService {
@@ -38,8 +40,13 @@ class AuthService {
       await user.save(); throw new Error('Invalid email or password');
     }
     user.failedLoginAttempts = 0; user.lockUntil = null; await user.save();
+    if (["admin","official"].includes(user.role) && user.mfaEnabled) return { mfaRequired:true, userId:user._id };
     return this.issueTokens(user);
   }
+  async setupMfa(user) { if (!["admin","official"].includes(user.role)) throw new Error("MFA is only required for administrators and officials"); const secret=speakeasy.generateSecret({name:`GovIntel (${user.email})`}); user.mfaSecret=secret.base32; user.mfaEnabled=false; await user.save(); return { otpauthUrl:secret.otpauth_url, qrCode:await QRCode.toDataURL(secret.otpauth_url) }; }
+  async confirmMfa(user, code) { if (!speakeasy.totp.verify({secret:user.mfaSecret,encoding:"base32",token:code,window:1})) throw new Error("Invalid authenticator code"); const codes=Array.from({length:8},()=>crypto.randomBytes(4).toString("hex")); user.mfaRecoveryCodes=codes.map(c=>crypto.createHash("sha256").update(c).digest("hex")); user.mfaEnabled=true; await user.save(); return codes; }
+  async verifyMfaLogin(userId, code) { const user=await authRepository.findById(userId); if(!user||!user.mfaEnabled) throw new Error("MFA challenge unavailable"); const hash=crypto.createHash("sha256").update(code).digest("hex"); const valid=speakeasy.totp.verify({secret:user.mfaSecret,encoding:"base32",token:code,window:1}) || user.mfaRecoveryCodes.includes(hash); if(!valid) throw new Error("Invalid authenticator code"); if(user.mfaRecoveryCodes.includes(hash)){user.mfaRecoveryCodes=user.mfaRecoveryCodes.filter(x=>x!==hash);await user.save();} return this.issueTokens(user); }
+
   async getUserProfile(id) { const user = await authRepository.findById(id); if (!user) throw new Error('User not found'); return safeUser(user); }
   async updateUserProfile(id, { name, profile, officialProfile, organizationProfile, researcherProfile, department, privacyConsent, privacyPolicyVersion }) {
     const user = await authRepository.findById(id); if (!user) throw new Error('User not found');

@@ -12,6 +12,7 @@ const {
   approveScheme,
   rejectScheme,
   archiveScheme,
+  restoreScheme,
   addSchemeUpdate,
 } = require("./schemes.controller");
 const upload = require("./schemes.upload");
@@ -32,6 +33,7 @@ router.delete("/:id", protect, authorize("admin", "official"), validateObjectId(
 router.put("/:id/submit", protect, authorize("admin", "official"), validateObjectId("id"), submitSchemeForApproval);
 router.put("/:id/approve", protect, authorize("admin", "official"), validateObjectId("id"), approveScheme);
 router.put("/:id/reject", protect, authorize("admin", "official"), validateObjectId("id"), rejectScheme);
+router.put("/:id/restore", protect, authorize("admin", "official"), restoreScheme);
 router.put("/:id/archive", protect, authorize("admin"), validateObjectId("id"), archiveScheme);
 
 // News/Updates logging

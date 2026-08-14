@@ -5,7 +5,7 @@ const { logAction } = require("../auditLogs/auditLogs.service");
 const getSchemes = async (req, res) => {
   try {
     const schemes = await schemesService.getSchemes(req.query, req.user);
-    res.status(200).json({ success: true, schemes });
+    res.status(200).json({ success:true, schemes:schemes.items, pagination:schemes.pagination });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -20,8 +20,8 @@ const getSchemeById = async (req, res) => {
   }
 };
 
-const uploadSchemeDocument=async(req,res)=>{try{if(!req.file)return res.status(400).json({success:false,message:"A scheme document is required"});res.json({success:true,scheme:await schemesService.attachDocument(req.params.id,req.file,req.user)});}catch(e){res.status(400).json({success:false,message:e.message});}};
-const getSchemeDocument=async(req,res)=>{try{const scheme=await schemesService.getSchemeById(req.params.id,req.user);if(!scheme.document?.key)return res.status(404).json({success:false,message:"No document attached"});res.download(path.join(process.cwd(),"uploads","schemes",scheme.document.key),scheme.document.name);}catch(e){res.status(404).json({success:false,message:e.message});}};
+const uploadSchemeDocument=async(req,res)=>{try{if(!req.file)return res.status(400).json({success:false,message:"A scheme document is required"});const scheme=await schemesService.attachDocument(req.params.id,req.file,req.user);await logAction({action:"SCHEME_DOCUMENT_UPLOAD",userId:req.user._id,userRole:req.user.role,targetId:scheme._id,details:`Uploaded scheme document: ${req.file.originalname}`,ipAddress:req.ip});res.json({success:true,scheme});}catch(e){res.status(400).json({success:false,message:e.message});}};
+const getSchemeDocument=async(req,res)=>{try{const scheme=await schemesService.getSchemeById(req.params.id,req.user);if(!scheme.document?.key)return res.status(404).json({success:false,message:"No document attached"});await logAction({action:"SCHEME_DOCUMENT_DOWNLOAD",userId:req.user?._id||null,userRole:req.user?.role||"guest",targetId:scheme._id,details:`Downloaded scheme document: ${scheme.document.name}`,ipAddress:req.ip});res.download(path.join(process.cwd(),"uploads","schemes",scheme.document.key),scheme.document.name);}catch(e){res.status(404).json({success:false,message:e.message});}};
 
 const createScheme = async (req, res) => {
   try {
@@ -139,9 +139,11 @@ const rejectScheme = async (req, res) => {
   }
 };
 
+const restoreScheme=async(req,res)=>{try{const scheme=await schemesService.restoreScheme(req.params.id,req.user);await logAction({action:"SCHEME_RESTORE",userId:req.user._id,userRole:req.user.role,targetId:scheme._id,details:"Restored archived scheme",ipAddress:req.ip});res.json({success:true,scheme});}catch(e){res.status(400).json({success:false,message:e.message});}};
+
 const archiveScheme = async (req, res) => {
   try {
-    const scheme = await schemesService.archiveScheme(req.params.id);
+    const scheme = await schemesService.archiveScheme(req.params.id,req.user,req.body.reason);
 
     await logAction({
       action: "SCHEME_ARCHIVE",
@@ -192,5 +194,6 @@ module.exports = {
   approveScheme,
   rejectScheme,
   archiveScheme,
+  restoreScheme,
   addSchemeUpdate,
 };

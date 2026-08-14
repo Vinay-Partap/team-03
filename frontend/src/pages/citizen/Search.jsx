@@ -17,6 +17,7 @@ export default function Search() {
   const [category, setCategory] = useState("");
   const [department, setDepartment] = useState("");
   const [state, setState] = useState("");
+  const [ministry, setMinistry] = useState(""); const [page, setPage] = useState(1); const [pagination, setPagination] = useState(null);
 
   const [policies, setPolicies] = useState([]);
   const [schemes, setSchemes] = useState([]);
@@ -37,14 +38,14 @@ export default function Search() {
       if (search) params.search = search;
       if (category) params.category = category;
       if (department) params.department = department;
-      if (state) params.state = state;
+      if (state) params.state = state; if (ministry) params.ministry = ministry; params.page = page; params.limit = 12;
 
       if (activeTab === "policies") {
         const res = await policyService.getPolicies(params);
-        setPolicies(res.policies || []);
+        setPolicies(res.policies || []); setPagination(res.pagination || null);
       } else {
         const res = await policyService.getSchemes(params);
-        setSchemes(res.schemes || []);
+        setSchemes(res.schemes || []); setPagination(res.pagination || null);
       }
     } catch (err) {
       toast.error("Failed to load list data");
@@ -67,7 +68,7 @@ export default function Search() {
 
   useEffect(() => {
     fetchItems();
-  }, [activeTab, category, department, state]);
+  }, [activeTab, category, department, state, ministry, page]);
 
   useEffect(() => {
     fetchSaved();
@@ -248,7 +249,7 @@ export default function Search() {
               {states.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
-        </div>
+        <div><label className="block text-xs font-bold text-slate-400 mb-1">Ministry</label><input value={ministry} onChange={e=>{setMinistry(e.target.value);setPage(1)}} placeholder="All Ministries" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div></div>
       </div>
 
       {/* Results grid */}
@@ -381,6 +382,7 @@ export default function Search() {
           )}
         </div>
       )}
+      {pagination && pagination.totalPages > 1 && <div className="flex items-center justify-between text-sm"><button disabled={page<=1} onClick={()=>setPage(page-1)} className="font-bold text-blue-600 disabled:text-slate-300">Previous</button><span className="text-slate-500">Page {pagination.page} of {pagination.totalPages} · {pagination.total} results</span><button disabled={page>=pagination.totalPages} onClick={()=>setPage(page+1)} className="font-bold text-blue-600 disabled:text-slate-300">Next</button></div>}
     </div>
   );
 }

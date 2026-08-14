@@ -75,6 +75,8 @@ const policyService = {
     return response.data;
   },
 
+  uploadSchemeDocument: async (id, file) => { const form = new FormData(); form.append("document", file); return (await API.post(`/schemes/${id}/document`, form, { headers: { "Content-Type": "multipart/form-data" } })).data; },
+
   submitSchemeApproval: async (id) => {
     const response = await API.put(`/schemes/${id}/submit`);
     return response.data;
@@ -90,8 +92,10 @@ const policyService = {
     return response.data;
   },
 
-  archiveScheme: async (id) => {
-    const response = await API.put(`/schemes/${id}/archive`);
+  restoreScheme: async (id) => (await API.put(`/schemes/${id}/restore`)).data,
+
+  archiveScheme: async (id, reason = "") => {
+    const response = await API.put(`/schemes/${id}/archive`, { reason });
     return response.data;
   },
 

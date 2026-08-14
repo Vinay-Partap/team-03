@@ -6,7 +6,7 @@ import { Users, FileText, Database, ShieldAlert, Award, RefreshCw, Layers } from
 export default function Dashboard() {
   const [stats, setStats] = useState({
     users: { total: 0, admin: 0, official: 0, citizen: 0 },
-    system: { policies: 0, schemes: 0, feedbacks: 0, openIssues: 0 },
+    system: { policies: 0, schemes: 0, feedbacks: 0, openIssues: 0, accountStatus: [], notificationStats: {total:0,unread:0} },
     recentLogs: [],
   });
   const [loading, setLoading] = useState(true);

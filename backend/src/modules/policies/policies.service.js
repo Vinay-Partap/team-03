@@ -1,5 +1,5 @@
 const policiesRepository = require("./policies.repository");
-const Notification = require("../notifications/notifications.model");
+const { deliver } = require("../../services/notification.service");
 
 class PoliciesService {
   async getPolicies(filter, user) {
@@ -127,12 +127,7 @@ class PoliciesService {
     const saved = await policiesRepository.save(policy);
 
     // Send global notification
-    await Notification.create({
-      userId: null,
-      title: "New Policy Launched",
-      message: `A new policy '${policy.title}' has been introduced under the ${policy.department} department.`,
-      type: "new_policy",
-    });
+    await deliver({ title:"New Policy Published", message:`${policy.title} is now publicly available.`, type:"new_policy", category:"policies", link:`/policies/${policy._id}` });
 
     return saved;
   }

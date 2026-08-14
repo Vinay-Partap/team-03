@@ -1,5 +1,5 @@
 const schemesRepository = require("./schemes.repository");
-const Notification = require("../notifications/notifications.model");
+const { deliver } = require("../../services/notification.service");
 
 class SchemesService {
   async getSchemes(filter, user) {
@@ -116,12 +116,7 @@ class SchemesService {
     const saved = await schemesRepository.save(scheme);
 
     // Send global notification
-    await Notification.create({
-      userId: null,
-      title: "New Public Welfare Scheme Live",
-      message: `A new public scheme '${scheme.title}' has been launched under the ${scheme.department} department. Check eligibility parameters!`,
-      type: "scheme_update",
-    });
+    await deliver({ title:"New Scheme Published", message:`${scheme.title} is now publicly available.`, type:"new_scheme", category:"schemes", link:`/schemes/${scheme._id}` });
 
     return saved;
   }
@@ -150,7 +145,7 @@ class SchemesService {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
 
-    scheme.updates.push({ content, addedBy:user.id, type }); if(scheme.status === "approved") await Notification.create({userId:null,title:"Scheme Update",message:`${scheme.title}: ${content}`,type:"scheme_update",category:"schemes",link:`/schemes/${scheme._id}`});
+    scheme.updates.push({ content, addedBy:user.id, type }); if(scheme.status === "approved") await deliver({title:"Scheme Update",message:`${scheme.title}: ${content}`,type:"scheme_update",category:"schemes",link:`/schemes/${scheme._id}`});
     return await schemesRepository.save(scheme);
   }
 }

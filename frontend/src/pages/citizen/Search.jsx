@@ -138,6 +138,7 @@ export default function Search() {
       updatedList.splice(existsIndex, 1);
       toast.success("Removed from comparison list");
     } else {
+      if (compareList.length > 0 && compareList[0].type !== compareItem.type) return toast.error("Compare policies with policies or schemes with schemes only");
       if (compareList.length >= 3) {
         return toast.error("You can compare up to 3 items at a time");
       }

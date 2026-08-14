@@ -33,12 +33,12 @@ class ReportsRepository {
     };
   }
 
-  async getPolicies() {
-    return await Policy.find();
+  async getPolicies(scope = {}) {
+    return await Policy.find(scope);
   }
 
-  async getSchemes() {
-    return await Scheme.find();
+  async getSchemes(scope = {}) {
+    return await Scheme.find(scope);
   }
 
   async createDownloadLog(logData) {

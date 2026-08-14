@@ -5,11 +5,12 @@ class ReportsService {
     return await reportsRepository.getAggregates();
   }
 
-  async exportCSV(type, userId) {
+  async exportCSV(type, user) {
+    const userId = user.id; const scope = user.role === "official" ? { department:user.department } : {}; if(!["policies","schemes"].includes(type)) throw new Error("Unsupported report type");
     let csvData = "";
 
     if (type === "policies") {
-      const policies = await reportsRepository.getPolicies();
+      const policies = await reportsRepository.getPolicies(scope);
       csvData += "Title,Description,Category,Department,State,Status,Deadline,Created Date\n";
       policies.forEach((p) => {
         csvData += `"${p.title.replace(/"/g, '""')}","${p.description.replace(/"/g, '""')}","${p.category}","${p.department}","${p.state}","${p.status}","${p.deadline || "N/A"}","${p.createdAt.toISOString()}"\n`;
@@ -17,7 +18,7 @@ class ReportsService {
       await reportsRepository.createDownloadLog({ userId, type: "csv", target: "policies" });
       return { csvData, filename: "policies_report.csv" };
     } else {
-      const schemes = await reportsRepository.getSchemes();
+      const schemes = await reportsRepository.getSchemes(scope);
       csvData += "Title,Description,Category,Department,State,Status,AgeMin,AgeMax,GenderLimit,IncomeMax,Created Date\n";
       schemes.forEach((s) => {
         const rules = s.eligibilityRules || {};
@@ -28,7 +29,8 @@ class ReportsService {
     }
   }
 
-  async exportPDF(type, userId) {
+  async exportPDF(type, user) {
+    const userId=user.id; const scope=user.role === "official"?{department:user.department}:{}; if(!["policies","schemes"].includes(type)) throw new Error("Unsupported report type");
     const PDFDocument = require("pdfkit");
     const doc = new PDFDocument({ margin: 30 });
     const buffers = [];
@@ -40,7 +42,7 @@ class ReportsService {
     doc.moveDown();
 
     if (type === "policies") {
-      const policies = await reportsRepository.getPolicies();
+      const policies = await reportsRepository.getPolicies(scope);
       policies.forEach((p, idx) => {
         doc.fontSize(12).fillColor("blue").text(`${idx + 1}. ${p.title}`);
         doc.fontSize(10).fillColor("black").text(`Category: ${p.category} | Department: ${p.department} | State: ${p.state} | Status: ${p.status}`);
@@ -48,7 +50,7 @@ class ReportsService {
         doc.moveDown();
       });
     } else {
-      const schemes = await reportsRepository.getSchemes();
+      const schemes = await reportsRepository.getSchemes(scope);
       schemes.forEach((s, idx) => {
         const rules = s.eligibilityRules || {};
         doc.fontSize(12).fillColor("green").text(`${idx + 1}. ${s.title}`);
@@ -70,7 +72,8 @@ class ReportsService {
     });
   }
 
-  async exportExcel(type, userId) {
+  async exportExcel(type, user) {
+    const userId=user.id; const scope=user.role === "official"?{department:user.department}:{}; if(!["policies","schemes"].includes(type)) throw new Error("Unsupported report type");
     const ExcelJS = require("exceljs");
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(type === "policies" ? "Policies" : "Schemes");
@@ -87,7 +90,7 @@ class ReportsService {
         { header: "Created Date", key: "createdAt", width: 25 },
       ];
 
-      const policies = await reportsRepository.getPolicies();
+      const policies = await reportsRepository.getPolicies(scope);
       policies.forEach((p) => {
         worksheet.addRow({
           title: p.title,
@@ -115,7 +118,7 @@ class ReportsService {
         { header: "Created Date", key: "createdAt", width: 25 },
       ];
 
-      const schemes = await reportsRepository.getSchemes();
+      const schemes = await reportsRepository.getSchemes(scope);
       schemes.forEach((s) => {
         const rules = s.eligibilityRules || {};
         worksheet.addRow({

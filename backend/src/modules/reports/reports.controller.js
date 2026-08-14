@@ -15,17 +15,17 @@ const exportReport = async (req, res) => {
     const format = req.query.format || "csv";
 
     if (format === "pdf") {
-      const { pdfBuffer, filename } = await reportsService.exportPDF(type, req.user.id);
+      const { pdfBuffer, filename } = await reportsService.exportPDF(type, req.user);
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
       return res.status(200).send(pdfBuffer);
     } else if (format === "excel" || format === "xlsx") {
-      const { excelBuffer, filename } = await reportsService.exportExcel(type, req.user.id);
+      const { excelBuffer, filename } = await reportsService.exportExcel(type, req.user);
       res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
       res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
       return res.status(200).send(excelBuffer);
     } else {
-      const { csvData, filename } = await reportsService.exportCSV(type, req.user.id);
+      const { csvData, filename } = await reportsService.exportCSV(type, req.user);
       res.setHeader("Content-Type", "text/csv");
       res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
       return res.status(200).send(csvData);

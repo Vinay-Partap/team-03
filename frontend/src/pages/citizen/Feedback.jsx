@@ -12,6 +12,9 @@ export default function Feedback() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [type, setType] = useState("feedback");
+  const [category, setCategory] = useState("General Feedback");
+  const [priority, setPriority] = useState("normal");
+  const [ticketId, setTicketId] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -22,8 +25,8 @@ export default function Feedback() {
 
     setLoading(true);
     try {
-      const payload = { name, email, subject, message, type };
-      await userService.submitFeedback(payload);
+      const payload = { name, email, subject, message, type, category, priority };
+      const result = await userService.submitFeedback(payload); setTicketId(result.feedback?.ticketId || "");
       toast.success("Feedback submitted successfully!");
       setSubject("");
       setMessage("");
@@ -62,6 +65,7 @@ export default function Feedback() {
           <span>Submit Inquiry Form</span>
         </h2>
 
+        {ticketId && <div className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">Ticket created: <b>{ticketId}</b></div>}
         <form onSubmit={handleSubmit} className="space-y-4 text-xs font-semibold text-slate-500">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -98,6 +102,8 @@ export default function Feedback() {
               <option value="contact">Contact Support</option>
             </select>
           </div>
+
+          <div className="grid grid-cols-2 gap-4"><label className="block text-slate-400">Category<select value={category} onChange={e=>setCategory(e.target.value)} className="mt-1 w-full rounded-xl border bg-slate-50 p-2"><option>General Feedback</option><option>Technical Issue</option><option>Scheme Information</option><option>Eligibility Issue</option><option>Application Support</option><option>Account / Login</option></select></label><label className="block text-slate-400">Priority<select value={priority} onChange={e=>setPriority(e.target.value)} className="mt-1 w-full rounded-xl border bg-slate-50 p-2"><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></label></div>
 
           <div>
             <label className="block text-slate-400 mb-1">Subject</label>

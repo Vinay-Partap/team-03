@@ -54,6 +54,7 @@ class SchemesService {
   }
 
   async createScheme(schemeData, user) {
+    const rules = schemeData.eligibilityRules || {}; if (rules.ageMin != null && rules.ageMax != null && Number(rules.ageMin) > Number(rules.ageMax)) throw new Error("Minimum age cannot exceed maximum age"); if (rules.incomeMax != null && Number(rules.incomeMax) < 0) throw new Error("Income limit cannot be negative");
     const department = user.role === "official" ? user.department : schemeData.department;
     if (!department) throw new Error("Government Officials must have an assigned department before creating content");
     return await schemesRepository.create({

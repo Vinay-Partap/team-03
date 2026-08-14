@@ -216,7 +216,7 @@ export default function Profile() {
               </div>
             )}
 
-            <div className="pt-4 border-t border-slate-100"><div className="flex items-center justify-between"><div><h3 className="text-sm font-bold text-blue-600 flex items-center gap-1"><Monitor className="h-4 w-4"/>Active sessions</h3><p className="text-xs text-slate-500">{sessions.filter(s => !s.revokedAt).length} session(s) recorded</p></div><button type="button" onClick={() => { if(window.confirm("Log out from all devices?")) dispatch(logoutUser()).then(() => window.location.assign("/login")); }} className="text-xs font-bold text-red-600">Log out all devices</button></div></div>
+            <div className="pt-4 border-t border-slate-100"><div className="flex items-center justify-between"><div><h3 className="text-sm font-bold text-blue-600 flex items-center gap-1"><Monitor className="h-4 w-4"/>Active sessions</h3><p className="text-xs text-slate-500">{sessions.filter(s => !s.revokedAt).length} session(s) recorded</p></div><button type="button" onClick={() => { if(window.confirm("Log out from all devices?")) authService.logoutAllDevices().then(() => window.location.assign("/login")); }} className="text-xs font-bold text-red-600">Log out all devices</button></div></div>
 
             <div className="flex justify-end pt-3">
               <button

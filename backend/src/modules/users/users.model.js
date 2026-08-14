@@ -26,6 +26,7 @@ const userSchema = new Schema(
     savedPolicies: [{ type: Schema.Types.ObjectId, ref: "Policies" }],
     savedSchemes: [{ type: Schema.Types.ObjectId, ref: "Schemes" }],
     searchHistory: [{ type: String }],
+    notificationPreferences: { inApp:{type:Boolean,default:true}, email:{type:Boolean,default:true}, policyAlerts:{type:Boolean,default:true}, schemeUpdates:{type:Boolean,default:true}, deadlineReminders:{type:Boolean,default:true}, applicationUpdates:{type:Boolean,default:true}, announcements:{type:Boolean,default:true} },
     mfaEnabled: { type: Boolean, default: false },
     mfaSecret: { type: String, default: "" },
     mfaRecoveryCodes: [{ type: String }],

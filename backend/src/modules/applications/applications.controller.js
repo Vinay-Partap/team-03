@@ -1,3 +1,4 @@
+const { deliver } = require("../../services/notification.service");
 const applicationsService = require("./applications.service");
 
 const submitApplication = async (req, res) => {
@@ -6,6 +7,7 @@ const submitApplication = async (req, res) => {
     if (!schemeId) return res.status(400).json({ success: false, message: "Scheme ID is required" });
 
     const application = await applicationsService.submitApplication(req.user.id, schemeId);
+    await deliver({userId:req.user.id,title:"Application Submitted",message:"Your scheme application was submitted.",type:"application_submitted",category:"applications",link:"/dashboard"});
     res.status(201).json({ success: true, message: "Application submitted successfully", application });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -30,6 +32,7 @@ const updateApplicationStatus = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid status specified" });
     }
     const application = await applicationsService.updateStatus(id, status, remarks);
+    await deliver({userId:application.userId,title:`Application ${status.replace("_"," ")}`,message:remarks||"Your application status has been updated.",type:`application_${status}`,category:"applications",priority:["approved","rejected"].includes(status)?"high":"normal",link:"/dashboard"});
     res.status(200).json({ success: true, message: "Application status updated", application });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

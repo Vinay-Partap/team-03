@@ -1,0 +1,3 @@
+const Notification=require('../modules/notifications/notifications.model');const User=require('../modules/users/users.model');const {sendEmail}=require('./email.service');
+async function deliver({userId=null,title,message,type='system',category='system',priority='normal',link=''}){const notification=await Notification.create({userId,title,message,type,category,priority,link});if(userId){const user=await User.findById(userId);if(user?.notificationPreferences?.email){await sendEmail({to:user.email,subject:title,text:message,html:`<p>${message}</p>`}).catch(e=>console.error('[notification-email]',e.message));}}return notification;}
+module.exports={deliver};

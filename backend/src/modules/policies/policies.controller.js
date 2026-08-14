@@ -20,7 +20,7 @@ const getPolicyById = async (req, res) => {
   }
 };
 
-const getPolicyDocument = async (req,res) => { try { const policy=await policiesService.getPolicyById(req.params.id, req.user); if(!policy.document?.key) return res.status(404).json({success:false,message:"No document attached"}); res.download(path.join(process.cwd(),"uploads","policies",policy.document.key), policy.document.name); } catch(e) { res.status(e.message.includes("Unauthorized")?403:404).json({success:false,message:e.message}); } };
+const getPolicyDocument = async (req,res) => { try { const policy=await policiesService.getPolicyById(req.params.id, req.user); if(!policy.document?.key) return res.status(404).json({success:false,message:"No document attached"}); await logAction({action:"POLICY_DOCUMENT_DOWNLOAD",userId:req.user?._id||null,userRole:req.user?.role||"guest",targetId:policy._id,details:`Downloaded policy document: ${policy.document.name}`,ipAddress:req.ip}); res.download(path.join(process.cwd(),"uploads","policies",policy.document.key), policy.document.name); } catch(e) { res.status(e.message.includes("Unauthorized")?403:404).json({success:false,message:e.message}); } };
 
 const createPolicy = async (req, res) => {
   try {

@@ -130,6 +130,7 @@ export default function PolicyDetails() {
               <p className="text-slate-700 font-bold mt-0.5">{policy.createdBy?.name || "Official Operator"}</p>
             </div>
           </div>
+          {policy.reviewDecision && <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-blue-500"/><div><p className="font-semibold text-slate-400">Review Decision</p><p className="font-bold text-slate-700 capitalize">{policy.reviewDecision}{policy.reviewReason ? ` · ${policy.reviewReason}` : ""}</p></div></div>}
           {policy.approvedBy && (
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-emerald-500" />

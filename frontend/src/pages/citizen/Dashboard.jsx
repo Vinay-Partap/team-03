@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import policyService from "../../services/policy.service";
 import userService from "../../services/user.service";
 import { Bookmark, Award, ShieldCheck, Bell, ChevronRight, Search, Zap } from "lucide-react";
 
@@ -12,6 +13,7 @@ export default function Dashboard() {
     eligibleSchemesCount: 0,
     recentSearchesCount: 0,
   });
+  const [recommendations, setRecommendations] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,6 +24,7 @@ export default function Dashboard() {
         if (data.success) {
           setStats(data.stats);
           setNotifications(data.notifications || []);
+          policyService.checkMyEligibility().then(r=>setRecommendations((r.results||[]).filter(x=>x.isEligible).slice(0,3))).catch(()=>{});
         }
       } catch (err) {
         console.error("Dashboard error:", err);
@@ -138,6 +141,8 @@ export default function Dashboard() {
               </Link>
             </div>
           </div>
+
+          {recommendations.length > 0 && <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm"><div className="flex justify-between"><h2 className="text-lg font-bold text-slate-800">Recommended for You</h2><Link to="/eligibility" className="text-sm font-bold text-blue-600">View all</Link></div><div className="mt-4 space-y-3">{recommendations.map(item=><Link key={item.schemeId} to={`/schemes/${item.schemeId}`} className="block rounded-xl bg-emerald-50 p-3"><b className="text-sm text-slate-800">{item.title}</b><span className="float-right text-xs font-bold text-emerald-700">{item.recommendationScore}% match</span><p className="mt-1 text-xs text-slate-600">{item.benefits || "View scheme guidance"}</p></Link>)}</div></div>}
 
           {/* Quick Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

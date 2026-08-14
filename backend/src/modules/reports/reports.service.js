@@ -5,19 +5,29 @@ class ReportsService {
     return await reportsRepository.getAggregates();
   }
 
-  async exportCSV(type, userId) {
+  async exportCSV(type, user) {
+    const userId = user.id; const scope = user.role === "official" ? { department:user.department } : {}; if(!["policies","schemes","user-activity","departments","analytics"].includes(type)) throw new Error("Unsupported report type");
+    if(user.role !== "admin" && !["policies","schemes","departments"].includes(type)) throw new Error("Not authorized for this report type");
     let csvData = "";
 
+    if (type === "user-activity") { const rows=await reportsRepository.getActivity(); csvData="Action,User,Role,Details,Timestamp\n"+rows.map(x=>`"${x.action}","${x.userId?.email||""}","${x.userRole}","${(x.details||"").replace(/"/g,'""')}","${x.createdAt.toISOString()}"`).join("\n"); return {csvData,filename:"user_activity_report.csv"};
+    }
+    if (type === "departments" || type === "analytics") { const data=await reportsRepository.getDepartmentSummary(scope); csvData="Metric,Value\n"+Object.entries(data).map(([k,v])=>`"${k}","${JSON.stringify(v).replace(/"/g,'""')}"`).join("\n"); return {csvData,filename:`${type}_report.csv`};
+    }
+    if (["user-activity","departments","analytics"].includes(type)) { const generated=await this.exportCSV(type,user); doc.fontSize(16).text(`GovIntel ${type} Report`); doc.moveDown().fontSize(9).text(generated.csvData); doc.end(); return new Promise(resolve=>doc.on("end",()=>resolve({pdfBuffer:Buffer.concat(buffers),filename:`${type}_report.pdf`}))); }
+    if (["user-activity","departments","analytics"].includes(type)) { const generated=await this.exportCSV(type,user); generated.csvData.split("\n").forEach(line=>worksheet.addRow(line.split(","))); const excelBuffer=await workbook.xlsx.writeBuffer(); return {excelBuffer,filename:`${type}_report.xlsx`}; }
     if (type === "policies") {
-      const policies = await reportsRepository.getPolicies();
+      const policies = await reportsRepository.getPolicies(scope);
       csvData += "Title,Description,Category,Department,State,Status,Deadline,Created Date\n";
       policies.forEach((p) => {
         csvData += `"${p.title.replace(/"/g, '""')}","${p.description.replace(/"/g, '""')}","${p.category}","${p.department}","${p.state}","${p.status}","${p.deadline || "N/A"}","${p.createdAt.toISOString()}"\n`;
       });
       await reportsRepository.createDownloadLog({ userId, type: "csv", target: "policies" });
       return { csvData, filename: "policies_report.csv" };
+    } else if (type === "user-activity") { const rows=await reportsRepository.getActivity(); csvData="Action,User,Role,Details,Timestamp\n"+rows.map(x=>`"${x.action}","${x.userId?.email||""}","${x.userRole}","${(x.details||"").replace(/"/g,'""')}","${x.createdAt.toISOString()}"`).join("\n"); return {csvData,filename:"user_activity_report.csv"};
+    } else if (type === "departments" || type === "analytics") { const data=await reportsRepository.getDepartmentSummary(scope); csvData=JSON.stringify(data,null,2); return {csvData,filename:`${type}_report.csv`};
     } else {
-      const schemes = await reportsRepository.getSchemes();
+      const schemes = await reportsRepository.getSchemes(scope);
       csvData += "Title,Description,Category,Department,State,Status,AgeMin,AgeMax,GenderLimit,IncomeMax,Created Date\n";
       schemes.forEach((s) => {
         const rules = s.eligibilityRules || {};
@@ -28,7 +38,8 @@ class ReportsService {
     }
   }
 
-  async exportPDF(type, userId) {
+  async exportPDF(type, user) {
+    const userId=user.id; const scope=user.role === "official"?{department:user.department}:{}; if(!["policies","schemes"].includes(type)) throw new Error("Unsupported report type");
     const PDFDocument = require("pdfkit");
     const doc = new PDFDocument({ margin: 30 });
     const buffers = [];
@@ -40,15 +51,17 @@ class ReportsService {
     doc.moveDown();
 
     if (type === "policies") {
-      const policies = await reportsRepository.getPolicies();
+      const policies = await reportsRepository.getPolicies(scope);
       policies.forEach((p, idx) => {
         doc.fontSize(12).fillColor("blue").text(`${idx + 1}. ${p.title}`);
         doc.fontSize(10).fillColor("black").text(`Category: ${p.category} | Department: ${p.department} | State: ${p.state} | Status: ${p.status}`);
         doc.text(`Description: ${p.description}`);
         doc.moveDown();
       });
+    } else if (type === "user-activity") { const rows=await reportsRepository.getActivity(); csvData="Action,User,Role,Details,Timestamp\n"+rows.map(x=>`"${x.action}","${x.userId?.email||""}","${x.userRole}","${(x.details||"").replace(/"/g,'""')}","${x.createdAt.toISOString()}"`).join("\n"); return {csvData,filename:"user_activity_report.csv"};
+    } else if (type === "departments" || type === "analytics") { const data=await reportsRepository.getDepartmentSummary(scope); csvData=JSON.stringify(data,null,2); return {csvData,filename:`${type}_report.csv`};
     } else {
-      const schemes = await reportsRepository.getSchemes();
+      const schemes = await reportsRepository.getSchemes(scope);
       schemes.forEach((s, idx) => {
         const rules = s.eligibilityRules || {};
         doc.fontSize(12).fillColor("green").text(`${idx + 1}. ${s.title}`);
@@ -70,7 +83,8 @@ class ReportsService {
     });
   }
 
-  async exportExcel(type, userId) {
+  async exportExcel(type, user) {
+    const userId=user.id; const scope=user.role === "official"?{department:user.department}:{}; if(!["policies","schemes"].includes(type)) throw new Error("Unsupported report type");
     const ExcelJS = require("exceljs");
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(type === "policies" ? "Policies" : "Schemes");
@@ -87,7 +101,7 @@ class ReportsService {
         { header: "Created Date", key: "createdAt", width: 25 },
       ];
 
-      const policies = await reportsRepository.getPolicies();
+      const policies = await reportsRepository.getPolicies(scope);
       policies.forEach((p) => {
         worksheet.addRow({
           title: p.title,
@@ -115,7 +129,7 @@ class ReportsService {
         { header: "Created Date", key: "createdAt", width: 25 },
       ];
 
-      const schemes = await reportsRepository.getSchemes();
+      const schemes = await reportsRepository.getSchemes(scope);
       schemes.forEach((s) => {
         const rules = s.eligibilityRules || {};
         worksheet.addRow({

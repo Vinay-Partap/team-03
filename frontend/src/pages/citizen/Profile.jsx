@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProfile, logoutUser } from "../../redux/slices/authSlice";
-import { toast, Toaster }
-import authService from "../../services/auth.service"; from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
+import authService from "../../services/auth.service";
 import { User, Mail, ShieldAlert, Award, Monitor } from "lucide-react";
 
 export default function Profile() {

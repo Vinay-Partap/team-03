@@ -1,4 +1,5 @@
 import { useState } from "react";
+import API from "../../services/api";
 import { motion } from "framer-motion";
 import {
   ChevronDown,
@@ -93,6 +94,8 @@ function downloadSpreadsheet(filename = "government-reports.xls") {
 
 export default function Reports() {
   const [range, setRange] = useState("Last 12 months");
+  const [reportType, setReportType] = useState("schemes");
+  const downloadReport = async (format) => { const r=await API.get(`/reports/export?type=${reportType}&format=${format}`,{responseType:"blob"}); const url=URL.createObjectURL(r.data); const a=document.createElement("a");a.href=url;a.download=`${reportType}_report.${format==="excel"?"xlsx":format}`;a.click();URL.revokeObjectURL(url); };
 
   const printReport = () => window.print();
 
@@ -127,7 +130,8 @@ export default function Reports() {
           </div>
 
           <div className="reports-controls" aria-label="Report controls">
-            <label className="reports-select-wrap">
+            <label className="reports-select-wrap"><select aria-label="Report type" value={reportType} onChange={e=>setReportType(e.target.value)}><option value="policies">Policies</option><option value="schemes">Schemes</option><option value="user-activity">User Activity</option><option value="departments">Departments</option><option value="analytics">Analytics</option></select>
+              
               <span className="sr-only">Reporting period</span>
               <select
                 aria-label="Reporting period"
@@ -140,14 +144,14 @@ export default function Reports() {
               </select>
               <ChevronDown size={18} strokeWidth={2.25} aria-hidden="true" />
             </label>
-            <button className="reports-action-button" type="button" onClick={printReport}>
+            <button className="reports-action-button" type="button" onClick={() => downloadReport("pdf")}>
               <FileText size={18} strokeWidth={2} aria-hidden="true" />
               Export PDF
             </button>
             <button
               className="reports-action-button"
               type="button"
-              onClick={() => downloadSpreadsheet()}
+              onClick={() => downloadReport("excel")}
             >
               <Table2 size={18} strokeWidth={2} aria-hidden="true" />
               Export Excel

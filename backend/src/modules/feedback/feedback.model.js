@@ -13,11 +13,10 @@ const feedbackSchema = new Schema(
       enum: ["feedback", "issue", "contact"],
       default: "feedback",
     },
-    status: {
-      type: String,
-      enum: ["open", "resolved"],
-      default: "open",
-    },
+    ticketId: { type: String, unique: true, sparse: true },
+    category: { type: String, default: "General Feedback" }, priority: { type: String, enum:["low","normal","high","urgent"], default:"normal" },
+    status: { type: String, enum: ["open","in_progress","waiting_for_citizen","resolved","closed"], default: "open" },
+    assignedTo: { type: Schema.Types.ObjectId, ref:"User", default:null }, assignedAt: {type:Date,default:null}, resolutionNote:{type:String,default:""}, resolvedBy:{type:Schema.Types.ObjectId,ref:"User",default:null}, resolvedAt:{type:Date,default:null}, lastResponseAt:{type:Date,default:null},
   },
   {
     timestamps: true,

@@ -192,7 +192,7 @@ export default function PublicLayout() {
             <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Support</h4>
             <ul className="flex flex-col gap-2.5 text-sm">
               <li><Link to="/feedback" className="hover:text-white transition-colors">Submit Feedback</Link></li>
-              <li><Link to="/feedback" className="hover:text-white transition-colors">FAQs & Help</Link></li>
+              <li><Link to="/faqs" className="hover:text-white transition-colors">FAQs & Help</Link></li>
             </ul>
           </div>
           <div>

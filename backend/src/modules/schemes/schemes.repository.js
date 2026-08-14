@@ -10,6 +10,8 @@ class SchemesRepository {
       .populate("approvedBy", "name email role");
   }
 
+  async count(query) { return Scheme.countDocuments(query); }
+
   async findById(id) {
     return await Scheme.findById(id)
       .populate("createdBy", "name email role")

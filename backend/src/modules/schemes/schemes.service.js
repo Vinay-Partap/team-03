@@ -6,10 +6,8 @@ class SchemesService {
     const { category, department, state, search, status, page, limit } = filter;
     let query = {};
 
-    if (user && ["admin", "official"].includes(user.role)) {
-      if (status) {
-        query.status = status;
-      }
+    if (user?.role === "admin") { if (status) query.status = status;
+    } else if (user?.role === "official") { const scoped=[{createdBy:user._id}]; if(user.department) scoped.push({department:user.department,status:"pending_approval"}); query.$and=[{$or:[{status:"approved"},...scoped]}]; if(status) query.$and.push({status});
     } else {
       query.status = "approved";
     }
@@ -35,7 +33,7 @@ class SchemesService {
     const skip = page && limit ? (Number(page) - 1) * Number(limit) : 0;
     const maxLimit = limit ? Math.min(Number(limit), 100) : 25;
 
-    return await schemesRepository.find(query, skip, maxLimit);
+    const [schemes,total]=await Promise.all([schemesRepository.find(query,skip,maxLimit),schemesRepository.count(query)]); return {items:schemes,pagination:{page:Number(page)||1,limit:maxLimit,total,totalPages:Math.ceil(total/maxLimit)}};
   }
 
   async getSchemeById(id, user) {
@@ -152,7 +150,7 @@ class SchemesService {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
 
-    scheme.updates.push({ content, addedBy:user.id, type });
+    scheme.updates.push({ content, addedBy:user.id, type }); if(scheme.status === "approved") await Notification.create({userId:null,title:"Scheme Update",message:`${scheme.title}: ${content}`,type:"scheme_update",category:"schemes",link:`/schemes/${scheme._id}`});
     return await schemesRepository.save(scheme);
   }
 }

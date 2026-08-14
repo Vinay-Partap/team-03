@@ -5,7 +5,7 @@ const { logAction } = require("../auditLogs/auditLogs.service");
 const getSchemes = async (req, res) => {
   try {
     const schemes = await schemesService.getSchemes(req.query, req.user);
-    res.status(200).json({ success: true, schemes });
+    res.status(200).json({ success:true, schemes:schemes.items, pagination:schemes.pagination });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

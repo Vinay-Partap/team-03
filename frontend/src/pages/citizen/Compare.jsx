@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeftRight, Trash2, ArrowLeft, ShieldCheck, HelpCircle, Award } from "lucide-react";
+import policyService from "../../services/policy.service";
 import { toast, Toaster } from "react-hot-toast";
 
 export default function Compare() {
@@ -9,7 +10,8 @@ export default function Compare() {
   useEffect(() => {
     const saved = localStorage.getItem("compareList");
     if (saved) {
-      setList(JSON.parse(saved));
+      const cached = JSON.parse(saved); setList(cached);
+      Promise.all(cached.map(item => item.type === "policy" ? policyService.getPolicyById(item._id) : policyService.getSchemeById(item._id))).then(items => setList(items.map((r,i)=>({...(r.policy||r.scheme),type:cached[i].type})))).catch(()=>{});
     }
   }, []);
 

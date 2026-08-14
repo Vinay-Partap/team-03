@@ -4,6 +4,7 @@ const {
   getPolicies,
   getPolicyById,
   createPolicy,
+  getPolicyDocument,
   updatePolicy,
   deletePolicy,
   submitPolicyForApproval,
@@ -17,6 +18,7 @@ const upload = require("./policies.upload");
 const { validatePolicyOrScheme, validateObjectId, validatePagination } = require("../../utils/validation");
 
 router.get("/", optionalProtect, validatePagination, getPolicies);
+router.get("/:id/document", optionalProtect, validateObjectId("id"), getPolicyDocument);
 router.get("/:id", optionalProtect, validateObjectId("id"), getPolicyById);
 
 // Official & Admin policy actions

@@ -1,4 +1,5 @@
 const policiesService = require("./policies.service");
+const path = require("path");
 const { logAction } = require("../auditLogs/auditLogs.service");
 
 const getPolicies = async (req, res) => {
@@ -18,6 +19,8 @@ const getPolicyById = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+const getPolicyDocument = async (req,res) => { try { const policy=await policiesService.getPolicyById(req.params.id, req.user); if(!policy.document?.key) return res.status(404).json({success:false,message:"No document attached"}); res.download(path.join(process.cwd(),"uploads","policies",policy.document.key), policy.document.name); } catch(e) { res.status(e.message.includes("Unauthorized")?403:404).json({success:false,message:e.message}); } };
 
 const createPolicy = async (req, res) => {
   try {
@@ -162,6 +165,7 @@ module.exports = {
   getPolicies,
   getPolicyById,
   createPolicy,
+  getPolicyDocument,
   updatePolicy,
   deletePolicy,
   submitPolicyForApproval,

@@ -1,6 +1,9 @@
+import API from "../../services/api";
 import { useEffect, useState } from "react";
+import API from "../../services/api";
 import { useParams, Link } from "react-router-dom";
 import policyService from "../../services/policy.service";
+import API from "../../services/api";
 import { ArrowLeft, Calendar, FileText, Landmark, User, Award, CheckCircle } from "lucide-react";
 
 export default function PolicyDetails() {

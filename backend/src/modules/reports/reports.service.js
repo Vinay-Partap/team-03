@@ -6,7 +6,8 @@ class ReportsService {
   }
 
   async exportCSV(type, user) {
-    const userId = user.id; const scope = user.role === "official" ? { department:user.department } : {}; if(!["policies","schemes"].includes(type)) throw new Error("Unsupported report type");
+    const userId = user.id; const scope = user.role === "official" ? { department:user.department } : {}; if(!["policies","schemes","user-activity","departments","analytics"].includes(type)) throw new Error("Unsupported report type");
+    if(user.role !== "admin" && !["policies","schemes","departments"].includes(type)) throw new Error("Not authorized for this report type");
     let csvData = "";
 
     if (type === "policies") {
@@ -17,6 +18,8 @@ class ReportsService {
       });
       await reportsRepository.createDownloadLog({ userId, type: "csv", target: "policies" });
       return { csvData, filename: "policies_report.csv" };
+    } else if (type === "user-activity") { const rows=await reportsRepository.getActivity(); csvData="Action,User,Role,Details,Timestamp\n"+rows.map(x=>`"${x.action}","${x.userId?.email||""}","${x.userRole}","${(x.details||"").replace(/"/g,'""')}","${x.createdAt.toISOString()}"`).join("\n"); return {csvData,filename:"user_activity_report.csv"};
+    } else if (type === "departments" || type === "analytics") { const data=await reportsRepository.getDepartmentSummary(scope); csvData=JSON.stringify(data,null,2); return {csvData,filename:`${type}_report.csv`};
     } else {
       const schemes = await reportsRepository.getSchemes(scope);
       csvData += "Title,Description,Category,Department,State,Status,AgeMin,AgeMax,GenderLimit,IncomeMax,Created Date\n";
@@ -49,6 +52,8 @@ class ReportsService {
         doc.text(`Description: ${p.description}`);
         doc.moveDown();
       });
+    } else if (type === "user-activity") { const rows=await reportsRepository.getActivity(); csvData="Action,User,Role,Details,Timestamp\n"+rows.map(x=>`"${x.action}","${x.userId?.email||""}","${x.userRole}","${(x.details||"").replace(/"/g,'""')}","${x.createdAt.toISOString()}"`).join("\n"); return {csvData,filename:"user_activity_report.csv"};
+    } else if (type === "departments" || type === "analytics") { const data=await reportsRepository.getDepartmentSummary(scope); csvData=JSON.stringify(data,null,2); return {csvData,filename:`${type}_report.csv`};
     } else {
       const schemes = await reportsRepository.getSchemes(scope);
       schemes.forEach((s, idx) => {

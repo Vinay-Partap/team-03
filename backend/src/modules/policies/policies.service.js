@@ -139,6 +139,8 @@ class PoliciesService {
     return await policiesRepository.save(policy);
   }
 
+  async restorePolicy(id, user) { const policy = await policiesRepository.findById(id); if (!policy) throw new Error("Policy not found"); if (user.role !== "admin" && (policy.createdBy?._id || policy.createdBy).toString() !== user.id) throw new Error("Unauthorized to restore this policy"); if (policy.status !== "archived") throw new Error("Only archived policies can be restored"); policy.status = "draft"; policy.archivedAt = null; policy.archivedBy = null; policy.archiveReason = ""; return policiesRepository.save(policy); }
+
   async archivePolicy(id, user, reason = "") {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");

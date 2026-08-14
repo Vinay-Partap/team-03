@@ -115,7 +115,8 @@ export default function Policies() {
         await policyService.submitPolicyApproval(id);
         toast.success("Submitted policy for official approval");
       } else if (action === "archive") {
-        await policyService.archivePolicy(id);
+        const reason = window.prompt("Archive reason (optional):") || "";
+      await policyService.archivePolicy(id, reason);
         toast.success("Policy directive archived");
       }
       fetchPolicies();

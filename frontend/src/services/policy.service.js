@@ -42,8 +42,10 @@ const policyService = {
     return response.data;
   },
 
-  archivePolicy: async (id) => {
-    const response = await API.put(`/policies/${id}/archive`);
+  restorePolicy: async (id) => (await API.put(`/policies/${id}/restore`)).data,
+
+  archivePolicy: async (id, reason = "") => {
+    const response = await API.put(`/policies/${id}/archive`, { reason });
     return response.data;
   },
 

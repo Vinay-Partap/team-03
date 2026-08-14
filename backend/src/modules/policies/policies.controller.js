@@ -142,6 +142,8 @@ const rejectPolicy = async (req, res) => {
   }
 };
 
+const restorePolicy = async (req,res) => { try { const policy=await policiesService.restorePolicy(req.params.id,req.user); res.json({success:true,message:"Policy restored to draft",policy}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
+
 const archivePolicy = async (req, res) => {
   try {
     const policy = await policiesService.archivePolicy(req.params.id, req.user, req.body.reason);
@@ -173,4 +175,5 @@ module.exports = {
   approvePolicy,
   rejectPolicy,
   archivePolicy,
+  restorePolicy,
 };

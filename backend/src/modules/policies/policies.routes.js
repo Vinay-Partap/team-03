@@ -12,6 +12,7 @@ const {
   approvePolicy,
   rejectPolicy,
   archivePolicy,
+  restorePolicy,
 } = require("./policies.controller");
 const { protect, optionalProtect, authorize } = require("../auth/auth.middleware");
 const upload = require("./policies.upload");
@@ -31,6 +32,7 @@ router.post("/:id/document", protect, authorize("admin", "official"), validateOb
 router.put("/:id/submit", protect, authorize("admin", "official"), validateObjectId("id"), submitPolicyForApproval);
 router.put("/:id/approve", protect, authorize("admin", "official"), validateObjectId("id"), approvePolicy);
 router.put("/:id/reject", protect, authorize("admin", "official"), validateObjectId("id"), rejectPolicy);
+router.put("/:id/restore", protect, authorize("admin", "official"), validateObjectId("id"), restorePolicy);
 router.put("/:id/archive", protect, authorize("admin"), validateObjectId("id"), archivePolicy);
 
 module.exports = router;

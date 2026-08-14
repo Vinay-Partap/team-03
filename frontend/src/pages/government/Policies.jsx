@@ -20,6 +20,7 @@ export default function Policies() {
   const [benefits, setBenefits] = useState("");
   const [applicationProcess, setApplicationProcess] = useState("");
   const [deadline, setDeadline] = useState("");
+  const [documentFile, setDocumentFile] = useState(null);
 
   const fetchPolicies = async () => {
     setLoading(true);
@@ -48,6 +49,7 @@ export default function Policies() {
     setBenefits("");
     setApplicationProcess("");
     setDeadline("");
+    setDocumentFile(null);
     setShowModal(true);
   };
 
@@ -82,7 +84,8 @@ export default function Policies() {
 
     try {
       if (editMode) {
-        await policyService.updatePolicy(targetId, payload);
+        const result = await policyService.updatePolicy(targetId, payload);
+        if (documentFile) await policyService.uploadPolicyDocument(targetId, documentFile);
         toast.success("Policy updated successfully");
       } else {
         await policyService.createPolicy(payload);
@@ -272,6 +275,7 @@ export default function Policies() {
                 ></textarea>
               </div>
 
+              <div><label className="block text-slate-400 mb-1">Official Document (PDF/DOC/DOCX, optional)</label><input type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e)=>setDocumentFile(e.target.files?.[0] || null)} className="w-full text-xs text-slate-600" /></div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-slate-400 mb-1">Category</label>

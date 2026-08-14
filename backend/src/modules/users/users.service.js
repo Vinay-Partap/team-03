@@ -38,6 +38,9 @@ class UsersService {
 
   async getAccountStatusHistory(id) { return AccountStatusHistory.find({ userId:id }).sort({ createdAt:-1 }).populate("changedBy", "name email"); }
 
+  async exportPersonalData(id) { const user = await usersRepository.findById(id); if (!user) throw new Error("User not found"); const Eligibility = require("../eligibility/eligibility.model"); return { account:{ name:user.name,email:user.email,role:user.role,profile:user.profile,privacyConsent:user.privacyConsent }, savedPolicies:user.savedPolicies, savedSchemes:user.savedSchemes, eligibilityHistory:await Eligibility.find({userId:id}) }; }
+  async deleteSensitiveData(id) { const user = await usersRepository.findById(id); if (!user) throw new Error("User not found"); user.profile={ age:null,gender:"",income:null,occupation:"",education:"",state:"",category:"",disability:false }; user.privacyConsent=false; user.privacyConsentAt=null; await usersRepository.save(user); const Eligibility=require("../eligibility/eligibility.model"); await Eligibility.deleteMany({userId:id}); }
+
   async savePolicy(userId, policyId) {
     const user = await usersRepository.findById(userId);
     if (!user) {

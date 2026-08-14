@@ -140,6 +140,10 @@ const auth0Login = async (req, res) => {
   } catch (error) { res.status(401).json({ success: false, message: error.message }); }
 };
 
+const setupMfa = async (req,res) => { try { res.json({success:true,...await authService.setupMfa(req.user)}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
+const confirmMfa = async (req,res) => { try { res.json({success:true,recoveryCodes:await authService.confirmMfa(req.user,req.body.code)}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
+const verifyMfaLogin = async (req,res) => { try { res.json({success:true,...await authService.verifyMfaLogin(req.body.userId,req.body.code)}); } catch(e) { res.status(401).json({success:false,message:e.message}); } };
+
 const verifyEmail = async (req, res) => { try { await authService.verifyEmail(req.body.token || req.query.token); res.json({ success:true, message:'Email verified successfully' }); } catch (error) { res.status(400).json({ success:false, message:error.message }); } };
 
 const logout = async (req,res) => { await authService.revokeRefreshToken(req.body.refreshToken); res.json({success:true}); };
@@ -166,6 +170,9 @@ module.exports = {
   refresh,
   auth0Login,
   verifyEmail,
+  setupMfa,
+  confirmMfa,
+  verifyMfaLogin,
   logout,
   logoutAll,
   getSessions,

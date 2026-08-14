@@ -10,6 +10,9 @@ const {
   refresh,
   auth0Login,
   verifyEmail,
+  setupMfa,
+  confirmMfa,
+  verifyMfaLogin,
   logout,
   logoutAll,
   getSessions,
@@ -25,6 +28,9 @@ router.post("/logout", logout);
 router.post("/logout-all", protect, logoutAll);
 router.get("/sessions", protect, getSessions);
 router.get("/verify-email", verifyEmail);
+router.post("/mfa/login", verifyMfaLogin);
+router.post("/mfa/setup", protect, setupMfa);
+router.post("/mfa/confirm", protect, confirmMfa);
 router.post("/verify-email", verifyEmail);
 router.post("/oauth/auth0", auth0Login);
 router.post("/forgot-password", forgotPassword);

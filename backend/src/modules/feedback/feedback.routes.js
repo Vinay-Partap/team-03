@@ -5,6 +5,7 @@ const { protect, optionalProtect, authorize } = require("../auth/auth.middleware
 
 // Submit feedback (Guests & Registered Users)
 router.post("/", optionalProtect, submitFeedback);
+router.get("/my-tickets", protect, getMyTickets);
 
 // Manage feedback (Officials & Admins)
 router.get("/", protect, authorize("admin", "official"), getFeedbacks);

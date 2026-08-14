@@ -27,6 +27,8 @@ const submitFeedback = async (req, res) => {
   }
 };
 
+const getMyTickets=async(req,res)=>{try{res.json({success:true,tickets:await Feedback.find({userId:req.user.id}).sort({createdAt:-1})});}catch(e){res.status(500).json({success:false,message:e.message});}};
+
 const getFeedbacks = async (req, res) => {
   try {
     const feedbacks = await feedbackService.getFeedbacks();
@@ -63,6 +65,7 @@ const getReplies=async(req,res)=>{const ticket=await Feedback.findById(req.param
 module.exports = {
   submitFeedback,
   getFeedbacks,
+  getMyTickets,
   resolveFeedback,
   updateTicket,
   addReply,

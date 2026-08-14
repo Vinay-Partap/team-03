@@ -10,6 +10,12 @@ class ReportsService {
     if(user.role !== "admin" && !["policies","schemes","departments"].includes(type)) throw new Error("Not authorized for this report type");
     let csvData = "";
 
+    if (type === "user-activity") { const rows=await reportsRepository.getActivity(); csvData="Action,User,Role,Details,Timestamp\n"+rows.map(x=>`"${x.action}","${x.userId?.email||""}","${x.userRole}","${(x.details||"").replace(/"/g,'""')}","${x.createdAt.toISOString()}"`).join("\n"); return {csvData,filename:"user_activity_report.csv"};
+    }
+    if (type === "departments" || type === "analytics") { const data=await reportsRepository.getDepartmentSummary(scope); csvData="Metric,Value\n"+Object.entries(data).map(([k,v])=>`"${k}","${JSON.stringify(v).replace(/"/g,'""')}"`).join("\n"); return {csvData,filename:`${type}_report.csv`};
+    }
+    if (["user-activity","departments","analytics"].includes(type)) { const generated=await this.exportCSV(type,user); doc.fontSize(16).text(`GovIntel ${type} Report`); doc.moveDown().fontSize(9).text(generated.csvData); doc.end(); return new Promise(resolve=>doc.on("end",()=>resolve({pdfBuffer:Buffer.concat(buffers),filename:`${type}_report.pdf`}))); }
+    if (["user-activity","departments","analytics"].includes(type)) { const generated=await this.exportCSV(type,user); generated.csvData.split("\n").forEach(line=>worksheet.addRow(line.split(","))); const excelBuffer=await workbook.xlsx.writeBuffer(); return {excelBuffer,filename:`${type}_report.xlsx`}; }
     if (type === "policies") {
       const policies = await reportsRepository.getPolicies(scope);
       csvData += "Title,Description,Category,Department,State,Status,Deadline,Created Date\n";

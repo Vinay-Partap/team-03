@@ -126,6 +126,8 @@ class EligibilityService {
     if (user?.privacyConsent) eligibilityRepository.saveLog({ userId:user.id, profile:{}, results:results.map(r=>({schemeId:r.schemeId,isEligible:r.isEligible})) }).catch(err=>console.error("Eligibility summary log failed",err.message));
     return { results, summary:{ evaluated:results.length, eligible:results.filter(r=>r.isEligible).length, possible:results.filter(r=>r.isEligible&&r.missingFields.length).length } };
   }
+  async getHistory(userId) { return eligibilityRepository.getHistory(userId); }
+  async clearHistory(userId) { return eligibilityRepository.clearHistory(userId); }
 }
 
 module.exports = new EligibilityService();

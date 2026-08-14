@@ -13,6 +13,9 @@ const checkEligibility = async (req, res) => {
   }
 };
 
+const getHistory=async(req,res)=>{try{res.json({success:true,history:await eligibilityService.getHistory(req.user.id)});}catch(e){res.status(500).json({success:false,message:e.message});}};
+const clearHistory=async(req,res)=>{try{await eligibilityService.clearHistory(req.user.id);res.json({success:true});}catch(e){res.status(500).json({success:false,message:e.message});}};
+
 const checkMyEligibility = async (req, res) => {
   try {
     if (!req.user || !req.user.profile) {
@@ -31,4 +34,6 @@ const checkMyEligibility = async (req, res) => {
 module.exports = {
   checkEligibility,
   checkMyEligibility,
+  getHistory,
+  clearHistory,
 };

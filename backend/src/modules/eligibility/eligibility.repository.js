@@ -6,6 +6,9 @@ class EligibilityRepository {
     return await Scheme.find({ status: "approved" });
   }
 
+  async getHistory(userId) { return Eligibility.find({userId}).sort({createdAt:-1}).limit(20); }
+  async clearHistory(userId) { return Eligibility.deleteMany({userId}); }
+
   async saveLog(logData) {
     return await Eligibility.create(logData);
   }

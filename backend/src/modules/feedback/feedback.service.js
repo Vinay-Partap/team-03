@@ -2,7 +2,7 @@ const feedbackRepository = require("./feedback.repository");
 
 class FeedbackService {
   async submitFeedback(feedbackData) {
-    const { userId, name, email, subject, message, type } = feedbackData;
+    const { userId, name, email, subject, message, type, category, priority } = feedbackData;
     if (!name || !email || !subject || !message) {
       throw new Error("Please fill all required fields");
     }
@@ -13,7 +13,7 @@ class FeedbackService {
       email,
       subject,
       message,
-      type: type || "feedback",
+      type: type || "feedback", category: category || "General Feedback", priority: priority || "normal", ticketId: `SUP-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,6).toUpperCase()}`,
     });
   }
 

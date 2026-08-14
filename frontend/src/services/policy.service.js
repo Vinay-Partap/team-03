@@ -75,6 +75,8 @@ const policyService = {
     return response.data;
   },
 
+  uploadSchemeDocument: async (id, file) => { const form = new FormData(); form.append("document", file); return (await API.post(`/schemes/${id}/document`, form, { headers: { "Content-Type": "multipart/form-data" } })).data; },
+
   submitSchemeApproval: async (id) => {
     const response = await API.put(`/schemes/${id}/submit`);
     return response.data;

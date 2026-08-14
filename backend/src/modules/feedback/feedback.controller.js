@@ -27,6 +27,8 @@ const submitFeedback = async (req, res) => {
   }
 };
 
+const getAssignees=async(req,res)=>{const User=require("../users/users.model");const scope=req.user.role==="official"&&req.user.department?{role:"official",department:req.user.department,isActive:true}:{role:"official",isActive:true};res.json({success:true,users:await User.find(scope).select("name email department")});};
+
 const getMyTickets=async(req,res)=>{try{res.json({success:true,tickets:await Feedback.find({userId:req.user.id}).sort({createdAt:-1})});}catch(e){res.status(500).json({success:false,message:e.message});}};
 
 const getFeedbacks = async (req, res) => {
@@ -66,6 +68,7 @@ module.exports = {
   submitFeedback,
   getFeedbacks,
   getMyTickets,
+  getAssignees,
   resolveFeedback,
   updateTicket,
   addReply,

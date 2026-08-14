@@ -78,6 +78,8 @@ const deletePolicy = async (req, res) => {
   }
 };
 
+const uploadPolicyDocument = async (req,res) => { try { if(!req.file) return res.status(400).json({success:false,message:"A policy document is required"}); const policy=await policiesService.attachDocument(req.params.id,req.file,req.user); res.json({success:true,policy}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
+
 const submitPolicyForApproval = async (req, res) => {
   try {
     const policy = await policiesService.submitForApproval(req.params.id, req.user);
@@ -163,6 +165,7 @@ module.exports = {
   updatePolicy,
   deletePolicy,
   submitPolicyForApproval,
+  uploadPolicyDocument,
   approvePolicy,
   rejectPolicy,
   archivePolicy,

@@ -90,6 +90,8 @@ class PoliciesService {
     return await policiesRepository.findByIdAndDelete(id);
   }
 
+  async attachDocument(id, file, user) { const policy=await policiesRepository.findById(id); if(!policy) throw new Error("Policy not found"); const creator=policy.createdBy?._id||policy.createdBy; if(user.role!=="admin"&&creator.toString()!==user.id) throw new Error("Unauthorized to upload policy document"); policy.document={ key:file.filename, name:file.originalname, mimeType:file.mimetype, size:file.size, uploadedAt:new Date(), uploadedBy:user.id }; return policiesRepository.save(policy); }
+
   async submitForApproval(id, user) {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");

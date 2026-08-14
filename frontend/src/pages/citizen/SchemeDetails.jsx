@@ -79,6 +79,12 @@ export default function SchemeDetails() {
           </div>
         </div>
 
+        <div className="grid grid-cols-1 gap-3 border-t border-slate-100 pt-5 text-sm text-slate-600 md:grid-cols-2">
+          {scheme.ministry && <p><b>Ministry:</b> {scheme.ministry}</p>}{scheme.officialReference && <p><b>Official Reference:</b> {scheme.officialReference}</p>}{scheme.publicationDate && <p><b>Publication Date:</b> {new Date(scheme.publicationDate).toLocaleDateString()}</p>}{scheme.effectiveDate && <p><b>Effective Date:</b> {new Date(scheme.effectiveDate).toLocaleDateString()}</p>}{scheme.deadline && <p><b>Application Deadline:</b> {new Date(scheme.deadline).toLocaleDateString()}</p>}<p><b>Version:</b> {scheme.version || 1}</p>{scheme.sourceUrl && <a href={scheme.sourceUrl} target="_blank" rel="noreferrer" className="font-semibold text-purple-600">Official source</a>}
+        </div>
+        {scheme.reviewDecision && <div className="rounded-xl bg-slate-50 p-3 text-sm text-slate-600"><b>Review:</b> <span className="capitalize">{scheme.reviewDecision}</span>{scheme.reviewedBy?.name && ` by ${scheme.reviewedBy.name}`}{scheme.reviewedAt && ` · ${new Date(scheme.reviewedAt).toLocaleString()}`}{scheme.reviewReason && <p className="mt-1"><b>Reason:</b> {scheme.reviewReason}</p>}</div>}
+        {scheme.status === "archived" && <div className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800"><b>Archived</b>{scheme.archiveReason && ` · ${scheme.archiveReason}`}{scheme.archivedAt && ` · ${new Date(scheme.archivedAt).toLocaleDateString()}`}</div>}
+
         {/* Eligibility Criteria Cards */}
         <div className="pt-6 border-t border-slate-100 space-y-4">
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">

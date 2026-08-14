@@ -255,7 +255,7 @@ export default function Schemes() {
                             ? "bg-slate-100 text-slate-400"
                             : "bg-blue-50 text-blue-600"
                         }`}>
-                          {item.status?.replace("_", " ")}
+                          {item.status === "archived" && item.archiveReason ? `Archived: ${item.archiveReason}` : item.status?.replace("_", " ")}
                         </span>
                       </td>
                       <td className="p-5 text-right space-x-1.5 whitespace-nowrap">

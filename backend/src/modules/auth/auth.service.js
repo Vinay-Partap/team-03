@@ -7,7 +7,7 @@ const AuthSession = require('./authSession.model');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 
-const safeUser = (user) => ({ _id: user._id, name: user.name, email: user.email, role: user.role, profile: user.profile, officialProfile: user.officialProfile, organizationProfile: user.organizationProfile, researcherProfile: user.researcherProfile, department: user.department, privacyConsent: user.privacyConsent, privacyPolicyVersion: user.privacyPolicyVersion, accountStatus: user.accountStatus, savedPolicies: user.savedPolicies, savedSchemes: user.savedSchemes });
+const safeUser = (user) => ({ _id: user._id, name: user.name, email: user.email, role: user.role, profile: user.profile, officialProfile: user.officialProfile, organizationProfile: user.organizationProfile, researcherProfile: user.researcherProfile, department: user.department, notificationPreferences: user.notificationPreferences, privacyConsent: user.privacyConsent, privacyPolicyVersion: user.privacyPolicyVersion, accountStatus: user.accountStatus, savedPolicies: user.savedPolicies, savedSchemes: user.savedSchemes });
 class AuthService {
   generateToken(id) { return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '15m' }); }
   generateRefreshToken(id, sid) { return jwt.sign({ id, sid }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' }); }
@@ -48,13 +48,14 @@ class AuthService {
   async verifyMfaLogin(userId, code) { const user=await authRepository.findById(userId); if(!user||!user.mfaEnabled) throw new Error("MFA challenge unavailable"); const hash=crypto.createHash("sha256").update(code).digest("hex"); const valid=speakeasy.totp.verify({secret:user.mfaSecret,encoding:"base32",token:code,window:1}) || user.mfaRecoveryCodes.includes(hash); if(!valid) throw new Error("Invalid authenticator code"); if(user.mfaRecoveryCodes.includes(hash)){user.mfaRecoveryCodes=user.mfaRecoveryCodes.filter(x=>x!==hash);await user.save();} return this.issueTokens(user); }
 
   async getUserProfile(id) { const user = await authRepository.findById(id); if (!user) throw new Error('User not found'); return safeUser(user); }
-  async updateUserProfile(id, { name, profile, officialProfile, organizationProfile, researcherProfile, department, privacyConsent, privacyPolicyVersion }) {
+  async updateUserProfile(id, { name, profile, officialProfile, organizationProfile, researcherProfile, department, notificationPreferences, privacyConsent, privacyPolicyVersion }) {
     const user = await authRepository.findById(id); if (!user) throw new Error('User not found');
     if (name) user.name = String(name).trim();
     if (department !== undefined && user.role === "official") user.department = String(department).trim();
     if (officialProfile && user.role === "official") user.officialProfile = { ...user.officialProfile.toObject?.() || {}, ...officialProfile };
     if (organizationProfile && user.role === "organization") user.organizationProfile = { ...user.organizationProfile.toObject?.() || {}, ...organizationProfile };
     if (researcherProfile && user.role === "researcher") user.researcherProfile = { ...user.researcherProfile.toObject?.() || {}, ...researcherProfile };
+    if (notificationPreferences) user.notificationPreferences = { ...user.notificationPreferences.toObject?.() || {}, ...notificationPreferences };
     if (privacyConsent === true) { user.privacyConsent = true; user.privacyConsentAt = new Date(); user.privacyPolicyVersion = privacyPolicyVersion || "1.0"; }
     if (profile) user.profile = { ...user.profile.toObject(), ...profile }; await user.save(); return user;
   }

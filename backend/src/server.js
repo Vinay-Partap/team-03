@@ -1,6 +1,7 @@
 const app = require("./app");
 const mongoose = require("mongoose");
 const logger = require("./utils/logger");
+const { startDeadlineReminders } = require("./jobs/deadlineReminder.job");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,7 @@ mongoose
     logger.info("Connected to MongoDB successfully");
     const server = app.listen(PORT, () => {
       logger.info(`Server is running on port ${PORT}`);
+      startDeadlineReminders();
     });
     const shutdown = () => server.close(() => mongoose.connection.close().finally(() => process.exit(0)));
     process.once("SIGTERM", shutdown); process.once("SIGINT", shutdown);

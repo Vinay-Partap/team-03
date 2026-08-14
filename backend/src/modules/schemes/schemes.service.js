@@ -139,12 +139,13 @@ class SchemesService {
     return await schemesRepository.save(scheme);
   }
 
-  async archiveScheme(id) {
+  async restoreScheme(id,user) { const scheme=await schemesRepository.findById(id); if(!scheme) throw new Error("Scheme not found"); const creator=scheme.createdBy?._id||scheme.createdBy; if(user.role!=="admin"&&creator.toString()!==user.id) throw new Error("Unauthorized to restore this scheme"); if(scheme.status!=="archived") throw new Error("Only archived schemes can be restored"); scheme.status="draft";scheme.archivedAt=null;scheme.archivedBy=null;scheme.archiveReason="";return schemesRepository.save(scheme); }
+
+  async archiveScheme(id,user,reason="") {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
 
-    scheme.status = "archived";
-    return await schemesRepository.save(scheme);
+    scheme.status="archived";scheme.archivedAt=new Date();scheme.archivedBy=user.id;scheme.archiveReason=reason;return schemesRepository.save(scheme);
   }
 
   async addSchemeUpdate(id, content, user, type = "General Update") {

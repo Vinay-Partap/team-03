@@ -90,8 +90,10 @@ const policyService = {
     return response.data;
   },
 
-  archiveScheme: async (id) => {
-    const response = await API.put(`/schemes/${id}/archive`);
+  restoreScheme: async (id) => (await API.put(`/schemes/${id}/restore`)).data,
+
+  archiveScheme: async (id, reason = "") => {
+    const response = await API.put(`/schemes/${id}/archive`, { reason });
     return response.data;
   },
 

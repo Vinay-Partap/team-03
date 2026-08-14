@@ -139,9 +139,11 @@ const rejectScheme = async (req, res) => {
   }
 };
 
+const restoreScheme=async(req,res)=>{try{res.json({success:true,scheme:await schemesService.restoreScheme(req.params.id,req.user)});}catch(e){res.status(400).json({success:false,message:e.message});}};
+
 const archiveScheme = async (req, res) => {
   try {
-    const scheme = await schemesService.archiveScheme(req.params.id);
+    const scheme = await schemesService.archiveScheme(req.params.id,req.user,req.body.reason);
 
     await logAction({
       action: "SCHEME_ARCHIVE",
@@ -192,5 +194,6 @@ module.exports = {
   approveScheme,
   rejectScheme,
   archiveScheme,
+  restoreScheme,
   addSchemeUpdate,
 };

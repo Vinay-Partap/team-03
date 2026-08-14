@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import policyService from "../../services/policy.service";
 import userService from "../../services/user.service";
+import { useSelector } from "react-redux";
 import { toast, Toaster } from "react-hot-toast";
 import { Search as SearchIcon, Filter, Bookmark, Award, FileText, ArrowLeftRight, ArrowRight } from "lucide-react";
 
 export default function Search() {
   const location = useLocation();
+  const { user } = useSelector((state) => state.auth);
   const isSchemesMode = location.pathname.includes("schemes");
 
   // Tab management
@@ -17,7 +19,7 @@ export default function Search() {
   const [category, setCategory] = useState("");
   const [department, setDepartment] = useState("");
   const [state, setState] = useState("");
-  const [ministry, setMinistry] = useState(""); const [page, setPage] = useState(1); const [pagination, setPagination] = useState(null);
+  const [ministry, setMinistry] = useState(""); const [sector, setSector] = useState(""); const [publicationFrom, setPublicationFrom] = useState(""); const [publicationTo, setPublicationTo] = useState(""); const [effectiveFrom, setEffectiveFrom] = useState(""); const [effectiveTo, setEffectiveTo] = useState(""); const [deadlineFrom, setDeadlineFrom] = useState(""); const [deadlineTo, setDeadlineTo] = useState(""); const [status, setStatus] = useState(""); const [sort, setSort] = useState("newest"); const [history, setHistory] = useState([]); const [page, setPage] = useState(1); const [pagination, setPagination] = useState(null);
 
   const [policies, setPolicies] = useState([]);
   const [schemes, setSchemes] = useState([]);
@@ -38,7 +40,7 @@ export default function Search() {
       if (search) params.search = search;
       if (category) params.category = category;
       if (department) params.department = department;
-      if (state) params.state = state; if (ministry) params.ministry = ministry; params.page = page; params.limit = 12;
+      if (state) params.state = state; if (ministry) params.ministry = ministry; if(sector)params.sector=sector;if(publicationFrom)params.publicationFrom=publicationFrom;if(publicationTo)params.publicationTo=publicationTo;if(effectiveFrom)params.effectiveFrom=effectiveFrom;if(effectiveTo)params.effectiveTo=effectiveTo;if(deadlineFrom)params.deadlineFrom=deadlineFrom;if(deadlineTo)params.deadlineTo=deadlineTo;if(status)params.status=status;params.sort=sort; params.page = page; params.limit = 12;
 
       if (activeTab === "policies") {
         const res = await policyService.getPolicies(params);
@@ -68,10 +70,11 @@ export default function Search() {
 
   useEffect(() => {
     fetchItems();
-  }, [activeTab, category, department, state, ministry, page]);
+  }, [activeTab, category, department, state, ministry, sector, publicationFrom, publicationTo, effectiveFrom, effectiveTo, deadlineFrom, deadlineTo, status, sort, page]);
 
   useEffect(() => {
     fetchSaved();
+    userService.getSearchHistory().then(r=>setHistory(r.searchHistory||[])).catch(()=>{});
     // Load local compare list
     const savedCompare = localStorage.getItem("compareList");
     if (savedCompare) setCompareList(JSON.parse(savedCompare));
@@ -249,9 +252,11 @@ export default function Search() {
               {states.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
-        <div><label className="block text-xs font-bold text-slate-400 mb-1">Ministry</label><input value={ministry} onChange={e=>{setMinistry(e.target.value);setPage(1)}} placeholder="All Ministries" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div></div>
+        <div><label className="block text-xs font-bold text-slate-400 mb-1">Ministry</label><input value={ministry} onChange={e=>{setMinistry(e.target.value);setPage(1)}} placeholder="All Ministries" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div><div><label className="block text-xs font-bold text-slate-400 mb-1">Sector</label><input value={sector} onChange={e=>{setSector(e.target.value);setPage(1)}} placeholder="All Sectors" className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div><div><label className="block text-xs font-bold text-slate-400 mb-1">Published From</label><input type="date" value={publicationFrom} onChange={e=>setPublicationFrom(e.target.value)} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div><div><label className="block text-xs font-bold text-slate-400 mb-1">Published To</label><input type="date" value={publicationTo} onChange={e=>setPublicationTo(e.target.value)} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"/></div><button onClick={()=>{setCategory("");setDepartment("");setState("");setMinistry("");setSector("");setPublicationFrom("");setPublicationTo("");setPage(1)}} className="text-xs font-bold text-blue-600">Reset filters</button></div>
       </div>
 
+      <div className="flex flex-wrap gap-3"><select value={sort} onChange={e=>setSort(e.target.value)} className="rounded-xl border border-slate-200 px-3 py-2 text-xs"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="updated">Recently Updated</option><option value="deadline">Deadline</option></select>{["admin","official"].includes(user?.role) && <select value={status} onChange={e=>setStatus(e.target.value)} className="rounded-xl border border-slate-200 px-3 py-2 text-xs"><option value="">All Statuses</option><option value="draft">Draft</option><option value="pending_approval">Pending Review</option><option value="approved">Approved</option><option value="archived">Archived</option></select>}<input type="date" value={effectiveFrom} onChange={e=>setEffectiveFrom(e.target.value)} className="rounded-xl border border-slate-200 px-2 text-xs" title="Effective from"/><input type="date" value={deadlineTo} onChange={e=>setDeadlineTo(e.target.value)} className="rounded-xl border border-slate-200 px-2 text-xs" title="Deadline to"/></div>
+      {history.length>0 && <div className="text-xs text-slate-500">Recent: {history.slice(0,5).map(q=><button key={q} onClick={()=>{setSearch(q);setPage(1)}} className="mr-2 font-semibold text-blue-600">{q}</button>)}</div>}
       {/* Results grid */}
       {loading ? (
         <div className="flex justify-center items-center py-16">
@@ -260,7 +265,7 @@ export default function Search() {
       ) : (
         <div className="space-y-4">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-            Search Results ({activeTab === "policies" ? policies.length : schemes.length})
+            Search Results ({pagination?.total ?? (activeTab === "policies" ? policies.length : schemes.length)})
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -375,7 +380,9 @@ export default function Search() {
                 })}
           </div>
 
-          {((activeTab === "policies" && policies.length === 0) || (activeTab === "schemes" && schemes.length === 0)) && (
+          {pagination?.totalPages > 1 && <div className="flex justify-center gap-3"><button disabled={page<=1} onClick={()=>setPage(page-1)} className="rounded-lg border px-3 py-2 text-sm disabled:opacity-40">Previous</button><span className="py-2 text-sm">Page {page} of {pagination.totalPages}</span><button disabled={page>=pagination.totalPages} onClick={()=>setPage(page+1)} className="rounded-lg border px-3 py-2 text-sm disabled:opacity-40">Next</button></div>}
+
+      {((activeTab === "policies" && policies.length === 0) || (activeTab === "schemes" && schemes.length === 0)) && (
             <div className="bg-white rounded-2xl p-12 text-center border border-slate-100 shadow-sm">
               <p className="text-slate-400 font-medium">No results found matching your search parameters.</p>
             </div>

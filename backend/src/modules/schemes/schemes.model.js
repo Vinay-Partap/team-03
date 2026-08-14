@@ -7,6 +7,7 @@ const schemeSchema = new Schema(
     description: { type: String, required: true },
     category: { type: String, required: true, enum: require('./schemeCategories') },
     department: { type: String, required: true },
+    sector: { type: String, default: "" },
     state: { type: String, default: "Global" },
     status: {
       type: String,

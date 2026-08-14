@@ -3,7 +3,7 @@ const Notification = require("../notifications/notifications.model");
 
 class PoliciesService {
   async getPolicies(filter, user) {
-    const { category, department, state, ministry, publicationFrom, publicationTo, effectiveFrom, effectiveTo, sort, search, status, page, limit } = filter;
+    const { category, department, state, ministry, publicationFrom, publicationTo, effectiveFrom, effectiveTo, deadlineFrom, deadlineTo, sector, sort, search, status, page, limit } = filter;
     let query = {};
 
     if (user?.role === "admin") {
@@ -20,7 +20,9 @@ class PoliciesService {
     if (category) query.category = category;
     if (department) query.department = department;
     if (ministry) query.ministry = ministry;
+    if (sector) query.sector = sector;
     if (publicationFrom || publicationTo) query.publicationDate = { ...(publicationFrom && {$gte:new Date(publicationFrom)}), ...(publicationTo && {$lte:new Date(publicationTo)}) };
+    if (deadlineFrom || deadlineTo) query.deadline={...(deadlineFrom&&{$gte:new Date(deadlineFrom)}),...(deadlineTo&&{$lte:new Date(deadlineTo)})};
     if (effectiveFrom || effectiveTo) query.effectiveDate = { ...(effectiveFrom && {$gte:new Date(effectiveFrom)}), ...(effectiveTo && {$lte:new Date(effectiveTo)}) };
     if (state) {
       if (state.toLowerCase() === "global") {
@@ -40,7 +42,7 @@ class PoliciesService {
     const skip = page && limit ? (Number(page) - 1) * Number(limit) : 0;
     const maxLimit = limit ? Math.min(Number(limit), 100) : 25;
 
-    const [policies, total] = await Promise.all([policiesRepository.find(query, skip, maxLimit), policiesRepository.count(query)]);
+    const sortMap={newest:{createdAt:-1},oldest:{createdAt:1},updated:{updatedAt:-1},deadline:{deadline:1}}; const [policies, total] = await Promise.all([policiesRepository.find(query, skip, maxLimit, sortMap[sort] || sortMap.newest), policiesRepository.count(query)]);
     return { items: policies, pagination: { page: Number(page) || 1, limit: maxLimit, total, totalPages: Math.ceil(total / maxLimit) } };
   }
 

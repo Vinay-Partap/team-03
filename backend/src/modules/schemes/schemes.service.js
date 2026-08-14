@@ -3,7 +3,7 @@ const Notification = require("../notifications/notifications.model");
 
 class SchemesService {
   async getSchemes(filter, user) {
-    const { category, department, state, ministry, publicationFrom, publicationTo, effectiveFrom, effectiveTo, sort, search, status, page, limit } = filter;
+    const { category, department, state, ministry, publicationFrom, publicationTo, effectiveFrom, effectiveTo, deadlineFrom, deadlineTo, sector, sort, search, status, page, limit } = filter;
     let query = {};
 
     if (user?.role === "admin") { if (status) query.status = status;
@@ -33,7 +33,7 @@ class SchemesService {
     const skip = page && limit ? (Number(page) - 1) * Number(limit) : 0;
     const maxLimit = limit ? Math.min(Number(limit), 100) : 25;
 
-    const [schemes,total]=await Promise.all([schemesRepository.find(query,skip,maxLimit),schemesRepository.count(query)]); return {items:schemes,pagination:{page:Number(page)||1,limit:maxLimit,total,totalPages:Math.ceil(total/maxLimit)}};
+    const sortMap={newest:{createdAt:-1},oldest:{createdAt:1},updated:{updatedAt:-1},deadline:{deadline:1}}; const [schemes,total]=await Promise.all([schemesRepository.find(query,skip,maxLimit,sortMap[sort]||sortMap.newest),schemesRepository.count(query)]); return {items:schemes,pagination:{page:Number(page)||1,limit:maxLimit,total,totalPages:Math.ceil(total/maxLimit)}};
   }
 
   async getSchemeById(id, user) {

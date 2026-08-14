@@ -19,6 +19,7 @@ export default function Eligibility() {
 
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
+  const [summary, setSummary] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
 
   const loadProfile = () => {
@@ -65,7 +66,7 @@ export default function Eligibility() {
 
       const res = await policyService.checkEligibility(payload);
       if (res.success) {
-        setResults(res.results || []);
+        setResults(res.results || []); setSummary(res.summary || null);
         toast.success(`Evaluated schemes. Found matches.`);
       }
     } catch (err) {

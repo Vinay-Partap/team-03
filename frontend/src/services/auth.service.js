@@ -56,6 +56,14 @@ const authService = {
     return response.data;
   },
 
+  setupMfa: async () => (await API.post("/auth/mfa/setup")).data,
+  confirmMfa: async (code) => (await API.post("/auth/mfa/confirm", { code })).data,
+  verifyMfaLogin: async (userId, code) => {
+    const response = await API.post("/auth/mfa/login", { userId, code });
+    if (response.data.token) { sessionStorage.setItem("token", response.data.token); sessionStorage.setItem("refreshToken", response.data.refreshToken); sessionStorage.setItem("user", JSON.stringify(response.data.user)); }
+    return response.data;
+  },
+
   forgotPassword: async (email) => {
     const response = await API.post("/auth/forgot-password", { email });
     return response.data;

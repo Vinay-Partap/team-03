@@ -1,9 +1,7 @@
 import API from "../../services/api";
 import { useEffect, useState } from "react";
-import API from "../../services/api";
 import { useParams, Link } from "react-router-dom";
 import policyService from "../../services/policy.service";
-import API from "../../services/api";
 import { ArrowLeft, Calendar, FileText, Landmark, User, Award, CheckCircle } from "lucide-react";
 
 export default function PolicyDetails() {
@@ -111,6 +109,17 @@ export default function PolicyDetails() {
             <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{policy.applicationProcess}</p>
           </div>
         )}
+
+        <div className="grid grid-cols-1 gap-3 border-t border-slate-100 pt-5 text-sm text-slate-600 md:grid-cols-2">
+          {policy.ministry && <p><b>Ministry:</b> {policy.ministry}</p>}
+          {policy.officialReference && <p><b>Official Reference:</b> {policy.officialReference}</p>}
+          {policy.publicationDate && <p><b>Publication Date:</b> {new Date(policy.publicationDate).toLocaleDateString()}</p>}
+          {policy.effectiveDate && <p><b>Effective Date:</b> {new Date(policy.effectiveDate).toLocaleDateString()}</p>}
+          <p><b>Version:</b> {policy.version || 1}</p>
+          {policy.sourceUrl && <a className="font-semibold text-blue-600" href={policy.sourceUrl} target="_blank" rel="noreferrer">Official source</a>}
+        </div>
+        {policy.document?.name && <button onClick={async()=>{const r=await API.get(`/policies/${policy._id}/document`,{responseType:"blob"});window.open(URL.createObjectURL(r.data),"_blank")}} className="text-left text-sm font-bold text-blue-600">View official document: {policy.document.name}</button>}
+        {policy.versionHistory?.length > 0 && <div className="border-t border-slate-100 pt-5"><h2 className="font-bold text-slate-800">Version History</h2>{[...policy.versionHistory].reverse().map(v=><p key={v._id||v.version} className="mt-2 text-xs text-slate-500">v{v.version} · {v.summary || "Updated"} · {v.changedAt && new Date(v.changedAt).toLocaleString()}</p>)}</div>}
 
         {/* Workflow Approval Metadata */}
         <div className="pt-6 mt-6 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-500 bg-slate-50 p-4 rounded-2xl">

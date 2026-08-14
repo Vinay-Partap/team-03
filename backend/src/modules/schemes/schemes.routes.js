@@ -4,6 +4,8 @@ const {
   getSchemes,
   getSchemeById,
   createScheme,
+  uploadSchemeDocument,
+  getSchemeDocument,
   updateScheme,
   deleteScheme,
   submitSchemeForApproval,
@@ -12,14 +14,17 @@ const {
   archiveScheme,
   addSchemeUpdate,
 } = require("./schemes.controller");
+const upload = require("./schemes.upload");
 const { protect, optionalProtect, authorize } = require("../auth/auth.middleware");
 const { validatePolicyOrScheme, validateObjectId, validatePagination } = require("../../utils/validation");
 
 router.get("/", optionalProtect, validatePagination, getSchemes);
+router.get("/:id/document", optionalProtect, getSchemeDocument);
 router.get("/:id", optionalProtect, validateObjectId("id"), getSchemeById);
 
 // Official & Admin actions
 router.post("/", protect, authorize("admin", "official"), validatePolicyOrScheme, createScheme);
+router.post("/:id/document", protect, authorize("admin", "official"), upload.single("document"), uploadSchemeDocument);
 router.put("/:id", protect, authorize("admin", "official"), validateObjectId("id"), validatePolicyOrScheme, updateScheme);
 router.delete("/:id", protect, authorize("admin", "official"), validateObjectId("id"), deleteScheme);
 

@@ -3,19 +3,25 @@ const Notification = require("../notifications/notifications.model");
 
 class PoliciesService {
   async getPolicies(filter, user) {
-    const { category, department, state, search, status, page, limit } = filter;
+    const { category, department, state, ministry, publicationFrom, publicationTo, effectiveFrom, effectiveTo, sort, search, status, page, limit } = filter;
     let query = {};
 
-    if (user && ["admin", "official"].includes(user.role)) {
-      if (status) {
-        query.status = status;
-      }
+    if (user?.role === "admin") {
+      if (status) query.status = status;
+    } else if (user?.role === "official") {
+      const ownOrDepartment = [{ createdBy: user._id }];
+      if (user.department) ownOrDepartment.push({ department: user.department, status: "pending_approval" });
+      query.$and = [{ $or: [{ status: "approved" }, ...ownOrDepartment] }];
+      if (status) query.$and.push({ status });
     } else {
       query.status = "approved";
     }
 
     if (category) query.category = category;
     if (department) query.department = department;
+    if (ministry) query.ministry = ministry;
+    if (publicationFrom || publicationTo) query.publicationDate = { ...(publicationFrom && {$gte:new Date(publicationFrom)}), ...(publicationTo && {$lte:new Date(publicationTo)}) };
+    if (effectiveFrom || effectiveTo) query.effectiveDate = { ...(effectiveFrom && {$gte:new Date(effectiveFrom)}), ...(effectiveTo && {$lte:new Date(effectiveTo)}) };
     if (state) {
       if (state.toLowerCase() === "global") {
         query.state = "Global";
@@ -34,7 +40,8 @@ class PoliciesService {
     const skip = page && limit ? (Number(page) - 1) * Number(limit) : 0;
     const maxLimit = limit ? Math.min(Number(limit), 100) : 25;
 
-    return await policiesRepository.find(query, skip, maxLimit);
+    const [policies, total] = await Promise.all([policiesRepository.find(query, skip, maxLimit), policiesRepository.count(query)]);
+    return { items: policies, pagination: { page: Number(page) || 1, limit: maxLimit, total, totalPages: Math.ceil(total / maxLimit) } };
   }
 
   async getPolicyById(id, user) {
@@ -73,7 +80,10 @@ class PoliciesService {
       throw new Error("Unauthorized to edit this policy");
     }
 
-    return await policiesRepository.findByIdAndUpdate(id, updateData);
+    policy.version = (policy.version || 1) + 1;
+    policy.versionHistory.push({ version: policy.version, changedAt: new Date(), changedBy: user.id, summary: updateData.changeSummary || "Policy updated" });
+    Object.assign(policy, updateData); delete policy.changeSummary;
+    return await policiesRepository.save(policy);
   }
 
   async deletePolicy(id, user) {
@@ -89,6 +99,8 @@ class PoliciesService {
 
     return await policiesRepository.findByIdAndDelete(id);
   }
+
+  async attachDocument(id, file, user) { const policy=await policiesRepository.findById(id); if(!policy) throw new Error("Policy not found"); const creator=policy.createdBy?._id||policy.createdBy; if(user.role!=="admin"&&creator.toString()!==user.id) throw new Error("Unauthorized to upload policy document"); policy.document={ key:file.filename, name:file.originalname, mimeType:file.mimetype, size:file.size, uploadedAt:new Date(), uploadedBy:user.id }; return policiesRepository.save(policy); }
 
   async submitForApproval(id, user) {
     const policy = await policiesRepository.findById(id);
@@ -134,11 +146,13 @@ class PoliciesService {
     return await policiesRepository.save(policy);
   }
 
-  async archivePolicy(id) {
+  async restorePolicy(id, user) { const policy = await policiesRepository.findById(id); if (!policy) throw new Error("Policy not found"); if (user.role !== "admin" && (policy.createdBy?._id || policy.createdBy).toString() !== user.id) throw new Error("Unauthorized to restore this policy"); if (policy.status !== "archived") throw new Error("Only archived policies can be restored"); policy.status = "draft"; policy.archivedAt = null; policy.archivedBy = null; policy.archiveReason = ""; return policiesRepository.save(policy); }
+
+  async archivePolicy(id, user, reason = "") {
     const policy = await policiesRepository.findById(id);
     if (!policy) throw new Error("Policy not found");
 
-    policy.status = "archived";
+    policy.status = "archived"; policy.archivedAt = new Date(); policy.archivedBy = user.id; policy.archiveReason = reason;
     return await policiesRepository.save(policy);
   }
 }

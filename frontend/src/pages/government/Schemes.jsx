@@ -183,7 +183,7 @@ export default function Schemes() {
     }
   };
 
-  const categories = ["Healthcare", "Education", "Agriculture", "Finance", "Social Welfare", "Employment", "Housing"];
+  const categories = ["Scholarships", "Farmer Welfare", "Healthcare", "Housing", "Business Support", "Women Empowerment", "Senior Citizen Welfare", "Student Schemes", "Employment Programs", "Social SecurityHealthcare", "Education", "Agriculture", "Finance", "Social Welfare", "Employment", "Housing"];
 
   return (
     <div className="space-y-6">

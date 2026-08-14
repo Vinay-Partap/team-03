@@ -54,6 +54,7 @@ class SchemesService {
   }
 
   async createScheme(schemeData, user) {
+    const rules = schemeData.eligibilityRules || {}; if (rules.ageMin != null && rules.ageMax != null && Number(rules.ageMin) > Number(rules.ageMax)) throw new Error("Minimum age cannot exceed maximum age"); if (rules.incomeMax != null && Number(rules.incomeMax) < 0) throw new Error("Income limit cannot be negative");
     const department = user.role === "official" ? user.department : schemeData.department;
     if (!department) throw new Error("Government Officials must have an assigned department before creating content");
     return await schemesRepository.create({
@@ -74,16 +75,10 @@ class SchemesService {
       throw new Error("Unauthorized to edit this scheme");
     }
 
-    if (updateData.updateContent) {
-      if (!scheme.updates) scheme.updates = [];
-      scheme.updates.push({
-        content: updateData.updateContent,
-        date: new Date(),
-      });
-      delete updateData.updateContent;
-    }
-
-    return await schemesRepository.findByIdAndUpdate(id, updateData);
+    const rules = updateData.eligibilityRules || {}; if (rules.ageMin != null && rules.ageMax != null && Number(rules.ageMin) > Number(rules.ageMax)) throw new Error("Minimum age cannot exceed maximum age");
+    if (updateData.updateContent) { scheme.updates.push({ content: updateData.updateContent, date: new Date(), addedBy: user.id, type: updateData.updateType || "General Update" }); delete updateData.updateContent; delete updateData.updateType; }
+    scheme.version = (scheme.version || 1) + 1; scheme.versionHistory.push({ version:scheme.version, changedAt:new Date(), changedBy:user.id, summary:updateData.changeSummary || "Scheme updated" }); delete updateData.changeSummary;
+    Object.assign(scheme, updateData); return await schemesRepository.save(scheme);
   }
 
   async deleteScheme(id, user) {
@@ -99,6 +94,8 @@ class SchemesService {
 
     return await schemesRepository.findByIdAndDelete(id);
   }
+
+  async attachDocument(id,file,user) { const scheme=await schemesRepository.findById(id); if(!scheme) throw new Error("Scheme not found"); const creator=scheme.createdBy?._id||scheme.createdBy; if(user.role!=="admin"&&creator.toString()!==user.id) throw new Error("Unauthorized to upload scheme document"); scheme.document={key:file.filename,name:file.originalname,mimeType:file.mimetype,size:file.size,uploadedAt:new Date(),uploadedBy:user.id}; return schemesRepository.save(scheme); }
 
   async submitForApproval(id, user) {
     const scheme = await schemesRepository.findById(id);
@@ -150,11 +147,11 @@ class SchemesService {
     return await schemesRepository.save(scheme);
   }
 
-  async addSchemeUpdate(id, content) {
+  async addSchemeUpdate(id, content, user, type = "General Update") {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
 
-    scheme.updates.push({ content });
+    scheme.updates.push({ content, addedBy:user.id, type });
     return await schemesRepository.save(scheme);
   }
 }

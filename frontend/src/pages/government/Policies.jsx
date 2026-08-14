@@ -20,6 +20,7 @@ export default function Policies() {
   const [benefits, setBenefits] = useState("");
   const [applicationProcess, setApplicationProcess] = useState("");
   const [deadline, setDeadline] = useState("");
+  const [documentFile, setDocumentFile] = useState(null);
 
   const fetchPolicies = async () => {
     setLoading(true);
@@ -48,6 +49,7 @@ export default function Policies() {
     setBenefits("");
     setApplicationProcess("");
     setDeadline("");
+    setDocumentFile(null);
     setShowModal(true);
   };
 
@@ -82,7 +84,8 @@ export default function Policies() {
 
     try {
       if (editMode) {
-        await policyService.updatePolicy(targetId, payload);
+        const result = await policyService.updatePolicy(targetId, payload);
+        if (documentFile) await policyService.uploadPolicyDocument(targetId, documentFile);
         toast.success("Policy updated successfully");
       } else {
         await policyService.createPolicy(payload);
@@ -112,7 +115,8 @@ export default function Policies() {
         await policyService.submitPolicyApproval(id);
         toast.success("Submitted policy for official approval");
       } else if (action === "archive") {
-        await policyService.archivePolicy(id);
+        const reason = window.prompt("Archive reason (optional):") || "";
+      await policyService.archivePolicy(id, reason);
         toast.success("Policy directive archived");
       }
       fetchPolicies();
@@ -121,7 +125,7 @@ export default function Policies() {
     }
   };
 
-  const categories = ["Healthcare", "Education", "Agriculture", "Finance", "Social Welfare", "Employment", "Housing"];
+  const categories = ["Education", "Healthcare", "Agriculture", "Employment", "Finance", "Women & Child Welfare", "Housing", "Environment", "Digital Governance", "Infrastructure"];
 
   return (
     <div className="space-y-6">
@@ -203,7 +207,8 @@ export default function Policies() {
                             Submit
                           </button>
                         )}
-                        {item.status === "approved" && (
+                        {item.status === "archived" && <button onClick={async()=>{if(window.confirm("Restore this policy to draft?")){await policyService.restorePolicy(item._id);fetchPolicies();toast.success("Policy restored to draft")}}} className="text-xs font-bold text-emerald-600">Restore</button>}
+                  {item.status === "approved" && (
                           <button
                             onClick={() => handleWorkflow(item._id, "archive")}
                             className="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold p-1 rounded-lg"
@@ -272,6 +277,7 @@ export default function Policies() {
                 ></textarea>
               </div>
 
+              <div><label className="block text-slate-400 mb-1">Official Document (PDF/DOC/DOCX, optional)</label><input type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e)=>setDocumentFile(e.target.files?.[0] || null)} className="w-full text-xs text-slate-600" /></div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-slate-400 mb-1">Category</label>

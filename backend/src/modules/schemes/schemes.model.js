@@ -5,7 +5,7 @@ const schemeSchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    category: { type: String, required: true },
+    category: { type: String, required: true, enum: require('./schemeCategories') },
     department: { type: String, required: true },
     state: { type: String, default: "Global" },
     status: {
@@ -29,12 +29,16 @@ const schemeSchema = new Schema(
     updates: [
       {
         content: { type: String, required: true },
+        type: { type: String, default: "General Update" },
+        addedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
         date: { type: Date, default: Date.now },
       },
     ],
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     versionHistory: [{ version: Number, changedAt: Date, changedBy: { type: Schema.Types.ObjectId, ref: "User" }, summary: String }],
     approvedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    archivedAt: { type: Date, default: null }, archivedBy: { type: Schema.Types.ObjectId, ref: "User", default: null }, archiveReason: { type: String, default: "" },
+    version: { type: Number, default: 1 }, versionHistory: [{ version:Number, changedAt:Date, changedBy:{type:Schema.Types.ObjectId,ref:"User"}, summary:String }],
     reviewedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
     reviewedAt: { type: Date, default: null },
     reviewDecision: { type: String, enum: ["approved", "rejected", null], default: null },

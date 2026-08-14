@@ -5,7 +5,7 @@ const policySchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    category: { type: String, required: true }, // Healthcare, Education, Agriculture, etc.
+    category: { type: String, required: true, enum: require('./policyCategories') },
     department: { type: String, required: true }, // Finance, Health, Home Affairs, etc.
     state: { type: String, default: "Global" }, // "Global" or state name
     status: {
@@ -23,6 +23,9 @@ const policySchema = new Schema(
     benefits: { type: String, default: "" },
     applicationProcess: { type: String, default: "" },
     deadline: { type: Date, default: null },
+    archiveReason: { type: String, default: "" },
+    archivedAt: { type: Date, default: null },
+    archivedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
     sourceUrl: { type: String, default: "" },
     officialReference: { type: String, default: "" },
     ministry: { type: String, default: "" },

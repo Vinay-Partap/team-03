@@ -1,10 +1,11 @@
 const policiesService = require("./policies.service");
+const path = require("path");
 const { logAction } = require("../auditLogs/auditLogs.service");
 
 const getPolicies = async (req, res) => {
   try {
     const policies = await policiesService.getPolicies(req.query, req.user);
-    res.status(200).json({ success: true, policies });
+    res.status(200).json({ success: true, policies: policies.items, pagination: policies.pagination });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -18,6 +19,8 @@ const getPolicyById = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+const getPolicyDocument = async (req,res) => { try { const policy=await policiesService.getPolicyById(req.params.id, req.user); if(!policy.document?.key) return res.status(404).json({success:false,message:"No document attached"}); await logAction({action:"POLICY_DOCUMENT_DOWNLOAD",userId:req.user?._id||null,userRole:req.user?.role||"guest",targetId:policy._id,details:`Downloaded policy document: ${policy.document.name}`,ipAddress:req.ip}); res.download(path.join(process.cwd(),"uploads","policies",policy.document.key), policy.document.name); } catch(e) { res.status(e.message.includes("Unauthorized")?403:404).json({success:false,message:e.message}); } };
 
 const createPolicy = async (req, res) => {
   try {
@@ -78,6 +81,8 @@ const deletePolicy = async (req, res) => {
   }
 };
 
+const uploadPolicyDocument = async (req,res) => { try { if(!req.file) return res.status(400).json({success:false,message:"A policy document is required"}); const policy=await policiesService.attachDocument(req.params.id,req.file,req.user); await logAction({ action:"POLICY_DOCUMENT_UPLOAD", userId:req.user._id, userRole:req.user.role, targetId:policy._id, details:`Uploaded policy document: ${req.file.originalname}`, ipAddress:req.ip }); res.json({success:true,policy}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
+
 const submitPolicyForApproval = async (req, res) => {
   try {
     const policy = await policiesService.submitForApproval(req.params.id, req.user);
@@ -112,6 +117,7 @@ const approvePolicy = async (req, res) => {
       ipAddress: req.ip || "127.0.0.1",
     });
 
+    await logAction({action:"POLICY_REVIEW_DECISION",userId:req.user._id,userRole:req.user.role,targetId:policy._id,details:`Approved policy: ${policy.title}`,ipAddress:req.ip});
     res.status(200).json({ success: true, message: "Policy approved and published", policy });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -137,9 +143,11 @@ const rejectPolicy = async (req, res) => {
   }
 };
 
+const restorePolicy = async (req,res) => { try { const policy=await policiesService.restorePolicy(req.params.id,req.user); await logAction({action:"POLICY_RESTORE",userId:req.user._id,userRole:req.user.role,targetId:policy._id,details:"Restored archived policy",ipAddress:req.ip}); res.json({success:true,message:"Policy restored to draft",policy}); } catch(e) { res.status(400).json({success:false,message:e.message}); } };
+
 const archivePolicy = async (req, res) => {
   try {
-    const policy = await policiesService.archivePolicy(req.params.id);
+    const policy = await policiesService.archivePolicy(req.params.id, req.user, req.body.reason);
 
     await logAction({
       action: "POLICY_ARCHIVE",
@@ -150,6 +158,7 @@ const archivePolicy = async (req, res) => {
       ipAddress: req.ip || "127.0.0.1",
     });
 
+    await logAction({action:"POLICY_ARCHIVE",userId:req.user._id,userRole:req.user.role,targetId:policy._id,details:`Archived policy: ${policy.title}`,ipAddress:req.ip});
     res.status(200).json({ success: true, message: "Policy archived successfully", policy });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -160,10 +169,13 @@ module.exports = {
   getPolicies,
   getPolicyById,
   createPolicy,
+  getPolicyDocument,
   updatePolicy,
   deletePolicy,
   submitPolicyForApproval,
+  uploadPolicyDocument,
   approvePolicy,
   rejectPolicy,
   archivePolicy,
+  restorePolicy,
 };

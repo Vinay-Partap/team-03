@@ -10,6 +10,8 @@ class PoliciesRepository {
       .populate("approvedBy", "name email role");
   }
 
+  async count(query) { return Policy.countDocuments(query); }
+
   async findById(id) {
     return await Policy.findById(id)
       .populate("createdBy", "name email role")

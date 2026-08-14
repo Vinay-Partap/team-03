@@ -95,6 +95,8 @@ class SchemesService {
     return await schemesRepository.findByIdAndDelete(id);
   }
 
+  async attachDocument(id,file,user) { const scheme=await schemesRepository.findById(id); if(!scheme) throw new Error("Scheme not found"); const creator=scheme.createdBy?._id||scheme.createdBy; if(user.role!=="admin"&&creator.toString()!==user.id) throw new Error("Unauthorized to upload scheme document"); scheme.document={key:file.filename,name:file.originalname,mimeType:file.mimetype,size:file.size,uploadedAt:new Date(),uploadedBy:user.id}; return schemesRepository.save(scheme); }
+
   async submitForApproval(id, user) {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");

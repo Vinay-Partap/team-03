@@ -105,6 +105,9 @@ const unsaveScheme = async (req, res) => {
   }
 };
 
+const exportPersonalData = async (req,res) => { try { res.json({success:true,data:await usersService.exportPersonalData(req.user.id)}); } catch(e) { res.status(500).json({success:false,message:e.message}); } };
+const deleteSensitiveData = async (req,res) => { try { await usersService.deleteSensitiveData(req.user.id); res.json({success:true,message:"Sensitive eligibility data deleted"}); } catch(e) { res.status(500).json({success:false,message:e.message}); } };
+
 const getSavedItems = async (req, res) => {
   console.log("[GET /api/users/saved] request received");
   console.log("[GET /api/users/saved] req.user", req.user);
@@ -162,6 +165,8 @@ module.exports = {
   saveScheme,
   unsaveScheme,
   getSavedItems,
+  exportPersonalData,
+  deleteSensitiveData,
   getSearchHistory,
   addSearchQuery,
   clearSearchHistory,

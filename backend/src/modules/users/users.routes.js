@@ -11,6 +11,8 @@ const {
   saveScheme,
   unsaveScheme,
   getSavedItems,
+  exportPersonalData,
+  deleteSensitiveData,
   getSearchHistory,
   addSearchQuery,
   clearSearchHistory,
@@ -23,6 +25,9 @@ router.put("/role", protect, authorize("admin"), updateUserRole);
 router.get("/:id/status-history", protect, authorize("admin"), getAccountStatusHistory);
 router.patch("/:id/status", protect, authorize("admin"), updateAccountStatus);
 router.delete("/:id", protect, authorize("admin"), deleteUser);
+
+router.get("/me/export", protect, exportPersonalData);
+router.delete("/me/privacy-data", protect, deleteSensitiveData);
 
 // Saved items
 router.get("/saved", protect, getSavedItems);

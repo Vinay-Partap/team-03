@@ -12,7 +12,7 @@ describe("Schemes API Integration", () => {
 
   beforeAll(async () => {
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(MONGODB_URI);
+      await mongoose.connect(global.__MONGO_URI || MONGODB_URI);
     }
     await User.deleteMany({ email: "scheme_test@govintel.gov" });
     await Scheme.deleteMany({ title: "Scheme Integration Test Title" });

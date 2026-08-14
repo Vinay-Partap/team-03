@@ -8,7 +8,7 @@ const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/policy
 describe("Auth API Integration", () => {
   beforeAll(async () => {
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(MONGODB_URI);
+      await mongoose.connect(global.__MONGO_URI || MONGODB_URI);
     }
     await User.deleteMany({ email: "test_integration@govintel.gov" });
   });

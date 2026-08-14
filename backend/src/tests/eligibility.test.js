@@ -11,7 +11,7 @@ describe("Eligibility API Integration", () => {
 
   beforeAll(async () => {
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(MONGODB_URI);
+      await mongoose.connect(global.__MONGO_URI || MONGODB_URI);
     }
     await User.deleteMany({ email: "eligibility_test@govintel.gov" });
 

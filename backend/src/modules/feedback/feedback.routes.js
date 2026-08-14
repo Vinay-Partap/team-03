@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { submitFeedback, getFeedbacks, resolveFeedback, updateTicket, addReply, getReplies, getAssignees } = require("./feedback.controller");
+const { submitFeedback, getFeedbacks, resolveFeedback, updateTicket, addReply, getReplies, getAssignees, getMyTickets } = require("./feedback.controller");
 const { protect, optionalProtect, authorize } = require("../auth/auth.middleware");
 
 // Submit feedback (Guests & Registered Users)

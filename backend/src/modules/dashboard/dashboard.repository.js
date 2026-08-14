@@ -3,6 +3,7 @@ const Policy = require("../policies/policies.model");
 const Scheme = require("../schemes/schemes.model");
 const AuditLog = require("../auditLogs/auditLogs.model");
 const Notification = require("../notifications/notifications.model");
+const Application = require("../applications/applications.model");
 const Feedback = require("../feedback/feedback.model");
 
 class DashboardRepository {
@@ -57,6 +58,10 @@ class DashboardRepository {
 
     const totalPolicies = await Policy.countDocuments();
     const totalSchemes = await Scheme.countDocuments();
+    const policyStatus = await Policy.aggregate([{ $group:{_id:"$status",count:{$sum:1}} }]);
+    const schemeStatus = await Scheme.aggregate([{ $group:{_id:"$status",count:{$sum:1}} }]);
+    const accountStatus = await User.aggregate([{ $group:{_id:"$accountStatus",count:{$sum:1}} }]);
+    const notificationStats = { total:await Notification.countDocuments(), unread:await Notification.countDocuments({read:false}) };
 
     const feedbacksCount = await Feedback.countDocuments();
     const unresolvedFeedbacks = await Feedback.countDocuments({ status: "open" });
@@ -68,7 +73,7 @@ class DashboardRepository {
 
     return {
       users: { total: totalUsers, admin: adminsCount, official: officialsCount, citizen: citizensCount },
-      system: { policies: totalPolicies, schemes: totalSchemes, feedbacks: feedbacksCount, openIssues: unresolvedFeedbacks },
+      system: { policies: totalPolicies, schemes: totalSchemes, feedbacks: feedbacksCount, openIssues: unresolvedFeedbacks, policyStatus, schemeStatus, accountStatus, notificationStats },
       recentLogs,
     };
   }

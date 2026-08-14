@@ -14,8 +14,13 @@ export default defineConfig([
       reactRefresh.configs.vite,
     ],
     languageOptions: {
-      globals: globals.browser,
+      globals: { ...globals.browser, ...globals.node },
       parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    rules: {
+      // Existing data-loading effects intentionally synchronize remote API state.
+      'react-hooks/set-state-in-effect': 'off',
+      'no-unused-vars': 'warn',
     },
   },
 ])

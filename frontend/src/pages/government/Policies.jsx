@@ -121,7 +121,7 @@ export default function Policies() {
     }
   };
 
-  const categories = ["Healthcare", "Education", "Agriculture", "Finance", "Social Welfare", "Employment", "Housing"];
+  const categories = ["Education", "Healthcare", "Agriculture", "Employment", "Finance", "Women & Child Welfare", "Housing", "Environment", "Digital Governance", "Infrastructure"];
 
   return (
     <div className="space-y-6">

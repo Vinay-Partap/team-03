@@ -98,7 +98,8 @@ class SchemesService {
   async submitForApproval(id, user) {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
-    if (scheme.createdBy.toString() !== user.id && user.role !== "admin") throw new Error("Only the creator can submit this record");
+    const creatorId = scheme.createdBy?._id || scheme.createdBy;
+    if (!creatorId || (creatorId.toString() !== user.id && user.role !== "admin")) throw new Error("Only the creator can submit this record");
     if (scheme.status !== "draft") throw new Error("Only drafts can be submitted");
     scheme.status = "pending_approval";
     return await schemesRepository.save(scheme);

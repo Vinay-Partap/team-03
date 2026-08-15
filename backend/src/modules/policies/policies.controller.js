@@ -120,7 +120,9 @@ const approvePolicy = async (req, res) => {
     await logAction({action:"POLICY_REVIEW_DECISION",userId:req.user._id,userRole:req.user.role,targetId:policy._id,details:`Approved policy: ${policy.title}`,ipAddress:req.ip});
     res.status(200).json({ success: true, message: "Policy approved and published", policy });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("[policy-approve]", error.message);
+    const status = error.message.includes("cannot approve") || error.message.includes("may only review") ? 403 : (error.message === "Policy not found" ? 404 : 500);
+    res.status(status).json({ success: false, message: error.message });
   }
 };
 

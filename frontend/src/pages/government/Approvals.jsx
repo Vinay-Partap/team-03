@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import policyService from "../../services/policy.service";
 import { toast, Toaster } from "react-hot-toast";
+import { useSelector } from "react-redux";
 import { CheckSquare, Check, X, FileText, Award, Landmark, User, Calendar } from "lucide-react";
 
 export default function Approvals() {
+  const { user } = useSelector((state) => state.auth);
   const [policies, setPolicies] = useState([]);
   const [schemes, setSchemes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -125,14 +127,14 @@ export default function Approvals() {
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
                   <button
-                    onClick={() => handleDecision(item._id, "approve", true)}
+                    disabled={item.createdBy?._id === user?._id} title={item.createdBy?._id === user?._id ? "You cannot approve your own policy" : ""} onClick={() => handleDecision(item._id, "approve", true)}
                     className="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm cursor-pointer"
                   >
                     <Check className="h-4 w-4" />
                     <span>Approve</span>
                   </button>
                   <button
-                    onClick={() => handleDecision(item._id, "reject", true)}
+                    disabled={item.createdBy?._id === user?._id} onClick={() => handleDecision(item._id, "reject", true)}
                     className="flex-1 md:flex-none bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/50 font-bold px-4 py-2 rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer"
                   >
                     <X className="h-4 w-4" />

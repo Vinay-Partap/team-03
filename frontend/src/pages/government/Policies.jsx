@@ -19,7 +19,7 @@ export default function Policies() {
   const [state, setState] = useState("");
   const [benefits, setBenefits] = useState("");
   const [applicationProcess, setApplicationProcess] = useState("");
-  const [deadline, setDeadline] = useState("");
+  const [deadline, setDeadline] = useState(""); const [ministry,setMinistry]=useState(""); const [sector,setSector]=useState(""); const [officialReference,setOfficialReference]=useState(""); const [publicationDate,setPublicationDate]=useState(""); const [effectiveDate,setEffectiveDate]=useState("");
   const [documentFile, setDocumentFile] = useState(null);
 
   const fetchPolicies = async () => {
@@ -48,7 +48,7 @@ export default function Policies() {
     setState("");
     setBenefits("");
     setApplicationProcess("");
-    setDeadline("");
+    setDeadline(""); setMinistry("");setSector("");setOfficialReference("");setPublicationDate("");setEffectiveDate("");
     setDocumentFile(null);
     setShowModal(true);
   };
@@ -79,7 +79,7 @@ export default function Policies() {
       state,
       benefits,
       applicationProcess,
-      deadline: deadline || null,
+      deadline: deadline || null, ministry, sector, officialReference, publicationDate: publicationDate || null, effectiveDate: effectiveDate || null,
     };
 
     try {
@@ -278,6 +278,7 @@ export default function Policies() {
               </div>
 
               <div><label className="block text-slate-400 mb-1">Official Document (PDF/DOC/DOCX, optional)</label><input type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e)=>setDocumentFile(e.target.files?.[0] || null)} className="w-full text-xs text-slate-600" /></div>
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-4"><input value={ministry} onChange={e=>setMinistry(e.target.value)} placeholder="Ministry" className="rounded-xl border bg-slate-50 p-2 text-xs"/><input value={sector} onChange={e=>setSector(e.target.value)} placeholder="Sector" className="rounded-xl border bg-slate-50 p-2 text-xs"/><input value={officialReference} onChange={e=>setOfficialReference(e.target.value)} placeholder="Official reference" className="rounded-xl border bg-slate-50 p-2 text-xs"/><input type="date" value={publicationDate} onChange={e=>setPublicationDate(e.target.value)} className="rounded-xl border bg-slate-50 p-2 text-xs"/><input type="date" value={effectiveDate} onChange={e=>setEffectiveDate(e.target.value)} className="rounded-xl border bg-slate-50 p-2 text-xs"/></div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-slate-400 mb-1">Category</label>

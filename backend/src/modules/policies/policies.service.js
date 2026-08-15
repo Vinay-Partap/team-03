@@ -9,7 +9,7 @@ class PoliciesService {
     if (user?.role === "admin") {
       if (status) query.status = status;
     } else if (user?.role === "official") {
-      const ownOrDepartment = [{ createdBy: user._id }];
+      const ownOrDepartment = [{ createdBy: user._id }, { status: "pending_approval", state: "Global" }];
       if (user.department) ownOrDepartment.push({ department: user.department, status: "pending_approval" });
       query.$and = [{ $or: [{ status: "approved" }, ...ownOrDepartment] }];
       if (status) query.$and.push({ status });

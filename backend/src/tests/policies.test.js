@@ -22,6 +22,7 @@ describe("Policies API Integration", () => {
       email: "policy_test@govintel.gov",
       password: "Password123",
       role: "official",
+      department: "Department of Power",
     });
 
     const loginRes = await request(app)
@@ -46,7 +47,7 @@ describe("Policies API Integration", () => {
       .send({
         title: "Policy Integration Test Title",
         description: "Integration test description context info details.",
-        category: "Energy",
+        category: "Infrastructure",
         department: "Department of Power",
         state: "Global",
       });

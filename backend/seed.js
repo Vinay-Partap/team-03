@@ -36,6 +36,7 @@ const seedData = async () => {
       email: "official@govintel.gov",
       password: "Password123",
       role: "official",
+      department: "Ministry of Renewable Energy",
       profile: {},
     });
 

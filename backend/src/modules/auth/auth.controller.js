@@ -23,6 +23,7 @@ const register = async (req, res) => {
         email: user.email,
         role: user.role,
         profile: user.profile,
+        department: user.department, officialProfile: user.officialProfile, organizationProfile: user.organizationProfile, researcherProfile: user.researcherProfile, notificationPreferences: user.notificationPreferences,
       },
     });
   } catch (error) {
@@ -92,7 +93,7 @@ const updateProfile = async (req, res) => {
         name: updatedUser.name,
         email: updatedUser.email,
         role: updatedUser.role,
-        profile: updatedUser.profile,
+        profile: updatedUser.profile, department: updatedUser.department, officialProfile: updatedUser.officialProfile, organizationProfile: updatedUser.organizationProfile, researcherProfile: updatedUser.researcherProfile, notificationPreferences: updatedUser.notificationPreferences,
         savedPolicies: updatedUser.savedPolicies,
         savedSchemes: updatedUser.savedSchemes,
       },

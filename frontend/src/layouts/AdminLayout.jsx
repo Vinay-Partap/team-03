@@ -37,6 +37,7 @@ export default function AdminLayout() {
     { name: "Audit Logs", path: "/admin/logs", icon: Database },
     { name: "System Policies", path: "/admin/policies", icon: FileText },
     { name: "System Schemes", path: "/admin/schemes", icon: Award },
+    { name: "Approval Workflow", path: "/admin/approvals", icon: FileText },
     { name: "Citizen Support", path: "/admin/feedback", icon: MessageSquare },
     { name: "My Profile", path: "/admin/profile", icon: User },
   ];

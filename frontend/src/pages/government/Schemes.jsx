@@ -20,21 +20,21 @@ export default function Schemes() {
   // Base fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("Healthcare");
-  const [department, setDepartment] = useState("Department of Health");
-  const [state, setState] = useState("Global");
+  const [category, setCategory] = useState("");
+  const [department, setDepartment] = useState("");
+  const [state, setState] = useState("");
   const [benefits, setBenefits] = useState("");
   const [applicationProcess, setApplicationProcess] = useState("");
 
   // Eligibility Rules
-  const [ageMin, setAgeMin] = useState("0");
-  const [ageMax, setAgeMax] = useState("120");
-  const [gender, setGender] = useState("All");
+  const [ageMin, setAgeMin] = useState("");
+  const [ageMax, setAgeMax] = useState("");
+  const [gender, setGender] = useState("");
   const [incomeMax, setIncomeMax] = useState("");
-  const [ruleState, setRuleState] = useState("All");
-  const [ruleCategory, setRuleCategory] = useState("All");
-  const [occupation, setOccupation] = useState("All");
-  const [education, setEducation] = useState("All");
+  const [ruleState, setRuleState] = useState("");
+  const [ruleCategory, setRuleCategory] = useState("");
+  const [occupation, setOccupation] = useState("");
+  const [education, setEducation] = useState("");
   const [disabilityRequired, setDisabilityRequired] = useState(false);
 
   const fetchSchemes = async () => {
@@ -58,8 +58,8 @@ export default function Schemes() {
     setTitle("");
     setDescription("");
     setCategory("Healthcare");
-    setDepartment("Department of Health");
-    setState("Global");
+    setDepartment("");
+    setState("");
     setBenefits("");
     setApplicationProcess("");
 
@@ -340,7 +340,7 @@ export default function Schemes() {
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold"
                   >
-                    {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+                    <option value="" disabled>Select category</option>{categories.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
               </div>
@@ -353,7 +353,7 @@ export default function Schemes() {
                     required
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="e.g. Department of Agriculture"
                   />
                 </div>
                 <div>
@@ -459,6 +459,7 @@ export default function Schemes() {
                       className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg"
                     />
                   </div>
+                  <div><label className="block text-slate-400 mb-1">Education Requirement</label><input type="text" value={education} onChange={(e)=>setEducation(e.target.value)} className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg" placeholder="All education levels" /></div>
                   <div className="flex items-center gap-2 pt-5">
                     <input
                       type="checkbox"

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
 const User = require("./src/modules/users/users.model");
@@ -23,13 +22,11 @@ const seedData = async () => {
     await Feedback.deleteMany({});
 
     console.log("Creating default users...");
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash("Password123", salt);
 
     const admin = await User.create({
       name: "GovIntel Administrator",
       email: "admin@govintel.gov",
-      password: hashedPassword,
+      password: "Password123",
       role: "admin",
       profile: {},
     });
@@ -37,7 +34,7 @@ const seedData = async () => {
     const official = await User.create({
       name: "State Official",
       email: "official@govintel.gov",
-      password: hashedPassword,
+      password: "Password123",
       role: "official",
       profile: {},
     });
@@ -45,7 +42,7 @@ const seedData = async () => {
     const citizen = await User.create({
       name: "Ramesh Kumar",
       email: "citizen@govintel.gov",
-      password: hashedPassword,
+      password: "Password123",
       role: "citizen",
       profile: {
         age: 28,

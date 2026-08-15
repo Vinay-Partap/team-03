@@ -77,7 +77,7 @@ const seedData = async () => {
     const policy2 = await Policy.create({
       title: "State Green Hydrogen Initiative",
       description: "Promoting carbon-neutral energy production through sustainable state grants to local research units.",
-      category: "Energy",
+      category: "Environment",
       department: "Ministry of Renewable Energy",
       state: "Global",
       status: "pending_approval",
@@ -91,7 +91,7 @@ const seedData = async () => {
     const scheme1 = await Scheme.create({
       title: "PM Agricultural Support Scheme (Kisan Nidhi)",
       description: "Direct annual financial assistance to active farmers with small and marginal land holdings.",
-      category: "Agriculture",
+      category: "Farmer Welfare",
       department: "Ministry of Agriculture",
       state: "All",
       status: "approved",
@@ -115,7 +115,7 @@ const seedData = async () => {
     const scheme2 = await Scheme.create({
       title: "State Youth Higher Education Scholarship",
       description: "Educational scholarship support for students pursuing technical and engineering degrees.",
-      category: "Education",
+      category: "Scholarships",
       department: "Ministry of Education",
       state: "Bihar",
       status: "approved",

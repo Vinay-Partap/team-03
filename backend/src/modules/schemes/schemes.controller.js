@@ -97,7 +97,9 @@ const submitSchemeForApproval = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Scheme submitted for approval", scheme });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("[scheme-submit]", error.message);
+    const status = error.message.includes("creator") || error.message.includes("draft") ? 403 : (error.message === "Scheme not found" ? 404 : 500);
+    res.status(status).json({ success: false, message: error.message });
   }
 };
 

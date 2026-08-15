@@ -7,7 +7,7 @@ class SchemesService {
     let query = {};
 
     if (user?.role === "admin") { if (status) query.status = status;
-    } else if (user?.role === "official") { const scoped=[{createdBy:user._id}]; if(user.department) scoped.push({department:user.department,status:"pending_approval"}); query.$and=[{$or:[{status:"approved"},...scoped]}]; if(status) query.$and.push({status});
+    } else if (user?.role === "official") { const scoped=[{createdBy:user._id},{ status:"pending_approval", state:"Global" }]; if(user.department) scoped.push({department:user.department,status:"pending_approval"}); query.$and=[{$or:[{status:"approved"},...scoped]}]; if(status) query.$and.push({status});
     } else {
       query.status = "approved";
     }
@@ -108,7 +108,7 @@ class SchemesService {
   async approveScheme(id, reviewer) {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
-    if (reviewer.role === "official" && reviewer.department !== scheme.department) throw new Error("Officials may only review records in their assigned department");
+    if (reviewer.role === "official" && scheme.department !== "Global" && reviewer.department !== scheme.department) throw new Error("Officials may only review records in their assigned department");
     if (scheme.status !== "pending_approval") throw new Error("Only submitted records can be approved");
     if (scheme.createdBy?._id?.toString() === reviewer.id.toString() || scheme.createdBy?.toString() === reviewer.id.toString()) throw new Error("A creator cannot approve their own scheme");
     scheme.status = "approved";
@@ -125,7 +125,7 @@ class SchemesService {
   async rejectScheme(id, reviewer, reason = "") {
     const scheme = await schemesRepository.findById(id);
     if (!scheme) throw new Error("Scheme not found");
-    if (reviewer.role === "official" && reviewer.department !== scheme.department) throw new Error("Officials may only review records in their assigned department");
+    if (reviewer.role === "official" && scheme.department !== "Global" && reviewer.department !== scheme.department) throw new Error("Officials may only review records in their assigned department");
     if (scheme.status !== "pending_approval") throw new Error("Only submitted records can be rejected");
     const creatorId = scheme.createdBy?._id || scheme.createdBy;
     if (!creatorId || creatorId.toString() === reviewer.id.toString()) throw new Error("A creator cannot reject their own scheme");

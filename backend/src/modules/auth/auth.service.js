@@ -21,7 +21,7 @@ class AuthService {
   async registerUser({ name, email, password, role, profile = {} }) {
     const normalizedEmail = String(email).trim().toLowerCase();
     if (await authRepository.findByEmail(normalizedEmail)) throw new Error('An account with this email already exists');
-    const selfServiceRoles = ['citizen', 'researcher', 'organization', 'official'];
+    const selfServiceRoles = ['citizen', 'researcher', 'organization', 'official', 'guest'];
     const safeRole = selfServiceRoles.includes(role) ? role : 'citizen';
     const pendingOfficial = safeRole === 'official';
     const user = await authRepository.createUser({ name: String(name).trim(), email: normalizedEmail, password, role: safeRole, profile, isActive: !pendingOfficial, accountStatus: pendingOfficial ? 'pending_verification' : 'active' });

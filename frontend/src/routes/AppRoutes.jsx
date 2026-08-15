@@ -112,6 +112,7 @@ export default function AppRoutes() {
           {/* Re-use official management screens under admin path */}
           <Route path="/admin/policies" element={<GovPolicies />} />
           <Route path="/admin/schemes" element={<GovSchemes />} />
+          <Route path="/admin/approvals" element={<GovApprovals />} />
           <Route path="/admin/feedback" element={<GovFeedback />} />
           <Route path="/admin/profile" element={<Profile />} />
         </Route>

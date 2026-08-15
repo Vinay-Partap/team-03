@@ -33,6 +33,8 @@ export default function Approvals() {
   }, [activeType]);
 
   const handleDecision = async (id, action, isPolicy) => {
+    const label = isPolicy ? "policy" : "scheme";
+    if (action === "approve" && !window.confirm(`Approve and publish this ${label}?`)) return;
     try {
       if (isPolicy) {
         if (action === "approve") {
@@ -55,7 +57,7 @@ export default function Approvals() {
       }
       fetchPending();
     } catch (e) {
-      toast.error("Failed to update verification status");
+      toast.error(e.response?.data?.message || "Failed to update verification status");
     }
   };
 
@@ -127,14 +129,14 @@ export default function Approvals() {
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
                   <button
-                    disabled={item.createdBy?._id === user?._id} title={item.createdBy?._id === user?._id ? "You cannot approve your own policy" : ""} onClick={() => handleDecision(item._id, "approve", true)}
+                    disabled={String(item.createdBy?._id || item.createdBy || "") === String(user?._id || "")} title={String(item.createdBy?._id || item.createdBy || "") === String(user?._id || "") ? "You cannot approve your own policy" : ""} onClick={() => handleDecision(item._id, "approve", true)}
                     className="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm cursor-pointer"
                   >
                     <Check className="h-4 w-4" />
                     <span>Approve</span>
                   </button>
                   <button
-                    disabled={item.createdBy?._id === user?._id} onClick={() => handleDecision(item._id, "reject", true)}
+                    disabled={String(item.createdBy?._id || item.createdBy || "") === String(user?._id || "")} onClick={() => handleDecision(item._id, "reject", true)}
                     className="flex-1 md:flex-none bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/50 font-bold px-4 py-2 rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer"
                   >
                     <X className="h-4 w-4" />

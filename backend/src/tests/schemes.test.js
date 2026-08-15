@@ -22,6 +22,7 @@ describe("Schemes API Integration", () => {
       email: "scheme_test@govintel.gov",
       password: "Password123",
       role: "official",
+      department: "Department of Agriculture",
     });
 
     const loginRes = await request(app)
@@ -46,7 +47,7 @@ describe("Schemes API Integration", () => {
       .send({
         title: "Scheme Integration Test Title",
         description: "Integration test description details.",
-        category: "Agriculture",
+        category: "Farmer Welfare",
         department: "Department of Agriculture",
         state: "All",
         eligibilityRules: {

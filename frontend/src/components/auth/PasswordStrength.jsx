@@ -1,0 +1,14 @@
+export default function PasswordStrength({ password }) {
+  const rules = [
+    password.length >= 8,
+    /[A-Z]/.test(password),
+    /[a-z]/.test(password),
+    /\d/.test(password),
+    /[^A-Za-z0-9]/.test(password),
+  ];
+  const score = rules.filter(Boolean).length;
+  const labels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Strong'];
+  const colors = ['', 'bg-red-500', 'bg-orange-500', 'bg-amber-500', 'bg-emerald-500', 'bg-emerald-600'];
+  if (!password) return null;
+  return <div className="mt-1"><div className="flex gap-1">{[1, 2, 3, 4, 5].map((n) => <span key={n} className={`h-1 flex-1 rounded ${n <= score ? colors[score] : 'bg-slate-200'}`} />)}</div><p className="mt-1 text-[10px] leading-3 text-slate-500">{labels[score]} · 8+ chars, upper/lowercase, number, symbol.</p></div>;
+}

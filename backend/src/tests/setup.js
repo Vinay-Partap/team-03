@@ -1,0 +1,11 @@
+const { MongoMemoryServer } = require('mongodb-memory-server');
+let mongo;
+process.env.NODE_ENV = 'test';
+process.env.JWT_SECRET = 'test-access-secret-not-for-production';
+process.env.JWT_REFRESH_SECRET = 'test-refresh-secret-not-for-production';
+process.env.GOOGLE_CLIENT_ID = 'test-google-client-id';
+process.env.GOOGLE_CLIENT_SECRET = 'test-google-client-secret';
+process.env.GOOGLE_CALLBACK_URL = 'http://localhost:5000/api/auth/google/callback';
+process.env.FRONTEND_URL = 'http://localhost:5173';
+beforeAll(async () => { mongo = await MongoMemoryServer.create(); global.__MONGO_URI = mongo.getUri('policy_platform_test'); });
+afterAll(async () => { if (mongo) await mongo.stop(); });

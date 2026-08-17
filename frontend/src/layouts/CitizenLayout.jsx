@@ -1,0 +1,201 @@
+import NotificationHub from "../components/notifications/NotificationHub";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logoutUser } from "../redux/slices/authSlice";
+import { useState, useEffect } from "react";
+import {
+  LayoutDashboard,
+  FileText,
+  Award,
+  ArrowLeftRight,
+  ShieldCheck,
+  Bookmark,
+  Bell,
+  User,
+  HelpCircle,
+  LogOut,
+  Menu,
+  X
+} from "lucide-react";
+import userService from "../services/user.service";
+
+export default function CitizenLayout() {
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+
+  const fetchUnreadNotifications = async () => {
+    try {
+      const data = await userService.getNotifications();
+      const unread = data.notifications.filter((n) => !n.read).length;
+      setUnreadCount(unread);
+    } catch (e) {
+      // Ignore
+    }
+  };
+
+  useEffect(() => {
+    fetchUnreadNotifications();
+    const interval = setInterval(fetchUnreadNotifications, 30000); // Check every 30s
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    setLogoutOpen(false);
+    navigate("/login");
+  };
+
+  const navItems = [
+    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+    { name: "Search Policies", path: "/policies", icon: FileText },
+    { name: "Search Schemes", path: "/schemes", icon: Award },
+    { name: "Compare Items", path: "/compare", icon: ArrowLeftRight },
+    { name: "Eligibility Checker", path: "/eligibility", icon: ShieldCheck },
+    { name: "Saved Bookmarks", path: "/saved", icon: Bookmark },
+    {
+      name: "Notifications",
+      path: "/notifications",
+      icon: Bell,
+      badge: unreadCount > 0 ? unreadCount : null,
+    },
+    { name: "My Profile", path: "/profile", icon: User },
+    { name: "Support / Feedback", path: "/feedback", icon: HelpCircle },
+  ];
+
+  return (
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex flex-col w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex-shrink-0">
+        <div className="p-6 border-b border-slate-800 flex items-center gap-2.5">
+          <ShieldCheck className="h-6 w-6 text-blue-500 stroke-[2.5]" />
+          <span className="text-white font-bold text-lg tracking-tight">Citizen Portal</span>
+        </div>
+
+        <div className="flex-1 py-6 overflow-y-auto px-4 space-y-1.5">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all group ${
+                  isActive
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                    : "hover:bg-slate-800 hover:text-white text-slate-400"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Icon className={`h-4.5 w-4.5 ${isActive ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
+                  <span>{item.name}</span>
+                </div>
+                {item.badge && (
+                  <span className="bg-red-500 text-white text-xxs font-bold px-2 py-0.5 rounded-full">
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* User Card */}
+        <div className="p-4 border-t border-slate-800 flex flex-col gap-3">
+          <div className="flex items-center gap-3 px-2">
+            <div className="bg-blue-600/10 text-blue-400 h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm">
+              {user?.name?.slice(0, 2).toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              <p className="text-white font-semibold text-sm truncate">{user?.name}</p>
+              <p className="text-slate-500 text-xs truncate capitalize">{user?.role}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setLogoutOpen(true)}
+            className="flex items-center gap-3 w-full px-4 py-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-slate-800 font-medium text-sm transition-all"
+          >
+            <LogOut className="h-4.5 w-4.5" />
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Mobile Top Navbar */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <header className="md:hidden h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-30">
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck className="h-5 w-5 text-blue-500" />
+            <span className="text-white font-bold tracking-tight">Citizen Portal</span>
+          </div>
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="text-slate-300 p-1.5 hover:bg-slate-800 rounded-lg">
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </header>
+
+        {/* Mobile Sidebar Overlay */}
+        {mobileOpen && (
+          <div className="md:hidden fixed inset-0 z-20 flex bg-black/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)}>
+            <div className="w-64 bg-slate-900 text-slate-300 flex flex-col h-full" onClick={(e) => e.stopPropagation()}>
+              <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-blue-500" />
+                  <span className="text-white font-bold">Citizen Portal</span>
+                </div>
+                <button onClick={() => setMobileOpen(false)} className="text-slate-400">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="flex-1 py-6 overflow-y-auto px-4 space-y-1.5">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      className={`flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm ${
+                        isActive ? "bg-blue-600 text-white" : "hover:bg-slate-800 text-slate-400"
+                      }`}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className="h-4.5 w-4.5" />
+                        <span>{item.name}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="bg-red-500 text-white text-xxs font-bold px-2 py-0.5 rounded-full">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+              <div className="p-6 border-t border-slate-800 flex flex-col gap-3">
+                <button
+                  onClick={() => setLogoutOpen(true)}
+                  className="flex items-center gap-3 w-full px-4 py-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-slate-800 font-medium text-sm"
+                >
+                  <LogOut className="h-4.5 w-4.5" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Content Outlet Panel */}
+        <main className="flex-1 overflow-y-auto p-6 md:p-8 lg:p-10">
+          <Outlet />
+        </main>
+      </div>
+      {logoutOpen && <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-4" role="dialog" aria-modal="true"><div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"><h2 className="text-lg font-bold text-slate-900">Do you want to log out?</h2><p className="mt-2 text-sm text-slate-600">You will need to sign in again to access your account.</p><div className="mt-6 flex justify-end gap-3"><button onClick={() => setLogoutOpen(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">Cancel</button><button onClick={handleLogout} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white">Yes, log out</button></div></div></div>}
+      <NotificationHub />
+    </div>
+  );
+}

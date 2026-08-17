@@ -1,0 +1,61 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+const schemeSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    category: { type: String, required: true, enum: require('./schemeCategories') },
+    department: { type: String, required: true },
+    sector: { type: String, default: "" },
+    state: { type: String, default: "Global" },
+    status: {
+      type: String,
+      enum: ["draft", "pending_approval", "approved", "archived"],
+      default: "draft",
+    },
+    eligibilityRules: {
+      ageMin: { type: Number, default: 0 },
+      ageMax: { type: Number, default: 120 },
+      gender: { type: String, enum: ["Male", "Female", "Transgender", "All"], default: "All" },
+      incomeMax: { type: Number, default: null }, // Null means no upper income limit
+      occupation: { type: String, default: "All" }, // "All" or a specific occupation
+      education: { type: String, default: "All" }, // "All" or a specific education level
+      state: { type: String, default: "All" }, // "All" or specific state
+      category: { type: String, default: "All" }, // "All", "General", "OBC", "SC", "ST"
+      disabilityRequired: { type: Boolean, default: false },
+    },
+    benefits: { type: String, default: "" },
+    applicationProcess: { type: String, default: "" },
+    updates: [
+      {
+        content: { type: String, required: true },
+        type: { type: String, default: "General Update" },
+        addedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+        date: { type: Date, default: Date.now },
+      },
+    ],
+    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    versionHistory: [{ version: Number, changedAt: Date, changedBy: { type: Schema.Types.ObjectId, ref: "User" }, summary: String }],
+    approvedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    archivedAt: { type: Date, default: null }, archivedBy: { type: Schema.Types.ObjectId, ref: "User", default: null }, archiveReason: { type: String, default: "" },
+    version: { type: Number, default: 1 }, versionHistory: [{ version:Number, changedAt:Date, changedBy:{type:Schema.Types.ObjectId,ref:"User"}, summary:String }],
+    reviewedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    reviewedAt: { type: Date, default: null },
+    reviewDecision: { type: String, enum: ["approved", "rejected", null], default: null },
+    reviewReason: { type: String, default: "" },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+schemeSchema.index({ category: 1 });
+schemeSchema.index({ department: 1 });
+schemeSchema.index({ state: 1 });
+schemeSchema.index({ status: 1 });
+schemeSchema.index({ createdAt: -1 });
+schemeSchema.index({ title: "text", description: "text", benefits: "text" });
+
+
+module.exports = mongoose.models.Schemes || mongoose.model("Schemes", schemeSchema);
